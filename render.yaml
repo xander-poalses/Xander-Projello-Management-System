@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: projello-api
+    runtime: docker
+    plan: free
+    rootDir: backend/Projello.Api
+    dockerfilePath: ./Dockerfile
+    branch: Dev
+    healthCheckPath: /swagger/index.html
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__Key
+        generateValue: true
+      - key: CloudinarySettings__CloudName
+        sync: false
+      - key: CloudinarySettings__ApiKey
+        sync: false
+      - key: CloudinarySettings__ApiSecret
+        sync: false
