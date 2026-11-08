@@ -88,7 +88,7 @@ builder.Services.AddCors(options =>
         policy.SetIsOriginAllowed(origin =>
             origin.StartsWith("http://localhost") ||
             origin.StartsWith("https://localhost") ||
-            origin == "https://projello-management-system.onrender.com" ||
+            origin == "https://projello-api.onrender.com" ||
             origin.StartsWith("app://") ||           // Common for Electron
             origin.StartsWith("file://")              // Sometimes used by Electron
         )

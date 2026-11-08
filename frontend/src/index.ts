@@ -26,8 +26,8 @@ const createWindow = (): void => {
 
 const connectSrc = [
   "'self'",
-  'https://projello-management-system.onrender.com',
-  'wss://projello-management-system.onrender.com',
+  'https://projello-api.onrender.com',
+  'wss://projello-api.onrender.com',
   ...(isDev ? ['http://localhost:*', 'ws://localhost:*', 'ws://127.0.0.1:*'] : []),
 ];//test
 
