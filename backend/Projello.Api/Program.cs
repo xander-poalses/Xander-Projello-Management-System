@@ -9,6 +9,9 @@ using Projello.Api.Hubs;
 using System.Text;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +51,12 @@ builder.Services.AddIdentityCore<User>(options => {
 .AddDefaultTokenProviders();
 
 // JWT
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "Projello@SuperSecret!Key#2026$Secure%";
+// No fallback: a missing key must stop startup, not sign tokens with a key that's in git
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32)
+{
+    throw new InvalidOperationException("Jwt:Key must be set (at least 32 bytes). On Render set the Jwt__Key environment variable.");
+}
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,6 +106,26 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Render sits in front of the API; trust only the hop it adds so the client IP is real
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Slow down password and 2FA code guessing: 10 attempts per minute per IP on auth endpoints
+var authPermitLimit = builder.Configuration.GetValue("RateLimiting:AuthPermitLimit", 10);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = authPermitLimit, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -142,6 +170,8 @@ builder.Services.AddSignalR().AddHubOptions<ProjectCallHub>(options =>
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 // Fixed conditional redirect blocks to prevent routing layout failure loops on Dev environments
 if (!app.Environment.IsDevelopment())
 {
@@ -169,6 +199,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 app.MapHub<ProjectCallHub>("/callhub");
 app.MapHub<TeamNotificationHub>("/teamnotificationHub");

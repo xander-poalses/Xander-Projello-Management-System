@@ -11,11 +11,11 @@ using Xunit;
 namespace Projello.Api.Tests.Integration
 {
     // WebApplicationFactory boots your REAL API in the background
-    public class AuthIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+    public class AuthIntegrationTests : IClassFixture<ProjelloApiFactory>
     {
         private readonly HttpClient _client;
 
-        public AuthIntegrationTests(WebApplicationFactory<Program> factory)
+        public AuthIntegrationTests(ProjelloApiFactory factory)
         {
             // Creates a real HTTP client pointing at your background API
             _client = factory.CreateClient();
@@ -207,9 +207,13 @@ namespace Projello.Api.Tests.Integration
             // Arrange
             var email = $"2fastatus_{Guid.NewGuid()}@test.com";
             await _client.PostAsJsonAsync("/api/auth/register", new UserRegisterDto { FullName = "2FA Status Check", Email = email, Password = "Password123!" });
+            var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" });
+            var authData = await loginResponse.Content.ReadFromJsonAsync<LoginResponseData>();
 
             // Act
-            var response = await _client.GetAsync($"/api/auth/2fa-status?email={email}");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/2fa-status");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authData!.Token);
+            var response = await _client.SendAsync(request);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -327,13 +331,13 @@ namespace Projello.Api.Tests.Integration
         }
 
         [Fact]
-        public async Task Get2FAStatus_NonExistentUser_ReturnsNotFound()
+        public async Task Get2FAStatus_Anonymous_ReturnsUnauthorized()
         {
-            // Act: Request status configuration for an email that completely does not exist in Db Context
+            // Act: Without a token the endpoint must not reveal whether an email has an account
             var response = await _client.GetAsync("/api/auth/2fa-status?email=ghost_profile_does_not_exist@test.com");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     } // <-- Properly closes the class scope
 

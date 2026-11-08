@@ -24,6 +24,8 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
   // Extract the email passed from LoginPage via route state
   // This ensures we only verify the specific user who requested 2FA
   const email = location.state?.email;
+  // Proof from the login step that the password was correct
+  const challengeToken = location.state?.challengeToken;
   // Security Check: If no email is found in state (e.g., user manually typed the URL),
   // redirect them back to login and stop rendering this component
   if (!email) {
@@ -42,7 +44,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
       const response = await fetch(`${API_BASE_URL}/api/Auth/verify-2fa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code }),
+        body: JSON.stringify({ email, code, challengeToken }),
       });
 
       const data = await response.json();

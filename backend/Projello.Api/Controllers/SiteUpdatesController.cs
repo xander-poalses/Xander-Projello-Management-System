@@ -29,6 +29,8 @@ public class SiteUpdatesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUpdates(int projectId)
     {
+        if (!await CanAccessProjectAsync(projectId)) return Forbid();
+
         var updates = await _context.ProjectUpdates
             .Where(u => u.ProjectId == projectId)
             .OrderByDescending(u => u.CreatedAt)
@@ -105,6 +107,7 @@ public class SiteUpdatesController : ControllerBase
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Unauthorized();
+        if (!await CanAccessProjectAsync(projectId)) return Forbid();
 
         string imageUrl = string.Empty;
 
@@ -237,5 +240,30 @@ public class SiteUpdatesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    // Same rule as ProjectsController.GetProject: Admin sees all, Owner sees their company,
+    // everyone else must be a member of the project
+    private async Task<bool> CanAccessProjectAsync(int projectId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var role = User.FindFirst("RoleID")?.Value;
+        if (userId == null) return false;
+        if (role == "1") return true;
+
+        var project = await _context.Projects
+            .Include(p => p.Client)
+            .FirstOrDefaultAsync(p => p.ProjectID == projectId);
+        if (project == null) return false;
+
+        var userCompanyId = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.CompanyId)
+            .FirstOrDefaultAsync();
+        if (userCompanyId == null || project.Client?.CompanyID != userCompanyId) return false;
+
+        if (role == "4") return true;
+
+        return await _context.ProjectMembers.AnyAsync(m => m.ProjectID == projectId && m.UserID == userId);
     }
 }

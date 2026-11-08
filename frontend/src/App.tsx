@@ -54,8 +54,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   useTeamNotifications(); // Keep this here to ensure notifications work across the app
   useIncomingCallNotifications();
   
-  // Added "/verify-2fa" to the array so the sidebar is hidden on this page too
-  const hideNav = ["/", "/login", "/signup", "/verify-2fa"].includes(location.pathname);
+  // Sidebar is hidden on the pages you see before signing in
+  const hideNav = ["/", "/login", "/signup", "/register-company", "/verify-2fa"].includes(location.pathname);
   
   return (
     <div style={{ display: "flex" }}>

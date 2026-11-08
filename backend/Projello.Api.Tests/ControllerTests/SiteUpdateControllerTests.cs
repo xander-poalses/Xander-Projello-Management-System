@@ -33,6 +33,22 @@ namespace Projello.Api.Tests.Controllers
             _dummyCloudinary = new Cloudinary(account);
 
             _controller = new SiteUpdatesController(_context, _dummyCloudinary);
+
+            // Default to an Admin so mapping tests aren't blocked by the project access check
+            SetCurrentUser("test-admin", "1");
+        }
+
+        // Creates a company, client and project, and adds the user to it as a worker
+        private void SeedProjectMember(int projectId, string userId, bool addMembership = true)
+        {
+            var company = new Company { CompanyID = 1, Name = "Test Co", CreatedAt = DateTime.UtcNow };
+            _context.Companies.Add(company);
+            _context.Users.Add(new User { Id = userId, FullName = "Site Worker", Email = $"{userId}@test.com", CompanyId = 1 });
+            _context.Clients.Add(new Client { ClientID = 1, Name = "Test Client", CompanyID = 1 });
+            _context.Projects.Add(new Project { ProjectID = projectId, ClientID = 1, Name = "Test Project", Status = "Active", CreatedByUserID = userId });
+            if (addMembership)
+                _context.ProjectMembers.Add(new ProjectMember { ProjectID = projectId, UserID = userId, AssignedAs = "Worker" });
+            _context.SaveChanges();
         }
 
         private void SetCurrentUser(string userId, string roleId = null)
@@ -121,7 +137,8 @@ namespace Projello.Api.Tests.Controllers
         {
 
             var userId = "user-123";
-            SetCurrentUser(userId);
+            SeedProjectMember(1, userId);
+            SetCurrentUser(userId, "3");
 
             var dto = new CreateUpdateDto
             {
@@ -138,6 +155,28 @@ namespace Projello.Api.Tests.Controllers
             Assert.Equal(string.Empty, createdUpdate.ImageUrl);
             Assert.Equal(userId, createdUpdate.UserId);
             Assert.Equal(1, _context.ProjectUpdates.Count());
+        }
+
+        [Fact]
+        public async Task GetUpdates_WorkerNotOnProject_ReturnsForbid()
+        {
+            SeedProjectMember(1, "outsider", addMembership: false);
+            SetCurrentUser("outsider", "3");
+
+            var result = await _controller.GetUpdates(1);
+
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUpdates_WorkerOnProject_ReturnsOk()
+        {
+            SeedProjectMember(1, "member");
+            SetCurrentUser("member", "3");
+
+            var result = await _controller.GetUpdates(1);
+
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]

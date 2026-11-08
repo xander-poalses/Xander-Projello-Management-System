@@ -11,6 +11,7 @@ using OtpNet; // Required for 2FA
 using Microsoft.AspNetCore.Authorization;
 using Projello.Api.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Projello.Api.Controllers
 {
@@ -30,6 +31,7 @@ namespace Projello.Api.Controllers
         }
 
         // --- CREATE: REGISTER ---
+        [EnableRateLimiting("auth")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto model)
         {
@@ -94,6 +96,7 @@ namespace Projello.Api.Controllers
         }
 
         // --- READ: LOGIN ---
+        [EnableRateLimiting("auth")]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto model)
         {
@@ -102,10 +105,16 @@ namespace Projello.Api.Controllers
             {
                 if (user.IsTwoFactorEnabled)
                 {
+                    // Short-lived, single-use proof that the password step passed
+                    var challenge = Base64UrlEncoder.Encode(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
+                    var expires = DateTime.UtcNow.Add(LoginChallengeLifetime).Ticks;
+                    await _userManager.SetAuthenticationTokenAsync(user, "Projello2FA", "LoginChallenge", $"{challenge}|{expires}");
+
                     return Ok(new
                     {
                         Requires2FA = true,
                         Email = user.Email,
+                        ChallengeToken = challenge,
                         Message = "Two-Step Verification required."
                     });
                 }
@@ -223,6 +232,7 @@ namespace Projello.Api.Controllers
         }
 
         // --- 2FA: STEP 2 - VERIFY SETUP CHALLENGE AND ACTIVATE CORES ---
+        [EnableRateLimiting("auth")]
         [HttpPost("verify-2fa")]
         public async Task<IActionResult> Verify2FA([FromBody] Verify2FaDto model)
         {
@@ -245,6 +255,10 @@ namespace Projello.Api.Controllers
             }
             else
             {
+                // Login with 2FA: the code alone is not enough, the password step must have passed
+                if (!await IsLoginChallengeValidAsync(user, model.ChallengeToken))
+                    return BadRequest(new { Message = "Your sign-in session has expired. Please log in again." });
+
                 base32Secret = user.TwoFactorSecret ?? "";
             }
 
@@ -272,6 +286,11 @@ namespace Projello.Api.Controllers
                     // Immediately remove both tokens so no one else can activate with this QR
                     await _userManager.RemoveAuthenticationTokenAsync(user, "Projello2FA", "UnverifiedSecretKey");
                     await _userManager.RemoveAuthenticationTokenAsync(user, "Projello2FA", "SetupSessionId");
+                }
+                else
+                {
+                    // Single use: the challenge can't be replayed for another login
+                    await _userManager.RemoveAuthenticationTokenAsync(user, "Projello2FA", "LoginChallenge");
                 }
 
                 // Generate token only once (works for both setup and normal verification)
@@ -316,16 +335,22 @@ namespace Projello.Api.Controllers
         }
 
         // --- 2FA: STATUS ---
+        // Only for the signed-in user, so it can't be used to check which emails have accounts
+        [Authorize]
         [HttpGet("2fa-status")]
-        public async Task<IActionResult> Get2FAStatus([FromQuery] string email)
+        public async Task<IActionResult> Get2FAStatus()
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
 
             return Ok(new { is2FAEnabled = user.IsTwoFactorEnabled });
         }
 
         // --- COMPANY REGISTRATION ---
+        [EnableRateLimiting("auth")]
         [HttpPost("register-company")]
         public async Task<IActionResult> RegisterCompany([FromBody] UserRegisterDto model)
         {
@@ -407,6 +432,22 @@ namespace Projello.Api.Controllers
                 ExpiresAt = invite.ExpiresAt,
                 Message = "Invite code generated successfully. Valid for 24 hours and can only be used once."
             });
+        }
+
+        // --- HELPER: 2FA LOGIN CHALLENGE ---
+        private static readonly TimeSpan LoginChallengeLifetime = TimeSpan.FromMinutes(5);
+
+        private async Task<bool> IsLoginChallengeValidAsync(User user, string? challengeToken)
+        {
+            if (string.IsNullOrEmpty(challengeToken)) return false;
+
+            var stored = await _userManager.GetAuthenticationTokenAsync(user, "Projello2FA", "LoginChallenge");
+            var parts = stored?.Split('|');
+            if (parts == null || parts.Length != 2 || !long.TryParse(parts[1], out var expiresTicks)) return false;
+            if (DateTime.UtcNow.Ticks > expiresTicks) return false;
+
+            return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(parts[0]), Encoding.UTF8.GetBytes(challengeToken));
         }
 
         // --- HELPER: JWT GENERATION ---

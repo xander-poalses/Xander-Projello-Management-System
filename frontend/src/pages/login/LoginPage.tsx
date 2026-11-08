@@ -57,7 +57,7 @@ export default function LoginPage({ onSwitchToSignUp, onSwitchToRegisterCompany,
       if (data.requires2FA) {
         // If 2FA is needed, redirect the user to the verification page
         // We pass the email in the navigation state so the 2FA page knows who to verify
-        navigate("/verify-2fa", { state: { email: email } });
+        navigate("/verify-2fa", { state: { email: email, challengeToken: data.challengeToken } });
       } else {
         // If no 2FA is needed, proceed immediately with the standard login flow
         completeLogin(data.token);

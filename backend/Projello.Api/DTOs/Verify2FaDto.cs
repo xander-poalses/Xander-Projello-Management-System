@@ -10,4 +10,7 @@ public class Verify2FaDto
 
     [Required]
     public string Code { get; set; } = null!;
+
+    // Issued by login when 2FA is on; required to finish a 2FA login
+    public string? ChallengeToken { get; set; }
 }
