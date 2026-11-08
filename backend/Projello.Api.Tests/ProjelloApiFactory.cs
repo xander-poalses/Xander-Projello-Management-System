@@ -19,6 +19,7 @@ namespace Projello.Api.Tests
             // UseSetting applies before Program.cs reads configuration; the tests fire many logins
             builder.UseSetting("RateLimiting:AuthPermitLimit", "1000");
             builder.UseSetting("ConnectionStrings:DefaultConnection", "");
+            builder.UseSetting("Jwt:Key", "test-only-signing-key-that-is-at-least-32-bytes-long");
 
             builder.ConfigureTestServices(services =>
             {

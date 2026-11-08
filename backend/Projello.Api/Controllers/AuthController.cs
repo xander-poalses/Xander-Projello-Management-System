@@ -101,7 +101,16 @@ namespace Projello.Api.Controllers
         public async Task<IActionResult> Login([FromBody] UserLoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user != null && await _userManager.IsLockedOutAsync(user))
+                return LockedOut();
+
+            if (user != null && !await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                // Counts towards lockout (5 failures locks the account for 15 minutes)
+                await _userManager.AccessFailedAsync(user);
+                if (await _userManager.IsLockedOutAsync(user)) return LockedOut();
+            }
+            else if (user != null)
             {
                 if (user.IsTwoFactorEnabled)
                 {
@@ -119,6 +128,9 @@ namespace Projello.Api.Controllers
                     });
                 }
 
+                // Failed attempts only reset once the whole login succeeds (after 2FA when it's on)
+                await _userManager.ResetAccessFailedCountAsync(user);
+
                 var token = GenerateJwtToken(user);
                 return Ok(new
                 {
@@ -129,6 +141,10 @@ namespace Projello.Api.Controllers
             }
             return Unauthorized(new { Message = "Invalid credentials" });
         }
+
+        private ObjectResult LockedOut() =>
+            StatusCode(StatusCodes.Status429TooManyRequests,
+                new { Message = "Too many failed attempts. Try again in 15 minutes." });
 
         // --- READ: GET CURRENT USER (ME) ---
         [Authorize]
@@ -255,6 +271,8 @@ namespace Projello.Api.Controllers
             }
             else
             {
+                if (await _userManager.IsLockedOutAsync(user)) return LockedOut();
+
                 // Login with 2FA: the code alone is not enough, the password step must have passed
                 if (!await IsLoginChallengeValidAsync(user, model.ChallengeToken))
                     return BadRequest(new { Message = "Your sign-in session has expired. Please log in again." });
@@ -291,6 +309,7 @@ namespace Projello.Api.Controllers
                 {
                     // Single use: the challenge can't be replayed for another login
                     await _userManager.RemoveAuthenticationTokenAsync(user, "Projello2FA", "LoginChallenge");
+                    await _userManager.ResetAccessFailedCountAsync(user);
                 }
 
                 // Generate token only once (works for both setup and normal verification)
@@ -309,6 +328,14 @@ namespace Projello.Api.Controllers
             if (isInitialSetupWorkflow)
             {
                 return BadRequest(new { Message = "Invalid code. Please try again with the same QR code." });
+            }
+
+            // Wrong codes count towards the same lockout as wrong passwords
+            await _userManager.AccessFailedAsync(user);
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                await _userManager.RemoveAuthenticationTokenAsync(user, "Projello2FA", "LoginChallenge");
+                return LockedOut();
             }
 
             return BadRequest(new { Message = "Invalid verification code." });

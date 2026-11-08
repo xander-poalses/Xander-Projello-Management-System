@@ -6,10 +6,10 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 - [x] Fix the 2FA bypass: `POST /api/auth/verify-2fa` accepts only an email and a code. Have login return a short-lived 2FA challenge token and require it at verify (`AuthController.cs:225`)
 - [x] Add rate limiting to login, verify-2fa and register (10 per minute per IP)
-- [ ] Add Identity lockout after repeated failed logins and 2FA codes
-- [ ] Rotate the JWT key and move it out of `appsettings.json` into environment variables
+- [x] Add Identity lockout after repeated failed logins and 2FA codes (5 failures, 15 minutes)
+- [x] Rotate the JWT key and move it out of `appsettings.json` into environment variables (Render generates `Jwt__Key`; local dev uses user-secrets)
 - [x] Remove the hardcoded fallback JWT key in `Program.cs` and fail at startup if none is set
-- [ ] Move the Postgres password in `database/docker-compose.yml` into an `.env` file kept out of git
+- [x] Move the Postgres password in `database/docker-compose.yml` into an `.env` file kept out of git
 
 ## 2. Security: high
 

@@ -339,6 +339,23 @@ namespace Projello.Api.Tests.Integration
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
+
+        [Fact]
+        public async Task Login_FiveWrongPasswords_LocksOutEvenWithCorrectPassword()
+        {
+            // Arrange
+            var email = $"lockout_{Guid.NewGuid()}@test.com";
+            await _client.PostAsJsonAsync("/api/auth/register", new UserRegisterDto { FullName = "Lockout Tester", Email = email, Password = "Password123!" });
+
+            for (var i = 0; i < 5; i++)
+                await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "WrongPassword1!" });
+
+            // Act: the right password no longer works while locked out
+            var response = await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+        }
     } // <-- Properly closes the class scope
 
     // ==================== DTO PAYLOAD RESPONSE CLASSES ====================
