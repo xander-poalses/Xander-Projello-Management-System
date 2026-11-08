@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projello.Api.Data;
+using Projello.Api.Services;
 using Projello.Api.Models;
 using Projello.Api.DTOs;
 using System;
@@ -34,13 +35,14 @@ namespace Projello.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var role = GetUserRole();
-            bool isAdmin = role == "1";
-
             var overview = new DashboardOverviewDto();
 
-            // 1. Build Query Context (Admins see all, workers/foremen see assigned projects)
-            var projectQuery = _context.Projects.Include(p => p.Client).AsQueryable();
-            if (!isAdmin)
+            // 1. Build Query Context: own company only; Admins and Owners see all of it,
+            // Foremen and Workers see their assigned projects
+            var companyId = await _context.GetCompanyIdAsync(userId);
+            var projectQuery = _context.Projects.Include(p => p.Client)
+                .Where(p => companyId != null && p.Client.CompanyID == companyId);
+            if (!CompanyScope.IsCompanyManager(role))
             {
                 projectQuery = projectQuery.Where(p => p.Members.Any(m => m.UserID == userId));
             }
@@ -64,14 +66,11 @@ namespace Projello.Api.Controllers
             overview.ActiveProjects = activeProjects;
 
             // Extract project IDs the user has explicit access to for downstream filtering
-            var authorizedProjectIds = activeProjects.Select(ap => ap.ProjectID).ToList();
+            var authorizedProjectIds = await projectQuery.Select(p => p.ProjectID).ToListAsync();
 
             // 3. Fetch Upcoming Milestones
-            var milestoneQuery = _context.Milestones.Include(m => m.Project).AsQueryable();
-            if (!isAdmin)
-            {
-                milestoneQuery = milestoneQuery.Where(m => authorizedProjectIds.Contains(m.ProjectID));
-            }
+            var milestoneQuery = _context.Milestones.Include(m => m.Project)
+                .Where(m => authorizedProjectIds.Contains(m.ProjectID));
 
             // FIX FOR CS1061: Changed 'TargetDate' to 'DueDate' to match your Milestone entity structural mapping
             overview.UpcomingMilestones = await milestoneQuery
@@ -90,11 +89,8 @@ namespace Projello.Api.Controllers
                 .ToListAsync();
 
             // 4. Fetch Urgent/Assigned Tasks
-            var taskQuery = _context.Tasks.Include(t => t.Milestone).ThenInclude(m => m.Project).AsQueryable();
-            if (!isAdmin)
-            {
-                taskQuery = taskQuery.Where(t => t.AssignedToUserID == userId || authorizedProjectIds.Contains(t.Milestone.ProjectID));
-            }
+            var taskQuery = _context.Tasks.Include(t => t.Milestone).ThenInclude(m => m.Project)
+                .Where(t => t.AssignedToUserID == userId || authorizedProjectIds.Contains(t.Milestone.ProjectID));
 
             overview.UrgentTasks = await taskQuery
                 .Where(t => t.Status != Status.Completed && (t.Priority == "Urgent" || t.Priority == "High"))
@@ -117,12 +113,7 @@ namespace Projello.Api.Controllers
                 .Include(u => u.User)
                 .Include(u => u.Milestone).ThenInclude(m => m.Project)
                 .Include(u => u.Reactions).ThenInclude(r => r.User)
-                .AsQueryable();
-
-            if (!isAdmin)
-            {
-                activityQuery = activityQuery.Where(u => authorizedProjectIds.Contains(u.Milestone.ProjectID));
-            }
+                .Where(u => authorizedProjectIds.Contains(u.Milestone.ProjectID));
 
             overview.RecentActivity = await activityQuery
                 .OrderByDescending(u => u.CreatedAt)

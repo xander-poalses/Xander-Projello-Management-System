@@ -130,6 +130,7 @@ namespace Projello.Api.Tests
             context.Milestones.Add(new Projello.Api.Models.Milestone { MilestoneID = 30, ProjectID = 3, Title = "Milestone A" });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -190,6 +191,7 @@ namespace Projello.Api.Tests
             );
 
             await context.SaveChangesAsync();
+            TestCompany.Adopt(context, "user-1");
 
             var tasksController = new TasksController(context)
             {
@@ -275,6 +277,7 @@ namespace Projello.Api.Tests
             );
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -372,6 +375,7 @@ namespace Projello.Api.Tests
             });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -448,6 +452,7 @@ namespace Projello.Api.Tests
             });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -512,6 +517,7 @@ namespace Projello.Api.Tests
             });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -542,6 +548,7 @@ namespace Projello.Api.Tests
             });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-id");
             var controller = new TasksController(context);
             controller.ControllerContext = new ControllerContext
             {

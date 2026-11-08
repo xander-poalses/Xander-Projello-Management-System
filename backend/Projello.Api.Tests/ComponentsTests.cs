@@ -96,7 +96,7 @@ namespace Projello.Tests
             var company = new Company { CompanyID = 1, Name = "BuildCorp Enterprise", CreatedAt = DateTime.UtcNow };
             var targetUser = new User { Id = targetForemanId, FullName = "Angie Tester", UserName = "angie@buildcorp.co.za", Email = "angie@buildcorp.co.za", CompanyId = 1 };
             
-            var client = new Client { ClientID = 1, Name = "Acme Corp", ContactEmail = "contact@acme.com", CreatedAt = DateTime.UtcNow };
+            var client = new Client { ClientID = 1, Name = "Acme Corp", ContactEmail = "contact@acme.com", CompanyID = 1, CreatedAt = DateTime.UtcNow };
             
             var project = new Project { ProjectID = 50, Name = "Highrise Block A", ClientID = 1, Status = "Planning", CreatedByUserID = targetForemanId, CreatedAt = DateTime.UtcNow };
             var milestone = new Milestone { MilestoneID = 88, ProjectID = 50, Title = "Structural Steel Framework", Status = "InProgress", CreatedAt = DateTime.UtcNow };
@@ -256,7 +256,7 @@ namespace Projello.Tests
                 : badRequestResult.Value.ToString();
 
             Assert.NotNull(messageValue);
-            Assert.Contains("cannot demote yourself", messageValue, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("change your own role", messageValue, StringComparison.OrdinalIgnoreCase);
             
             var unchangedUser = await context.Users.FindAsync(adminId);
             Assert.NotNull(unchangedUser);

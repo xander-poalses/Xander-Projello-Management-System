@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projello.Api.Data;
+using Projello.Api.Services;
 using Projello.Api.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -146,6 +147,7 @@ public class SiteUpdatesController : ControllerBase
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Unauthorized();
+        if (!await CanAccessUpdateAsync(updateId)) return Forbid();
 
         var existing = await _context.UpdateReactions
             .FirstOrDefaultAsync(r => r.UpdateId == updateId && r.UserId == userId && r.Emoji == dto.Emoji);
@@ -177,6 +179,7 @@ public class SiteUpdatesController : ControllerBase
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Unauthorized();
+        if (!await CanAccessUpdateAsync(updateId)) return Forbid();
 
         var comment = new UpdateComment
         {
@@ -202,12 +205,10 @@ public class SiteUpdatesController : ControllerBase
         var update = await _context.ProjectUpdates.FirstOrDefaultAsync(u => u.Id == updateId);
         if (update == null) return NotFound("Update not found.");
 
-        // Authorization: Post owner OR Owner/Admin
-        var role = User.FindFirst("RoleID")?.Value;
-        bool isOwnerOrAdmin = role == "1" || role == "4";
+        // Authorization: Post author OR Owner/Admin of the same company
         bool isPostAuthor = update.UserId == userId;
 
-        if (!isPostAuthor && !isOwnerOrAdmin)
+        if (!isPostAuthor && !await CanModerateAsync(update.ProjectId, userId))
             return Forbid("You don't have permission to delete this post.");
 
         _context.ProjectUpdates.Remove(update);
@@ -228,12 +229,14 @@ public class SiteUpdatesController : ControllerBase
 
         if (comment == null) return NotFound("Comment not found.");
 
-        // Authorization: Comment owner OR Owner/Admin
-        var role = User.FindFirst("RoleID")?.Value;
-        bool isOwnerOrAdmin = role == "1" || role == "4";
+        // Authorization: Comment author OR Owner/Admin of the same company
         bool isCommentAuthor = comment.UserId == userId;
+        var postProjectId = await _context.ProjectUpdates
+            .Where(u => u.Id == updateId)
+            .Select(u => u.ProjectId)
+            .FirstOrDefaultAsync();
 
-        if (!isCommentAuthor && !isOwnerOrAdmin)
+        if (!isCommentAuthor && !await CanModerateAsync(postProjectId, userId))
             return Forbid("You can only delete your own comments.");
 
         _context.UpdateComments.Remove(comment);
@@ -242,28 +245,23 @@ public class SiteUpdatesController : ControllerBase
         return NoContent();
     }
 
-    // Same rule as ProjectsController.GetProject: Admin sees all, Owner sees their company,
-    // everyone else must be a member of the project
-    private async Task<bool> CanAccessProjectAsync(int projectId)
+    private Task<bool> CanAccessProjectAsync(int projectId) =>
+        _context.CanAccessProjectAsync(projectId,
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+            User.FindFirst("RoleID")?.Value);
+
+    // Reacting and commenting need access to the project the post belongs to
+    private async Task<bool> CanAccessUpdateAsync(int updateId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var role = User.FindFirst("RoleID")?.Value;
-        if (userId == null) return false;
-        if (role == "1") return true;
-
-        var project = await _context.Projects
-            .Include(p => p.Client)
-            .FirstOrDefaultAsync(p => p.ProjectID == projectId);
-        if (project == null) return false;
-
-        var userCompanyId = await _context.Users
-            .Where(u => u.Id == userId)
-            .Select(u => u.CompanyId)
+        var projectId = await _context.ProjectUpdates
+            .Where(u => u.Id == updateId)
+            .Select(u => (int?)u.ProjectId)
             .FirstOrDefaultAsync();
-        if (userCompanyId == null || project.Client?.CompanyID != userCompanyId) return false;
-
-        if (role == "4") return true;
-
-        return await _context.ProjectMembers.AnyAsync(m => m.ProjectID == projectId && m.UserID == userId);
+        return projectId != null && await CanAccessProjectAsync(projectId.Value);
     }
+
+    // Owners and Admins may moderate posts, but only on their own company's projects
+    private async Task<bool> CanModerateAsync(int projectId, string userId) =>
+        CompanyScope.IsCompanyManager(User.FindFirst("RoleID")?.Value)
+        && await _context.IsProjectInCompanyAsync(projectId, userId);
 }

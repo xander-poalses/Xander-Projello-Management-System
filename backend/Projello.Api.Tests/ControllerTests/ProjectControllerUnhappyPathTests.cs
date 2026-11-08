@@ -39,6 +39,16 @@ namespace Projello.Api.Tests.ControllerTests
             return new ClaimsPrincipal(new ClaimsIdentity(claims, "mock"));
         }
 
+        // A project in company 10 plus the given users as members of company 10
+        private static void AddCompanyProject(AppDbContext context, int projectId, params string[] userIds)
+        {
+            if (!context.Clients.Any(c => c.ClientID == 900))
+                context.Clients.Add(new Client { ClientID = 900, CompanyID = 10, Name = "Test Client" });
+            context.Projects.Add(new Project { ProjectID = projectId, Name = "Build", CreatedByUserID = "system-admin", ClientID = 900 });
+            foreach (var id in userIds)
+                context.Users.Add(new User { Id = id, FullName = id, CompanyId = 10 });
+        }
+
         private UserManager<User> GetMockUserManager(AppDbContext context)
         {
             var store = new Mock<IUserStore<User>>();
@@ -151,7 +161,7 @@ namespace Projello.Api.Tests.ControllerTests
         public async Task UpdateProjectStatus_AsForeman_ReturnsNoContent()
         {
             var context = GetInMemoryDbContext();
-            context.Projects.Add(new Project { ProjectID = 20, Name = "Status Project", CreatedByUserID = "system-admin" });
+            AddCompanyProject(context, 20, "foreman-user");
             context.ProjectMembers.Add(new ProjectMember { ProjectID = 20, UserID = "foreman-user", AssignedAs = "Foreman" });
             context.SaveChanges();
 
@@ -288,7 +298,7 @@ namespace Projello.Api.Tests.ControllerTests
         public async Task RemoveProjectMember_AsForeman_ReturnsNoContent()
         {
             var context = GetInMemoryDbContext();
-            context.Projects.Add(new Project { ProjectID = 70, Name = "Build", CreatedByUserID = "system-admin" });
+            AddCompanyProject(context, 70, "foreman-user");
             context.ProjectMembers.Add(new ProjectMember { ProjectID = 70, UserID = "foreman-user", AssignedAs = "Foreman" });
             context.ProjectMembers.Add(new ProjectMember { ProjectID = 70, UserID = "target-worker", AssignedAs = "Worker" });
             context.SaveChanges();
@@ -317,7 +327,7 @@ namespace Projello.Api.Tests.ControllerTests
         public async Task RemoveProjectMember_MemberNotAssigned_ReturnsNotFound()
         {
             var context = GetInMemoryDbContext();
-            context.Projects.Add(new Project { ProjectID = 7, Name = "Build", CreatedByUserID = "admin-1" });
+            AddCompanyProject(context, 7, "admin");
             context.SaveChanges();
 
             var controller = CreateController(context, "admin", "1");

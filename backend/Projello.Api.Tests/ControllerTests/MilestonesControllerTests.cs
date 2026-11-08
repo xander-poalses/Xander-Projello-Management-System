@@ -48,6 +48,7 @@ namespace Projello.Api.Tests
             );
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "foreman-001");
             var controller = new MilestonesController(context);
             controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = CreateMockUser(userId, "2") } };
 
@@ -63,8 +64,10 @@ namespace Projello.Api.Tests
             var context = GetInMemoryDbContext();
             var foremanId = "foreman-002";
             context.Projects.Add(new Project { ProjectID = 5, Name = "Beta Build", CreatedByUserID = foremanId });
+            context.ProjectMembers.Add(new ProjectMember { ProjectID = 5, UserID = foremanId, AssignedAs = "Foreman" });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "foreman-002");
             var controller = new MilestonesController(context);
             controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = CreateMockUser(foremanId, "2") } };
 
@@ -184,6 +187,7 @@ namespace Projello.Api.Tests
             context.Milestones.Add(new Milestone { MilestoneID = 51, ProjectID = 1, Title = "Old Title", Status = "NotStarted" });
             context.SaveChanges();
 
+            TestCompany.Adopt(context, "admin-global");
             var controller = new MilestonesController(context);
             controller.ControllerContext = new ControllerContext
             {

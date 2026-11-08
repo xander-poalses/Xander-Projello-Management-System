@@ -36,10 +36,9 @@ namespace Projello.Api.Controllers
                 .Include(c => c.BlacklistedBy)
                 .AsQueryable();
 
-            if (role != "1" && currentUser?.CompanyId != null)
-            {
-                query = query.Where(c => c.CompanyID == currentUser.CompanyId);
-            }
+            // Everyone, Admin included, only sees clients from their own company
+            var companyId = currentUser?.CompanyId;
+            query = query.Where(c => companyId != null && c.CompanyID == companyId);
 
             var clients = await query.ToListAsync();
 
@@ -79,7 +78,7 @@ namespace Projello.Api.Controllers
 
             if (client == null) return NotFound();
 
-            if (role == "4" && client.CompanyID != currentUser?.CompanyId)
+            if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
             var activeProjects = await _context.Projects
@@ -144,7 +143,7 @@ namespace Projello.Api.Controllers
             if (client == null) return NotFound();
 
             var currentUser = await _userManager.FindByIdAsync(GetCurrentUserId()!);
-            if (role == "4" && client.CompanyID != currentUser?.CompanyId)
+            if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
             if (dto.TotalPaid.HasValue)
@@ -183,7 +182,7 @@ namespace Projello.Api.Controllers
 
             var currentUser = await _userManager.FindByIdAsync(GetCurrentUserId()!);
 
-            if (role == "4" && client.CompanyID != currentUser?.CompanyId)
+            if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
             if (client.IsBlacklisted)
@@ -211,7 +210,7 @@ namespace Projello.Api.Controllers
 
             var currentUser = await _userManager.FindByIdAsync(GetCurrentUserId()!);
 
-            if (role == "4" && client.CompanyID != currentUser?.CompanyId)
+            if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
             if (!client.IsBlacklisted)
@@ -242,10 +241,8 @@ public async Task<ActionResult<ClientSummaryDto>> GetClientSummary()
     var query = _context.Clients.AsQueryable();
 
     // Keep scoping aligned with existing GetClients behavior
-    if (role != "1" && currentUser?.CompanyId != null)
-    {
-        query = query.Where(c => c.CompanyID == currentUser.CompanyId);
-    }
+    var companyId = currentUser?.CompanyId;
+    query = query.Where(c => companyId != null && c.CompanyID == companyId);
 
     var blacklistedClients = await query.CountAsync(c => c.IsBlacklisted);
     var activeClients = await query.CountAsync(c => !c.IsBlacklisted);

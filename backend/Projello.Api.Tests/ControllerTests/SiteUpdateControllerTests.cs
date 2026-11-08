@@ -38,6 +38,19 @@ namespace Projello.Api.Tests.Controllers
             SetCurrentUser("test-admin", "1");
         }
 
+        // Puts the user in the test company as a member of the project, creating the
+        // project and any missing posts so access checks pass
+        private void GrantAccess(string userId, int projectId, params int[] updateIds)
+        {
+            if (!_context.Projects.Any(p => p.ProjectID == projectId))
+                _context.Projects.Add(new Project { ProjectID = projectId, Name = "Site", Status = "Active", CreatedByUserID = userId });
+            _context.ProjectMembers.Add(new ProjectMember { ProjectID = projectId, UserID = userId, AssignedAs = "Worker" });
+            foreach (var id in updateIds.Where(id => !_context.ProjectUpdates.Any(u => u.Id == id)))
+                _context.ProjectUpdates.Add(new ProjectUpdate { Id = id, ProjectId = projectId, UserId = userId, ImageUrl = "" });
+            _context.SaveChanges();
+            TestCompany.Adopt(_context, userId);
+        }
+
         // Creates a company, client and project, and adds the user to it as a worker
         private void SeedProjectMember(int projectId, string userId, bool addMembership = true)
         {
@@ -91,6 +104,7 @@ namespace Projello.Api.Tests.Controllers
 
             await _context.SaveChangesAsync();
 
+            GrantAccess("test-admin", projectId);
             var result = await _controller.GetUpdates(projectId);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -122,6 +136,7 @@ namespace Projello.Api.Tests.Controllers
             _context.UpdateComments.Add(new UpdateComment { Id = 5, UpdateId = 50, UserId = "ghost-user", CommentText = "Ghost comment" });
             await _context.SaveChangesAsync();
 
+            GrantAccess("test-admin", projectId);
             var result = await _controller.GetUpdates(projectId);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -190,6 +205,7 @@ namespace Projello.Api.Tests.Controllers
 
             var dto = new ReactDto { Emoji = emoji };
 
+            GrantAccess(userId, 1, updateId);
             var addResult = await _controller.React(updateId, dto);
             
             var addOkResult = Assert.IsType<OkObjectResult>(addResult);
@@ -215,6 +231,7 @@ namespace Projello.Api.Tests.Controllers
 
             var dto = new CommentDto { CommentText = "Great progress!" };
 
+            GrantAccess(userId, 1, updateId);
             var result = await _controller.AddComment(updateId, dto);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -280,6 +297,7 @@ namespace Projello.Api.Tests.Controllers
 
             SetCurrentUser("admin-user", "1");
 
+            GrantAccess("admin-user", 1);
             var result = await _controller.DeleteUpdate(22);
 
             Assert.IsType<NoContentResult>(result);
@@ -340,6 +358,7 @@ namespace Projello.Api.Tests.Controllers
 
             SetCurrentUser("owner-user", "4");
 
+            GrantAccess("owner-user", 1, 2);
             var result = await _controller.DeleteComment(2, 32);
 
             Assert.IsType<NoContentResult>(result);

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projello.Api.Data;
+using Projello.Api.Services;
 using Projello.Api.Models;
 using Projello.Api.DTOs;
 using System.Security.Claims;
@@ -31,12 +32,8 @@ namespace Projello.Api.Controllers
             var userId = GetCurrentUserId();
             var role = GetUserRole();
 
-            // Security: Ensure the worker is assigned to the project this milestone belongs to
-            var isMember = await _context.ProjectMembers
-                .AnyAsync(m => m.ProjectID == milestone.ProjectID && m.UserID == userId);
-            
-            // Allow Admins (Role 1) or Project Members
-            if (role != "1" && !isMember) return Forbid();
+            // Security: same company, and a member unless Admin or Owner
+            if (!await _context.CanAccessProjectAsync(milestone.ProjectID, userId, role)) return Forbid();
 
             var update = new ProgressUpdate
             {
@@ -58,8 +55,12 @@ namespace Projello.Api.Controllers
         [HttpPost("updates/{id}/reactions")]
         public async Task<ActionResult> AddReaction(int id, [FromBody] ReactionCreateDto dto)
         {
-            var updateExists = await _context.ProgressUpdates.AnyAsync(u => u.UpdateID == id);
-            if (!updateExists) return NotFound("Update not found.");
+            var projectId = await _context.ProgressUpdates
+                .Where(u => u.UpdateID == id)
+                .Select(u => (int?)u.Milestone.ProjectID)
+                .FirstOrDefaultAsync();
+            if (projectId == null) return NotFound("Update not found.");
+            if (!await _context.CanAccessProjectAsync(projectId.Value, GetCurrentUserId(), GetUserRole())) return Forbid();
 
             var reaction = new Reaction
             {
@@ -92,8 +93,12 @@ namespace Projello.Api.Controllers
                     .ThenInclude(r => r.User)
                 .AsQueryable();
 
-            // Role filtering: Non-admins (Roles 2 & 3) only see updates for projects they belong to
-            if (role != "1")
+            // Everyone only sees their own company's updates
+            var companyId = await _context.GetCompanyIdAsync(userId);
+            query = query.Where(u => companyId != null && u.Milestone.Project.Client.CompanyID == companyId);
+
+            // Foremen and Workers only see updates for projects they belong to
+            if (!CompanyScope.IsCompanyManager(role))
             {
                 query = query.Where(u => _context.ProjectMembers
                     .Any(pm => pm.ProjectID == u.Milestone.ProjectID && pm.UserID == userId));

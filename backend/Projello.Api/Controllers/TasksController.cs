@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projello.Api.Data;
+using Projello.Api.Services;
 using Projello.Api.Models;
 using Projello.Api.DTOs;
 using System.Security.Claims;
@@ -195,9 +196,10 @@ namespace Projello.Api.Controllers
         private async Task<bool> IsUserForemanOrAdmin(int projectId)
         {
             var role = GetUserRole();
-            if (role == "1") return true; // Global Admin
-            
-            return await _context.ProjectMembers.AnyAsync(m => 
+            if (!await _context.IsProjectInCompanyAsync(projectId, GetCurrentUserId())) return false;
+            if (CompanyScope.IsCompanyManager(role)) return true;
+
+            return await _context.ProjectMembers.AnyAsync(m =>
                 m.ProjectID == projectId && 
                 m.UserID == GetCurrentUserId() && 
                 m.AssignedAs == "Foreman");
@@ -205,8 +207,7 @@ namespace Projello.Api.Controllers
 
         private async Task<bool> HasProjectAccess(int projectId)
         {
-            if (GetUserRole() == "1") return true;
-            return await _context.ProjectMembers.AnyAsync(m => m.ProjectID == projectId && m.UserID == GetCurrentUserId());
+            return await _context.CanAccessProjectAsync(projectId, GetCurrentUserId(), GetUserRole());
         }
 
         private TaskReadDto MapToReadDto(TaskItem t) => new TaskReadDto

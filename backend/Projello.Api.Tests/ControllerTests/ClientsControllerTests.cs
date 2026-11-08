@@ -162,6 +162,7 @@ namespace Projello.Api.Tests
                 new Client { ClientID = 2, Name = "Client B", CompanyID = 1, IsBlacklisted = false },
                 new Client { ClientID = 3, Name = "Client C", CompanyID = 1, IsBlacklisted = true }
             );
+            context.Users.Add(new User { Id = "user-1", FullName = "Admin", CompanyId = 1 });
             context.SaveChanges();
 
             var userManager = GetMockUserManager(context);
@@ -375,7 +376,8 @@ namespace Projello.Api.Tests
         {
             var context = GetInMemoryDbContext();
             // Seed a client that IS currently blacklisted
-            context.Clients.Add(new Client { ClientID = 74, Name = "Blacklisted Client", IsBlacklisted = true, BlacklistedAt = DateTime.UtcNow });
+            context.Clients.Add(new Client { ClientID = 74, Name = "Blacklisted Client", CompanyID = 1, IsBlacklisted = true, BlacklistedAt = DateTime.UtcNow });
+            context.Users.Add(new User { Id = "admin-id", FullName = "Admin", CompanyId = 1 });
             context.SaveChanges();
 
             var userManager = GetMockUserManager(context);

@@ -23,6 +23,13 @@ namespace Projello.Api.Tests
             return new AppDbContext(options);
         }
 
+        // The controller reads the user's company from the database, not from claims
+        private static void AddUser(AppDbContext context, string userId, int companyId = 99)
+        {
+            context.Users.Add(new User { Id = userId, FullName = userId, CompanyId = companyId });
+            context.SaveChanges();
+        }
+
         // --- FIX: Added companyId to the user claims so the controller can find it ---
         private ClaimsPrincipal CreateUser(string userId, string roleId, string companyId = "99")
         {
@@ -52,6 +59,7 @@ namespace Projello.Api.Tests
 
             context.SaveChanges();
 
+            AddUser(context, adminId);
             var controller = new DashboardController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -95,6 +103,7 @@ namespace Projello.Api.Tests
             
             context.SaveChanges();
 
+            AddUser(context, userId);
             var controller = new DashboardController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -155,6 +164,7 @@ namespace Projello.Api.Tests
             );
             context.SaveChanges();
 
+            AddUser(context, adminId);
             var controller = new DashboardController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -189,6 +199,7 @@ namespace Projello.Api.Tests
             });
             context.SaveChanges();
 
+            AddUser(context, adminId);
             var controller = new DashboardController(context);
             controller.ControllerContext = new ControllerContext
             {
@@ -199,7 +210,9 @@ namespace Projello.Api.Tests
             var ok = Assert.IsType<OkObjectResult>(result.Result);
             var dto = Assert.IsType<DashboardOverviewDto>(ok.Value);
 
-            Assert.Equal(2, dto.ActiveProjects.Count());
+            // Only our company's project; the competitor's stays hidden even from an Admin
+            var project = Assert.Single(dto.ActiveProjects);
+            Assert.Equal("Our Company Project", project.Name);
         }
     }
 }

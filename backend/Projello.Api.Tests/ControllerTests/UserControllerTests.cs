@@ -59,7 +59,7 @@ namespace Projello.Api.Tests
         }
 
         [Fact]
-        public async Task GetUsers_AdminRole_ReturnsAllUsersAcrossCompanies()
+        public async Task GetUsers_AdminRole_ReturnsOnlyOwnCompanyUsers()
         {
             // Arrange
             using var context = CreateContext();
@@ -79,8 +79,10 @@ namespace Projello.Api.Tests
 
             var ok = Assert.IsType<OkObjectResult>(result.Result);
             var items = Assert.IsAssignableFrom<IEnumerable<UserDisplayDto>>(ok.Value).ToList();
-            
-            Assert.Equal(2, items.Count);
+
+            // Admin is a company admin: the user in company 20 stays hidden
+            var only = Assert.Single(items);
+            Assert.Equal("admin-id", only.Id);
         }
 
         [Fact]
@@ -129,7 +131,7 @@ namespace Projello.Api.Tests
         }
 
         [Fact]
-        public async Task UpdateUserRole_SelfDemotion_ReturnsBadRequest()
+        public async Task UpdateUserRole_OwnRole_ReturnsBadRequest()
         {
            
             using var context = CreateContext();
@@ -147,7 +149,7 @@ namespace Projello.Api.Tests
             var result = await controller.UpdateUserRole("admin-id", payload);
 
             var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("You cannot demote yourself from Admin.", badRequest.Value);
+            Assert.Equal("You can't change your own role.", badRequest.Value);
         }
 
         [Fact]
@@ -202,9 +204,9 @@ namespace Projello.Api.Tests
         {
             // Arrange
             using var context = CreateContext();
-            var targetUser = new User { Id = "target-worker-id", RoleID = 3, Email = "worker@test.com", UserName = "worker@test.com" };
+            var targetUser = new User { Id = "target-worker-id", RoleID = 3, CompanyId = 10, Email = "worker@test.com", UserName = "worker@test.com" };
             context.Users.AddRange(
-                new User { Id = "admin-id", RoleID = 1, Email = "admin@test.com", UserName = "admin@test.com" },
+                new User { Id = "admin-id", RoleID = 1, CompanyId = 10, Email = "admin@test.com", UserName = "admin@test.com" },
                 targetUser
             );
             await context.SaveChangesAsync();
@@ -221,6 +223,64 @@ namespace Projello.Api.Tests
 
             Assert.True(result is OkResult || result is NoContentResult || result is OkObjectResult);
             Assert.Equal(2, targetUser.RoleID); 
+        }
+
+        [Fact]
+        public async Task UpdateUserRole_OwnerPromotingSelfToAdmin_IsBlocked()
+        {
+            using var context = CreateContext();
+            context.Users.Add(new User { Id = "owner-id", RoleID = 4, CompanyId = 10, Email = "owner@test.com", UserName = "owner@test.com" });
+            await context.SaveChangesAsync();
+
+            var controller = new UsersController(CreateSimpleUserManagerMock(context).Object, context)
+            {
+                ControllerContext = CreateControllerContext("owner-id", "4")
+            };
+
+            var result = await controller.UpdateUserRole("owner-id", new UserRoleUpdateDto { RoleID = 1 });
+
+            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(4, context.Users.Single(u => u.Id == "owner-id").RoleID);
+        }
+
+        [Fact]
+        public async Task UpdateUserRole_UserInOtherCompany_ReturnsForbid()
+        {
+            using var context = CreateContext();
+            context.Users.AddRange(
+                new User { Id = "owner-id", RoleID = 4, CompanyId = 10, Email = "owner@test.com", UserName = "owner@test.com" },
+                new User { Id = "outsider", RoleID = 3, CompanyId = 20, Email = "out@test.com", UserName = "out@test.com" }
+            );
+            await context.SaveChangesAsync();
+
+            var controller = new UsersController(CreateSimpleUserManagerMock(context).Object, context)
+            {
+                ControllerContext = CreateControllerContext("owner-id", "4")
+            };
+
+            var result = await controller.UpdateUserRole("outsider", new UserRoleUpdateDto { RoleID = 2 });
+
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task UpdateUserRole_AdminPromotingToAdmin_ReturnsForbid()
+        {
+            using var context = CreateContext();
+            context.Users.AddRange(
+                new User { Id = "admin-id", RoleID = 1, CompanyId = 10, Email = "admin@test.com", UserName = "admin@test.com" },
+                new User { Id = "worker-id", RoleID = 3, CompanyId = 10, Email = "w@test.com", UserName = "w@test.com" }
+            );
+            await context.SaveChangesAsync();
+
+            var controller = new UsersController(CreateSimpleUserManagerMock(context).Object, context)
+            {
+                ControllerContext = CreateControllerContext("admin-id", "1")
+            };
+
+            var result = await controller.UpdateUserRole("worker-id", new UserRoleUpdateDto { RoleID = 1 });
+
+            Assert.IsType<ForbidResult>(result);
         }
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projello.Api.Data;
+using Projello.Api.Services;
 using Projello.Api.Models;
 using Projello.Api.DTOs;
 using System.Security.Claims;
@@ -32,11 +33,8 @@ namespace Projello.Api.Controllers
             var projectExists = await _context.Projects.AnyAsync(p => p.ProjectID == projectId);
             if (!projectExists) return NotFound("Project not found.");
 
-            // Security: Must be Admin OR assigned to the project
-            bool isMember = await _context.ProjectMembers
-                .AnyAsync(m => m.ProjectID == projectId && m.UserID == userId);
-
-            if (role != "1" && !isMember) return Forbid();
+            // Security: same company, and a member unless Admin or Owner
+            if (!await _context.CanAccessProjectAsync(projectId, userId, role)) return Forbid();
 
             var milestones = await _context.Milestones
                 .Where(m => m.ProjectID == projectId)
@@ -67,6 +65,7 @@ namespace Projello.Api.Controllers
             var role = GetUserRole();
             if (role != "1" && role != "2" && role != "4")
                 return StatusCode(StatusCodes.Status403Forbidden, "Only Admin, Foreman, or Owner can create milestones.");
+            if (!await _context.CanAccessProjectAsync(dto.ProjectID, GetCurrentUserId(), role)) return Forbid();
 
             var milestone = new Milestone
             {
@@ -106,6 +105,7 @@ namespace Projello.Api.Controllers
             var role = GetUserRole();
             if (role != "1" && role != "2" && role != "4")
                 return StatusCode(StatusCodes.Status403Forbidden, "Only Admin, Foreman, or Owner can update milestones.");
+            if (!await _context.CanAccessProjectAsync(milestone.ProjectID, GetCurrentUserId(), role)) return Forbid();
 
             milestone.Title = dto.Title;
             milestone.Description = dto.Description;
@@ -136,6 +136,7 @@ namespace Projello.Api.Controllers
             if (role != "1" && role != "2" && role != "4")
                 return StatusCode(StatusCodes.Status403Forbidden,
                     "Only Admin, Foreman, or Owner can delete milestones.");
+            if (!await _context.CanAccessProjectAsync(milestone.ProjectID, GetCurrentUserId(), role)) return Forbid();
 
             _context.Milestones.Remove(milestone);
             await _context.SaveChangesAsync();

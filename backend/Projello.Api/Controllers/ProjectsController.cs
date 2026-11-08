@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;   // ← ADDED
 using Microsoft.AspNetCore.SignalR; // ← Do not remove
 using Projello.Api.Hubs; // ← Do not remove
+using Projello.Api.Services;
 
 namespace Projello.Api.Controllers
 {
@@ -45,24 +46,21 @@ namespace Projello.Api.Controllers
             var currentUser = await _userManager.FindByIdAsync(userId!);
             var userCompanyId = currentUser?.CompanyId;
 
-            if (role != "1") // Not a global Admin
+            if (userCompanyId != null)
             {
-                if (userCompanyId != null)
-                {
-                    // Only show projects whose client belongs to the same company
-                    query = query.Where(p => p.Client != null && p.Client.CompanyID == userCompanyId);
-                }
-                else
-                {
-                    // User has no company → see nothing
-                    query = query.Where(p => false);
-                }
+                // Only show projects whose client belongs to the same company
+                query = query.Where(p => p.Client != null && p.Client.CompanyID == userCompanyId);
+            }
+            else
+            {
+                // User has no company → see nothing
+                query = query.Where(p => false);
+            }
 
-                // Non-Owners can only see projects they are members of
-                if (role != "4")
-                {
-                    query = query.Where(p => p.Members.Any(m => m.UserID == userId));
-                }
+            // Foremen and Workers only see projects they are members of
+            if (!CompanyScope.IsCompanyManager(role))
+            {
+                query = query.Where(p => p.Members.Any(m => m.UserID == userId));
             }
 
             var projects = await query.ToListAsync();
@@ -84,23 +82,7 @@ namespace Projello.Api.Controllers
             var role = GetUserRole();
             var userId = GetCurrentUserId();
 
-            // Security Check
-            if (role != "1")
-            {
-                var currentUser = await _userManager.FindByIdAsync(userId!);
-                if (currentUser?.CompanyId != null && project.Client?.CompanyID != currentUser.CompanyId)
-                    return Forbid();
-
-                if (role != "4" && !project.Members.Any(m => m.UserID == userId))
-                    return Forbid();
-            }
-
-            if (GetUserRole() == "4")
-            {
-                var currentUser = await _userManager.FindByIdAsync(userId!);
-                if (currentUser?.CompanyId == null || project.Client?.CompanyID != currentUser.CompanyId)
-                    return Forbid();
-            }
+            if (!await _context.CanAccessProjectAsync(id, await MyCompanyIdAsync(), userId, role)) return Forbid();
 
             var memberDtos = project.Members.Select(m => new ProjectMemberDto
             {
@@ -138,15 +120,12 @@ namespace Projello.Api.Controllers
             var currentUser = await _userManager.FindByIdAsync(GetCurrentUserId()!);
             var userCompanyId = currentUser?.CompanyId;
 
-            // ← NEW: Validate that the client belongs to the user's company
-            if (GetUserRole() != "1")
-            {
-                var client = await _context.Clients.FindAsync(dto.ClientID);
-                if (client == null) return BadRequest("Client not found.");
+            // The client must belong to the user's company
+            var client = await _context.Clients.FindAsync(dto.ClientID);
+            if (client == null) return BadRequest("Client not found.");
 
-                if (userCompanyId != null && client.CompanyID != userCompanyId)
-                    return Forbid("You can only create projects for clients in your own company.");
-            }
+            if (userCompanyId == null || client.CompanyID != userCompanyId)
+                return Forbid();
 
             var project = new Project
             {
@@ -183,15 +162,14 @@ namespace Projello.Api.Controllers
             var isForeman = await _context.ProjectMembers
                 .AnyAsync(m => m.ProjectID == id && m.UserID == userId && m.AssignedAs == "Foreman");
 
-            if (role == "4")
+            if (!await _context.IsProjectInCompanyAsync(id, await MyCompanyIdAsync())) return Forbid();
+            if (!CompanyScope.IsCompanyManager(role) && !isForeman) return Forbid();
+
+            // Moving the project to another client must stay inside the company
+            if (dto.ClientID != project.ClientID)
             {
-                var currentUser = await _userManager.FindByIdAsync(userId!);
-                if (currentUser?.CompanyId == null || project.Client?.CompanyID != currentUser.CompanyId)
-                    return Forbid();
-            }
-            else if (role != "1" && !isForeman)
-            {
-                return Forbid();
+                var newClient = await _context.Clients.FindAsync(dto.ClientID);
+                if (newClient == null || newClient.CompanyID != project.Client.CompanyID) return Forbid();
             }
 
             project.Name = dto.Name;
@@ -242,7 +220,8 @@ namespace Projello.Api.Controllers
             var isForeman = await _context.ProjectMembers
                 .AnyAsync(m => m.ProjectID == id && m.UserID == GetCurrentUserId() && m.AssignedAs == "Foreman");
 
-            if (GetUserRole() != "1" && GetUserRole() != "4" && !isForeman) return Forbid();
+            if (!CompanyScope.IsCompanyManager(GetUserRole()) && !isForeman) return Forbid();
+            if (!await _context.IsProjectInCompanyAsync(id, await MyCompanyIdAsync())) return Forbid();
 
             project.Status = dto.Status;
             await _context.SaveChangesAsync();
@@ -254,10 +233,11 @@ namespace Projello.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
-            if (GetUserRole() != "1" && GetUserRole() != "4") return Forbid();
+            if (!CompanyScope.IsCompanyManager(GetUserRole())) return Forbid();
 
             var project = await _context.Projects.FindAsync(id);
             if (project == null) return NotFound();
+            if (!await _context.IsProjectInCompanyAsync(id, await MyCompanyIdAsync())) return Forbid();
 
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
@@ -271,8 +251,8 @@ namespace Projello.Api.Controllers
             var userId = GetCurrentUserId();
             var role = GetUserRole();
 
-            // Only Owners, Foremen, or Global Admins can add members
-            if (role != "1" && role != "4")
+            // Only Owners, Admins or the project's Foreman can add members
+            if (!CompanyScope.IsCompanyManager(role))
             {
                 var isForeman = await _context.ProjectMembers
                     .AnyAsync(m => m.ProjectID == projectId &&
@@ -290,7 +270,7 @@ namespace Projello.Api.Controllers
             if (project == null) return NotFound("Project not found");
 
             var currentUser = await _userManager.FindByIdAsync(userId!);
-            if (currentUser?.CompanyId != null && project.Client?.CompanyID != currentUser.CompanyId)
+            if (currentUser?.CompanyId == null || project.Client?.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
             // Check if user exists and is in same company
@@ -345,7 +325,7 @@ namespace Projello.Api.Controllers
             var role = GetUserRole();
             var currentUserId = GetCurrentUserId();
 
-            if (role != "1" && role != "4")
+            if (!CompanyScope.IsCompanyManager(role))
             {
                 var isForeman = await _context.ProjectMembers.AnyAsync(m =>
                     m.ProjectID == projectId &&
@@ -354,6 +334,8 @@ namespace Projello.Api.Controllers
 
                 if (!isForeman) return Forbid();
             }
+
+            if (!await _context.IsProjectInCompanyAsync(projectId, await MyCompanyIdAsync())) return Forbid();
 
             var member = await _context.ProjectMembers.FirstOrDefaultAsync(m =>
                 m.ProjectID == projectId && m.UserID == userId);
@@ -371,6 +353,9 @@ namespace Projello.Api.Controllers
         private string? GetCurrentUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         private string? GetUserRole() => User.FindFirst("RoleID")?.Value;
+
+        private async Task<int?> MyCompanyIdAsync() =>
+            (await _userManager.FindByIdAsync(GetCurrentUserId()!))?.CompanyId;
 
         private ProjectReadDto MapToReadDto(Project p) => new ProjectReadDto
         {

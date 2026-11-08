@@ -33,6 +33,9 @@ namespace Projello.Api.Tests.Controllers
 
             var store = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+            // Default: every test user belongs to company 10 unless a test sets up otherwise
+            _userManagerMock.Setup(um => um.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((string id) => new User { Id = id, CompanyId = 10 });
 
             _hubContextMock = new Mock<IHubContext<TeamNotificationHub>>();
             _hubClientsMock = new Mock<IHubClients>();
@@ -235,6 +238,8 @@ namespace Projello.Api.Tests.Controllers
         public async Task CreateProject_AsAdmin_CreatesAndReturnsProject()
         {
             SetCurrentUser("admin-1", "1");
+            _context.Clients.Add(new Client { ClientID = 10, CompanyID = 10, Name = "Test Client" });
+            await _context.SaveChangesAsync();
 
             var dto = new ProjectCreateDto
             {
@@ -413,7 +418,7 @@ namespace Projello.Api.Tests.Controllers
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
 
-            var dto = new ProjectUpdateDto { Name = "Brand New Name" };
+            var dto = new ProjectUpdateDto { Name = "Brand New Name", ClientID = project.ClientID };
             var result = await _controller.UpdateProject(1, dto);
 
             Assert.True(result is OkResult || result is OkObjectResult || result is NoContentResult);
@@ -429,7 +434,7 @@ namespace Projello.Api.Tests.Controllers
         {
             SetCurrentUser("admin-1", "1");
 
-            _context.Projects.Add(new Project { ProjectID = 1, Name = "Project Alpha", CreatedByUserID = "admin-1" });
+            _context.Projects.Add(new Project { ProjectID = 1, Name = "Project Alpha", CreatedByUserID = "admin-1", Client = new Client { CompanyID = 10, Name = "Test Client" } });
             await _context.SaveChangesAsync();
 
             var result = await _controller.DeleteProject(1);

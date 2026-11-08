@@ -14,8 +14,8 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 ## 2. Security: high
 
 - [x] `GET /api/siteupdates`: check project membership before returning updates (`SiteUpdatesController.cs:29`)
-- [ ] Site update delete: limit Owner (role 4) to their own company (`SiteUpdatesController.cs:204`)
-- [ ] Decide whether Admin (role 1) is a platform admin or a company admin. If it's a company admin, add company filters to `UsersController` delete, role change and profile reads
+- [x] Site update delete: limit Owner (role 4) to their own company (`SiteUpdatesController.cs:204`)
+- [x] Admin (role 1) is a company admin: every controller now scopes to the caller's company (`Services/CompanyScope.cs`), and nobody can change their own role or assign one at or above their own
 - [x] Put `GET /api/auth/2fa-status` behind auth, or remove it (it reveals which accounts exist)
 
 ## 3. Security: medium
@@ -93,4 +93,4 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 - [ ] Install `frontend/node_modules`, run the app and re-run Hallmark with `--render` for screenshots
 - [ ] Check layouts at 320, 375, 414 and 768px
-- [ ] Run backend and frontend tests after each fix batch (2 backend tests were already failing: TasksController not-found, ClientsController other-company; frontend has 864 existing type errors)
+- [ ] Run backend and frontend tests after each fix batch (1 backend test was already failing: TasksController not-found; frontend has 864 existing type errors)
