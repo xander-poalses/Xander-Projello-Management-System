@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../../../config';
+import { getToken } from "../../../auth/tokenStore";
 
 export type PeerConnectionEvent =
   | { type: 'ice-candidate'; candidate: RTCIceCandidateInit; peerId: string }
@@ -35,7 +36,7 @@ export class WebRTCPeerManager {
 
   private async loadIceServers() {
     try {
-      const token = localStorage.getItem('token') || '';
+      const token = getToken() || '';
       const cleanToken = token.startsWith('"') && token.endsWith('"')
         ? token.slice(1, -1)
         : token;

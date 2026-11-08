@@ -6,6 +6,7 @@ import { API_BASE_URL } from "../../../config";
 
 
 import ringtoneSrc from "../../../assets/notifcations/mixkit-waiting-ringtone-1354.wav";
+import { getToken } from "../../../auth/tokenStore";
 
 const ringtone = new Audio(ringtoneSrc);
 ringtone.loop = true;
@@ -21,7 +22,7 @@ const callNotificationClient = createSignalRClient<{
 }>({
   hubUrl: `${API_BASE_URL}/callhub`,
   getAccessToken: () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (!token) return null;
     return token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
   },
@@ -35,7 +36,7 @@ export function useIncomingCallNotifications() {
     let unsubscribe: (() => void) | undefined;
 
     const start = async () => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       if (!token) return;
 
       try {

@@ -4,6 +4,7 @@ import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from '../../config';
 import { PasswordInput } from "../../components/PasswordInput";
+import { setToken } from "../../auth/tokenStore";
 
 // Import the Godzilla roar audio file for the success sound effect
 const godzillaRoar = require("../../assets/zilla-1.mp3").default; 
@@ -72,7 +73,7 @@ export default function LoginPage({ onSwitchToSignUp, onSwitchToRegisterCompany,
   // Function to finalize the login process after successful authentication
   const completeLogin = (token: string) => {
     // Save the authentication token to localStorage so the user stays logged in
-    localStorage.setItem("token", token);
+    setToken(token);
     
     setSuccessMsg("Login successful! Redirecting...");
     
@@ -115,7 +116,7 @@ export default function LoginPage({ onSwitchToSignUp, onSwitchToRegisterCompany,
             />
             
             {/* Conditionally render the error message if the error state is not empty */}
-            {error && <p className="login-error-text" style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="login-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
             
             {/* Conditionally render the success message if the successMsg state is not empty */}
             {successMsg && <p className="login-success-text" style={{ color: 'green', fontWeight: 'bold' }}>{successMsg}</p>}

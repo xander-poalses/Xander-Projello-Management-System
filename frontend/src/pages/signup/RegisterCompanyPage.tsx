@@ -20,7 +20,7 @@ export default function RegisterCompanyPage({ onSwitchToLogin }: RegisterCompany
 
   //Validates the password against the rules and returns an error message if it fails
   function validatePasswordRules(pw: string): string | null {
-    if (pw.length < 8) return "Password must be at least 8 characters.";
+    if (pw.length < 12) return "Password must be at least 12 characters.";
     if (!/[A-Z]/.test(pw)) return "Password must include at least one uppercase letter.";
     if (!/[a-z]/.test(pw)) return "Password must include at least one lowercase letter.";
     if (!/[0-9]/.test(pw)) return "Password must include at least one number.";
@@ -140,7 +140,7 @@ export default function RegisterCompanyPage({ onSwitchToLogin }: RegisterCompany
               <option value={4}>Owner</option>
             </select> */}
 
-            {error && <p className="signup-error-text" style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="signup-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
             {successMsg && (
               <p className="signup-success-text" style={{ color: 'green', fontWeight: 'bold' }}>
                 {successMsg}

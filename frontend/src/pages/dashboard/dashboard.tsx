@@ -8,6 +8,7 @@ import { AddButton } from "../../components/AddButton";
 import { ProjectAddModal } from "../../components/ProjectAddModal";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../config";
+import { getToken } from "../../auth/tokenStore";
 
 interface ProjectFormData {
   name: string;
@@ -26,7 +27,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
 
     fetch(`${API_BASE_URL}/api/Projects`, {
       headers: {
@@ -116,7 +117,7 @@ export default function DashboardPage() {
   const [showSortModal, setShowSortModal] = useState(false);
 
   const resolveClientId = async (clientName: string): Promise<number> => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     const clientsResponse = await fetch(`${API_BASE_URL}/api/clients`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -160,7 +161,7 @@ export default function DashboardPage() {
 
   const handleProjectSubmit = async (data: ProjectFormData) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const clientId = await resolveClientId(data.clientName);
       const response = await fetch(`${API_BASE_URL}/api/projects`, {
         method: "POST",

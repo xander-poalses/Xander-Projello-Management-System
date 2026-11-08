@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config";
 import { message as antdMessage } from "antd";
+import { getToken } from "../auth/tokenStore";
 
 interface AddProjectMemberModalProps {
   open: boolean;
@@ -29,7 +30,7 @@ export default function AddProjectMemberModal({
   const fetchAvailableWorkers = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/users`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -48,7 +49,7 @@ export default function AddProjectMemberModal({
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/members`, {
         method: "POST",
         headers: {

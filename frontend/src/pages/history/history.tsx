@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // 1. Imported the navigation hook
 import { API_BASE_URL } from "../../config"; 
 import "./history.css";
+import { getToken } from "../../auth/tokenStore";
 
 // Interface definitions aligning with Projello's UpdateReadDto contracts
 interface CompletedProjectItem {
@@ -44,7 +45,7 @@ export default function HistoryPage() {
   };
 
   const fetchCompletedProjectsArchive = async () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     // Calls the Projects Controller filtering for closed/archived parameters
     const response = await fetch(`${API_BASE_URL}/api/projects?status=Completed`, {
       method: "GET",

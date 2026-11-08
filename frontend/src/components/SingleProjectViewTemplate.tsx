@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./single-project-view.css";
 import { API_BASE_URL } from "../config";
+import { getToken } from "../auth/tokenStore";
 
 interface Project {
   projectID: number;
@@ -42,7 +43,7 @@ export default function SingleProjectViewPage() {
       }
 
       try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 

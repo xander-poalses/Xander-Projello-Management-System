@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Projello.Api.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
+using Projello.Api.Services;
 
 namespace Projello.Api.Controllers
 {
@@ -234,7 +235,7 @@ namespace Projello.Api.Controllers
             // === SINGLE-USE SETUP: Store secret + session ID ===
             var setupSessionId = Guid.NewGuid().ToString();
 
-            await _userManager.SetAuthenticationTokenAsync(user, "Projello2FA", "UnverifiedSecretKey", base32Secret);
+            await _userManager.SetAuthenticationTokenAsync(user, "Projello2FA", "UnverifiedSecretKey", TwoFactorSecretProtector.Protect(_config, base32Secret));
             await _userManager.SetAuthenticationTokenAsync(user, "Projello2FA", "SetupSessionId", setupSessionId);
 
             var issuer = "Projello";
@@ -260,7 +261,7 @@ namespace Projello.Api.Controllers
 
             if (isInitialSetupWorkflow)
             {
-                base32Secret = await _userManager.GetAuthenticationTokenAsync(user, "Projello2FA", "UnverifiedSecretKey") ?? "";
+                base32Secret = TwoFactorSecretProtector.Unprotect(_config, await _userManager.GetAuthenticationTokenAsync(user, "Projello2FA", "UnverifiedSecretKey"));
                 var setupSessionId = await _userManager.GetAuthenticationTokenAsync(user, "Projello2FA", "SetupSessionId");
 
                 // If secret was already consumed by someone else
@@ -277,7 +278,7 @@ namespace Projello.Api.Controllers
                 if (!await IsLoginChallengeValidAsync(user, model.ChallengeToken))
                     return BadRequest(new { Message = "Your sign-in session has expired. Please log in again." });
 
-                base32Secret = user.TwoFactorSecret ?? "";
+                base32Secret = TwoFactorSecretProtector.Unprotect(_config, user.TwoFactorSecret);
             }
 
             if (string.IsNullOrEmpty(base32Secret))
@@ -292,7 +293,7 @@ namespace Projello.Api.Controllers
                 if (isInitialSetupWorkflow)
                 {
                     // === FIRST SUCCESSFUL SCAN WINS ===
-                    user.TwoFactorSecret = base32Secret;
+                    user.TwoFactorSecret = TwoFactorSecretProtector.Protect(_config, base32Secret);
                     user.IsTwoFactorEnabled = true;
 
                     var identityUpdateResult = await _userManager.UpdateAsync(user);
@@ -345,14 +346,22 @@ namespace Projello.Api.Controllers
 
         // --- 2FA: DISABLE ---
         [Authorize]
+        [EnableRateLimiting("auth")]
         [HttpPost("disable-2fa")]
-        public async Task<IActionResult> Disable2FA()
+        public async Task<IActionResult> Disable2FA([FromBody] Disable2FaDto model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
+
+            if (await _userManager.IsLockedOutAsync(user)) return LockedOut();
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                await _userManager.AccessFailedAsync(user);
+                return BadRequest(new { Message = "Incorrect password." });
+            }
 
             user.IsTwoFactorEnabled = false;
             user.TwoFactorSecret = null;

@@ -63,7 +63,7 @@
 }
 
 .clients-page__state--error {
-  color: red;
+  color: var(--error-text);
 }
 
 .clients-page__action-menu {
@@ -352,5 +352,5 @@ select.action-modal__input {
 }
 
 .clients-page__message--error {
-  color: red;
+  color: var(--error-text);
 }

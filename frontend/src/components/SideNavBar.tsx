@@ -6,10 +6,11 @@ import UserDefaultPfp from "../assets/UserDefaultPfp.svg";
 import { createAvatar } from '@dicebear/core';
 import { botttsNeutral } from '@dicebear/collection';
 import { API_BASE_URL } from "../config";
+import { getToken } from "../auth/tokenStore";
 
 function getUserInfoFromToken() {
     try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         if (!token) return { id: "", name: "Unknown", role: "Unknown" };
         let payloadPart = token.split('.')[1];
         payloadPart = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
@@ -44,7 +45,7 @@ export default function SideNavBar() {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             if (!token) return;
 
             try {

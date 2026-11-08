@@ -20,15 +20,17 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 ## 3. Security: medium
 
-- [ ] Re-check the user's role from the database on sensitive actions, or shorten the token lifetime and add refresh tokens
-- [ ] Move the JWT out of `localStorage` (Electron `safeStorage` through preload, or an httpOnly cookie)
-- [ ] Review `dangerouslySetInnerHTML` in `settings.tsx:299` and sanitise it or remove it
-- [ ] Encrypt `TwoFactorSecret` at rest (Data Protection API)
-- [ ] Require a password or a current code to disable 2FA
-- [ ] Tighten CORS: list exact origins instead of matching prefixes like `http://localhost*`, `file://` and `app://`
-- [ ] Strengthen password rules (length 12+, check against breached-password lists)
-- [ ] Remove `/api/webrtc/test` and turn off `EnableDetailedErrors` outside development
-- [ ] Check the Electron settings in `index.ts`: `contextIsolation`, `nodeIntegration: false`, `sandbox`, CSP
+- [x] Re-check the user's role from the database on every request (deleted users and role changes take effect immediately)
+- [x] Move the JWT out of `localStorage` (Electron `safeStorage` through preload; old tokens move over on first read)
+- [x] Review `dangerouslySetInnerHTML` in `settings.tsx:299` and sanitise it or remove it (now an `<img>` like the other avatars)
+- [x] Encrypt `TwoFactorSecret` at rest (AES-GCM, key from `TwoFactor__EncryptionKey`)
+- [x] Require a password or a current code to disable 2FA
+- [x] Tighten CORS: list exact origins instead of matching prefixes like `http://localhost*`, `file://` and `app://`
+- [x] Strengthen password rules: minimum length 12
+- [ ] Check new passwords against a breached-password list (needs a decision: Have I Been Pwned's k-anonymity API sends 5 characters of a hash to a third party)
+- [x] Remove `/api/webrtc/test` and turn off `EnableDetailedErrors` outside development
+- [x] Check the Electron settings in `index.ts`: `contextIsolation`, `nodeIntegration: false`, `sandbox`, CSP (set explicitly; DevTools no longer open in the packaged app)
+- [ ] Drop `'unsafe-eval'` from the production CSP once the one `new Function` in the bundle is traced to its library
 
 ## 4. Database
 

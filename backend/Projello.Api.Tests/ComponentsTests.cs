@@ -196,7 +196,8 @@ namespace Projello.Tests
             Assert.IsType<OkObjectResult>(generateResult);
 
             // Dynamically obtain the actual unverified secret stored during step 1
-            string? dynamicSecret = await userManager.GetAuthenticationTokenAsync(testUser, "Projello2FA", "UnverifiedSecretKey");
+            // The pending secret is stored encrypted, so decrypt it the same way the API does
+            string? dynamicSecret = Projello.Api.Services.TwoFactorSecretProtector.Unprotect(mockConfig.Object, await userManager.GetAuthenticationTokenAsync(testUser, "Projello2FA", "UnverifiedSecretKey"));
             Assert.NotNull(dynamicSecret);
 
             var totp = new Totp(Base32Encoding.ToBytes(dynamicSecret));
@@ -216,7 +217,8 @@ namespace Projello.Tests
             var userRecord = await context.Users.FindAsync(targetUserId);
             Assert.NotNull(userRecord);
             Assert.True(userRecord.IsTwoFactorEnabled);
-            Assert.Equal(dynamicSecret, userRecord.TwoFactorSecret);
+            Assert.StartsWith("v1:", userRecord.TwoFactorSecret);
+            Assert.Equal(dynamicSecret, Projello.Api.Services.TwoFactorSecretProtector.Unprotect(mockConfig.Object, userRecord.TwoFactorSecret));
         }
 
         // --- COMPONENT TEST 3: ADMINISTRATIVE PRIVILEGE IMMUTABILITY GUARDS ---

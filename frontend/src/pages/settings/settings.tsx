@@ -10,9 +10,10 @@ import { QRCodeSVG } from 'qrcode.react'; // Secured: Local rendering instead of
 
 import { message as antdMessage } from "antd";
 import { API_BASE_URL } from "../../config";
+import { getToken, clearToken } from "../../auth/tokenStore";
 
 const getUserInfoFromToken = () => {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   if (!token) return { id: "", email: "", username: "", avatarSeed: undefined, avatarBg: undefined };
 
   try {
@@ -58,7 +59,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!userId) return;
-      const token = localStorage.getItem("token");
+      const token = getToken();
       if (!token) return;
 
       try {
@@ -108,7 +109,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetch2FAStatus = async () => {
       if (!userEmail) return;
-      const token = localStorage.getItem("token");
+      const token = getToken();
       try {
         const response = await fetch(`${API_BASE_URL}/api/Auth/2fa-status?email=${encodeURIComponent(userEmail)}`, {
           headers: {
@@ -151,7 +152,7 @@ export default function SettingsPage() {
     } else {
       setLoading(true);
       try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         const response = await fetch(`${API_BASE_URL}/api/Auth/generate-2fa-secret`, { 
           method: 'POST',
           headers: { 
@@ -180,7 +181,7 @@ export default function SettingsPage() {
   const handleVerifyCode = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/Auth/verify-2fa`, { 
         method: 'POST', 
         headers: { 
@@ -281,7 +282,8 @@ export default function SettingsPage() {
                     if (val.length <= 6) setModalBg(val);
                   }}
                   placeholder="e.g. ffa000"
-                  style={{ width: 100, background: "#cccccc70", border: "none", outline: "none", color: "var(--text-dark)", fontFamily: "Roboto", fontWeight: 500, fontSize: 16, borderRadius: 10, padding: "2px 4px" }}
+                  className="settings-hex-input"
+                  style={{ width: 100, background: "var(--field-bg)", border: "1px solid var(--control-border)", color: "var(--text-dark)", fontFamily: "Roboto", fontWeight: 500, fontSize: 16, borderRadius: 10, padding: "2px 4px" }}
                   maxLength={6}
                 />
               </div>
@@ -294,14 +296,14 @@ export default function SettingsPage() {
                               border: modalSelectedSeed === seed ? "2px solid #ffa000" : "2px solid transparent", 
                               borderRadius: 12, padding: 6, background: modalSelectedSeed === seed ? "#fffbe6" : "#f7f7f3" }} 
                      onClick={() => setModalSelectedSeed(seed)}>
-                  <span
+                  {/* Rendered as an image, like the other avatars, so the typed colour can't inject markup */}
+                  <img
+                    alt={`${seed} avatar`}
                     style={{ width: 64, height: 64, display: 'inline-block', borderRadius: '50%', marginBottom: 4, background: `#${modalBg}`, overflow: 'hidden' }}
-                    dangerouslySetInnerHTML={{
-                      __html: createAvatar(botttsNeutral, { 
-                        seed, 
-                        backgroundColor: [`#${modalBg}`]
-                      }).toString()
-                    }}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(createAvatar(botttsNeutral, {
+                      seed,
+                      backgroundColor: [`#${modalBg}`]
+                    }).toString())}`}
                   />
                   <span style={{ fontSize: 13, color: "#28332b" }}>{seed}</span>
                 </div>
@@ -316,7 +318,7 @@ export default function SettingsPage() {
                 setAvatarBg(modalBg);
                 setShowAvatarModal(false);
 
-                const token = localStorage.getItem("token");
+                const token = getToken();
                 if (!token || !userId) {
                   antdMessage.error("Could not determine user ID.");
                   return;
@@ -446,7 +448,7 @@ export default function SettingsPage() {
             <button
               className="btn-primary btn-logout"
               onClick={() => {
-                localStorage.removeItem("token");
+                clearToken();
                 navigate("/login");
               }}
             >

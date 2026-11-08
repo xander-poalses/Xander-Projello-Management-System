@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/Frame 160.svg";
 import "./LoginPage.css"; // Reusing your login styling to keep it consistent
 import { API_BASE_URL } from "../../config";
+import { setToken } from "../../auth/tokenStore";
 
 const godzillaRoar = require("../../assets/zilla-1.mp3").default;
 interface Verify2FAPageProps {
@@ -51,7 +52,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
 
       if (response.ok) {
         // Success: Save the final JWT token to localStorage
-        localStorage.setItem("token", data.token);
+        setToken(data.token);
 
         // Play the "Godzilla" roar sound effect
         const roar = new Audio(godzillaRoar);
@@ -92,7 +93,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
               maxLength={6}
               required
             />
-            {error && <p className="login-error-text" style={{ color: "red" }}>{error}</p>}
+            {error && <p className="login-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
             <div className="login-button-row" style={{ marginTop: "20px" }}>
               <button
                 type="button"

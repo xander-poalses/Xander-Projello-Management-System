@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { API_BASE_URL } from '../../config';
+import { getToken } from "../../auth/tokenStore";
 
 interface Setup2FAProps {
   userEmail: string;
@@ -21,7 +22,7 @@ export default function Setup2FA({ userEmail }: Setup2FAProps) {
     setSuccessMessage('');
     
     try {
-      const token = localStorage.getItem('token'); // Retrieve token for required [Authorize] endpoint access
+      const token = getToken(); // Retrieve token for required [Authorize] endpoint access
       const response = await fetch(`${API_BASE_URL}/api/Auth/generate-2fa-secret`, {
         method: 'POST',
         headers: { 
@@ -99,7 +100,7 @@ export default function Setup2FA({ userEmail }: Setup2FAProps) {
       <p>Enable Two-Factor Authentication using an app like Google Authenticator or Authy.</p>
 
       {successMessage && <p style={{ color: 'green', marginTop: '10px', fontWeight: 'bold' }}>{successMessage}</p>}
-      {error && <p style={{ color: 'red', marginTop: '10px', fontWeight: 'bold' }}>{error}</p>}
+      {error && <p style={{ color: "var(--error-text)", marginTop: '10px', fontWeight: 'bold' }}>{error}</p>}
 
       {!authenticatorUri ? (
         <button 

@@ -8,6 +8,7 @@ import { AddButton } from "../../components/AddButton";
 import { API_BASE_URL } from "../../config";
 import ClientAddModal from "../../components/ClientAddModal";
 import { ProjectAddModal } from "../../components/ProjectAddModal";
+import { getToken } from "../../auth/tokenStore";
 
 
 type ClientSummary = {
@@ -87,7 +88,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
     const doBlacklist = async () => {
         setBusy(true);
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             const res = await fetch(`${API_BASE_URL}/api/clients/${row.clientId}/blacklist`, {
                 method: "POST",
                 headers: {
@@ -109,7 +110,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
     const doUnblacklist = async () => {
         setBusy(true);
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             const res = await fetch(`${API_BASE_URL}/api/clients/${row.clientId}/blacklist`, {
                 method: "DELETE",
                 headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -129,7 +130,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
     const handleSaveEdit = async () => {
         setBusy(true);
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             const res = await fetch(`${API_BASE_URL}/api/clients/${row.clientId}`, {
                 method: "PUT",
                 headers: {
@@ -342,7 +343,7 @@ export default function ClientsPage() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         if (token) {
             try {
                 const payload = JSON.parse(atob(token.split(".")[1]));
@@ -356,7 +357,7 @@ export default function ClientsPage() {
         setLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             const res = await fetch(`${API_BASE_URL}/api/clients`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : undefined,
             });
@@ -406,7 +407,7 @@ export default function ClientsPage() {
 
     const fetchClientSummary = async () => {
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             const res = await fetch(`${API_BASE_URL}/api/clients/summary`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : undefined,
             });
@@ -560,7 +561,7 @@ export default function ClientsPage() {
                     disableClientName={true}
                     onSubmit={async (data) => {
                         try {
-                            const token = localStorage.getItem("token");
+                            const token = getToken();
                             const res = await fetch(`${API_BASE_URL}/api/projects`, {
                                 method: "POST",
                                 headers: {

@@ -80,7 +80,6 @@
 .single-project-view__client-name {
   font-size: 14px;
   color: var(--white);
-  opacity: 0.9;
 }
 
 .single-project-view__completion-pill {
@@ -154,7 +153,8 @@
 .single-project-view__tab--active {
   color: var(--white);
   border-bottom-color: var(--white);
-  background: #ffffff15;
+  /* Darken instead of lighten so white text keeps 4.5:1 */
+  background: rgba(0, 0, 0, 0.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -321,7 +321,7 @@
   display: grid;
   place-items: center;
   background: var(--success-green);
-  color: var(--white);
+  color: var(--text-on-success);
   font-size: 30px;
   line-height: 1;
   font-weight: 500;
@@ -356,7 +356,9 @@
 .single-project-view__rename-link {
   background: transparent;
   border: none;
-  color: var(--accent-3);
+  /* Gold on the green header was 2.4:1; white with an underline reads as a link */
+  color: var(--white);
+  text-decoration: underline;
   font-weight: 600;
   cursor: pointer;
   padding: 0;

@@ -6,6 +6,7 @@ import WorkerCard, { WorkerCardProps } from "../../components/WorkerCard";
 import { API_BASE_URL } from "../../config";
 import { AddButton } from "../../components/AddButton";
 import CustomModal from "../../components/CustomModal";
+import { getToken } from "../../auth/tokenStore";
 
 interface UserDisplay {
   id: string;
@@ -63,7 +64,7 @@ export default function WorkersPage() {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
@@ -99,7 +100,7 @@ export default function WorkersPage() {
     console.log("Submitting new worker:", data);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const response = await fetch(`${API_BASE_URL}/api/Auth/register`, {
         method: "POST",
@@ -132,7 +133,7 @@ export default function WorkersPage() {
     setInviteCodeError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/Auth/generate-invite`, {
         method: "POST",
         headers: {
@@ -198,7 +199,7 @@ export default function WorkersPage() {
   const [currentUserRole, setCurrentUserRole] = useState<number>(0);
 
 	useEffect(() => {
-		const token = localStorage.getItem("token");
+		const token = getToken();
 		if (token) {
 			try {
 				// Decode JWT to get RoleID

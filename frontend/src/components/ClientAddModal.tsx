@@ -3,6 +3,7 @@ import { Button, Modal } from "antd";
 import { API_BASE_URL } from "../config";
 import "./WorkerClientAddModal.css";
 import { PlusCircle } from "lucide-react";
+import { getToken } from "../auth/tokenStore";
 
 interface ClientAddModalProps {
   open: boolean;
@@ -46,7 +47,7 @@ export default function ClientAddModal({ open, onClose, onClientAdded }: ClientA
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/clients`, {
         method: "POST",
         headers: {

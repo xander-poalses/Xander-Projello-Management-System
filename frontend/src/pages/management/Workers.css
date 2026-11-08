@@ -94,7 +94,7 @@
 }
 
 .workers-page__state--error {
-	color: red;
+	color: var(--error-text);
 }
 
 .workers-page__actions {
@@ -110,7 +110,7 @@
 }
 
 .workers-page__message--error {
-	color: red;
+	color: var(--error-text);
 }	
 
 

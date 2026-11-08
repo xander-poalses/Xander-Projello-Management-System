@@ -71,10 +71,25 @@ html, body {
 :root,
 [data-theme="light"] {
   --background: #28332b;
-  --accent-1: #5e745f;
-  --accent-1-text: #5e745f;
+  /* Darkened from #5e745f so white text on it passes 4.5:1 */
+  --accent-1: #5c715d;
+  /* accent-1 as text on light surfaces (5.1:1 or better) */
+  --accent-1-text: #566a57;
   --accent-2: #28332b;
   --accent-3: #d6ae34;
+  /* accent-3 (gold) as text: #d6ae34 only reaches 1.8:1 on light surfaces */
+  --accent-3-text: #7e661e;
+  /* Text on the lime success fill */
+  --text-on-success: #28332b;
+  /* Placeholders and input/select outlines (WCAG: 4.5:1 text, 3:1 boundary) */
+  --placeholder: #5f5f5f;
+  --control-border: #81817c;
+  /* Secondary (Cancel) button fill: white text on it is 4.6:1 */
+  --button-secondary-bg: #757571;
+  /* Error messages as text (error-red #c34949 is for fills and icons) */
+  --error-text: #ad4040;
+  /* Input fill inside modals and cards */
+  --field-bg: #e5e5e2;
   --accent-2-10_Opacity: rgba(40, 51, 43, 0.1);
   --accent-2-5_Opacity: rgba(75, 87, 78, 0.02);
   --accent-2-40_Opacity: rgba(40, 51, 43, 0.8);
@@ -108,6 +123,13 @@ html, body {
   --accent-1-text: #88dca8;
   --accent-2: #f7f7f3;
   --accent-3: #e0c05d;
+  --accent-3-text: #e0c05d;
+  --text-on-success: #28332b;
+  --placeholder: #a3aea6;
+  --control-border: #8a998e;
+  --button-secondary-bg: #757571;
+  --error-text: #de9a9a;
+  --field-bg: #1f2822;
   --accent-2-10_Opacity: rgba(13, 18, 13, 0.5);
   --accent-2-40_Opacity: rgba(247, 247, 243, 0.8);
   --accent-2-5_Opacity: rgba(247, 247, 243, 0.02);
@@ -133,6 +155,17 @@ html, body {
   --card-bg: #334239;
   --warning-red: #c34949;
   --bright-yellow: #deab3d;
+}
+
+/* Surfaces that stay light in both themes (sign-in cards, form modals), so these don't change with data-theme */
+:root {
+  --on-light-field-bg: #e5e5e2;
+  --on-light-placeholder: #5f5f5f;
+  --on-light-control-border: #81817c;
+  --on-light-link: #7e661e;
+  --on-light-accent-text: #516452;
+  --on-light-error: #ad4040;
+  --button-secondary-bg-hover: #66665f;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -12,6 +12,8 @@ services:
         sync: false
       - key: Jwt__Key
         generateValue: true
+      - key: TwoFactor__EncryptionKey
+        generateValue: true
       - key: CloudinarySettings__CloudName
         sync: false
       - key: CloudinarySettings__ApiKey

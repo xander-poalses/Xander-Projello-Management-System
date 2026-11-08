@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { message as antdMessage } from "antd";
 import { createSignalRClient } from "../services/signalrClient";
 import { API_BASE_URL } from "../../../config";
+import { getToken } from "../../../auth/tokenStore";
 
 type TeamJoinedNotification = {
   projectId: number;
@@ -16,7 +17,7 @@ const teamNotificationClient = createSignalRClient<{
 }>({
    hubUrl: `${API_BASE_URL}/teamNotificationHub`,
   getAccessToken: () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (!token) return null;
     return token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
   },
@@ -28,7 +29,7 @@ export function useTeamNotifications() {
     let cancelled = false;
 
     const start = async () => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       if (!token) return;
 
       try {

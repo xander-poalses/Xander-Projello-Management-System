@@ -11,6 +11,7 @@ import { message as antdMessage, Modal } from "antd";
 import CustomModal from "../../components/CustomModal";
 
 import { useIncomingCallNotifications } from "../../features/realtime/hooks/useIncomingCallNotifications";
+import { getToken } from "../../auth/tokenStore";
 
 type ProjectDetails= {
   projectID: number;
@@ -179,7 +180,7 @@ export default function SingleProjectViewPage() {
     setRenameSaving(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/projects/${project.projectID}`, {
         method: "PUT",
         headers: {
@@ -230,7 +231,7 @@ export default function SingleProjectViewPage() {
     setDescriptionSaving(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/projects/${project.projectID}`, {
         method: "PUT",
         headers: {
@@ -271,7 +272,7 @@ export default function SingleProjectViewPage() {
     setStatusUpdating(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/api/projects/${project.projectID}/status`, {
         method: "PUT",
         headers: {
@@ -314,7 +315,7 @@ export default function SingleProjectViewPage() {
 
   // Get current user role
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -360,7 +361,7 @@ export default function SingleProjectViewPage() {
       }
 
       try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -392,7 +393,7 @@ export default function SingleProjectViewPage() {
 
     setUpdatesLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
@@ -413,7 +414,7 @@ export default function SingleProjectViewPage() {
     if (!projectId) return;
     setMilestonesLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/milestones`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -456,7 +457,7 @@ export default function SingleProjectViewPage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/milestones`, {
         method: "POST",
         headers: {
@@ -496,7 +497,7 @@ export default function SingleProjectViewPage() {
   // Save changes to backend
   const handleSaveMilestone = async (milestone: any) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       await fetch(`${API_BASE_URL}/api/milestones/${milestone.milestoneID}`, {
         method: "PUT",
         headers: {
@@ -519,7 +520,7 @@ export default function SingleProjectViewPage() {
     if (!window.confirm("Delete this milestone?")) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/milestones/${id}`, {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -550,7 +551,7 @@ export default function SingleProjectViewPage() {
     setIsUploading(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const formData = new FormData();
       formData.append("Image", file);
       formData.append("Caption", "");
@@ -594,7 +595,7 @@ export default function SingleProjectViewPage() {
       cancelText: "Cancel",
       onOk: async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = getToken();
           const targetId =
             member.UserID ?? member.userID ?? member.userId ?? member.id ?? null;
 
@@ -797,7 +798,7 @@ export default function SingleProjectViewPage() {
                   <button
                     type="button"
                     onClick={startEditingDescription}
-                    style={{ background: "none", border: "none", color: "#5e745f", cursor: "pointer", fontSize: "14px", fontWeight: 600 }}
+                    style={{ background: "none", border: "none", color: "var(--accent-1-text)", cursor: "pointer", fontSize: "14px", fontWeight: 600 }}
                   >
                     Edit
                   </button>

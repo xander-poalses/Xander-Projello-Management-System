@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ProjectCallService } from '../services/projectCallService';
+import { getToken } from "../../../auth/tokenStore";
 
 // === GLOBAL SINGLETON ===
 let globalCallService: ProjectCallService | null = null;
@@ -21,7 +22,7 @@ export function useProjectCall(projectId: number | string) {
   const listenerRef = useRef<any>(null);
 
   const getAccessToken = useCallback((): string | Promise<string | null> => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) return Promise.resolve(null);
     return token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
   }, []);

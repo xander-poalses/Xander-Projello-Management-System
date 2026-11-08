@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./single-project-view.css";
 import "./DiscussionTab.css";
 import { API_BASE_URL } from "../../config";
+import { getToken } from "../../auth/tokenStore";
 
 type DiscussionReaction = {
   id: number;
@@ -65,7 +66,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
@@ -85,7 +86,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   // NEW: Refresh without showing full loading screen (prevents page "refresh" feeling)
   const refreshPosts = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
@@ -106,7 +107,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   }, [projectId]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (!token) return;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -122,7 +123,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   const handleReact = async (updateId: number, emoji: string) => {
     try {
       setSubmittingId(updateId);
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/react`, {
         method: "POST",
@@ -150,7 +151,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
 
     try {
       setSubmittingId(updateId);
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/comments`, {
         method: "POST",
@@ -178,7 +179,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
 
     try {
       setSubmittingId(updateId);
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}`, {
         method: "DELETE",
@@ -201,7 +202,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
 
     try {
       setSubmittingId(commentId);
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/comments/${commentId}`, {
         method: "DELETE",
@@ -228,7 +229,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
 
     try {
       setSubmittingId(0);
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const formData = new FormData();
       formData.append("caption", caption);
@@ -275,7 +276,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   }, [imagePreviewUrl]);
 
   if (loading) return <p style={{ padding: 20 }}>Loading discussion...</p>;
-  if (error) return <p style={{ padding: 20, color: "red" }}>{error}</p>;
+  if (error) return <p style={{ padding: 20, color: "var(--error-text)" }}>{error}</p>;
 
   return (
     <div style={{ padding: 16, maxWidth: 980, margin: "0 auto" }}>

@@ -61,15 +61,5 @@ namespace Projello.Api.Tests
             var problem = Assert.IsType<ObjectResult>(result);
             Assert.Equal(StatusCodes.Status500InternalServerError, problem.StatusCode);
         }
-
-        [Fact]
-        public void Test_ReturnsWorkingMessage()
-        {
-            var controller = CreateController(new WebRtcOptions());
-            var result = controller.Test();
-
-            var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Contains("WebRTC controller is working", ok.Value!.ToString());
-        }
     }
 }

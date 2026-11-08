@@ -6,6 +6,7 @@ import ManagementTopNav from '../../components/ManagementTopNav';
 import ClientsPage from "./Clients";
 import WorkersPage from "./Workers";
 import { API_BASE_URL } from "../../config";
+import { getToken } from "../../auth/tokenStore";
 
 interface Project {
   projectID: number;
@@ -64,7 +65,7 @@ function ProjectActionModal({ project, onClose, onRefresh, allProjects }: Projec
 
     setBusy(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch(`${API_BASE_URL}/api/projects/${project.projectID}`, {
         method: "PUT",
@@ -246,7 +247,7 @@ export default function ManagementPage() {
 
   const fetchProjects = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const headers: HeadersInit = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -291,7 +292,7 @@ export default function ManagementPage() {
 
   const fetchClients = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/clients`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });

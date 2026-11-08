@@ -44,7 +44,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Identity - using AddIdentityCore to prevent cookie auth overriding JWT
 builder.Services.AddIdentityCore<User>(options => {
     options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
+    // Length matters more than character rules; existing shorter passwords still log in
+    options.Password.RequiredLength = 12;
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
     options.Lockout.AllowedForNewUsers = true;
@@ -87,22 +88,36 @@ builder.Services.AddAuthentication(options => {
                 context.Token = accessToken;
             }
             return Task.CompletedTask;
+        },
+        // Tokens last a day, so check every request against the database: a deleted
+        // user or a changed role takes effect immediately instead of when the token expires
+        OnTokenValidated = async context =>
+        {
+            var userId = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var roleClaim = context.Principal?.FindFirst("RoleID")?.Value;
+            var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+
+            var currentRole = await db.Users
+                .Where(u => u.Id == userId)
+                .Select(u => (int?)u.RoleID)
+                .FirstOrDefaultAsync();
+
+            if (currentRole == null || currentRole.ToString() != roleClaim)
+                context.Fail("Account changed since this token was issued. Please sign in again.");
         }
     };
 });
 
 // CORS - Allow localhost (dev) + your Render domain + Electron
+// Exact origins only: the packaged Electron app loads from file://, and `npm start`
+// serves from localhost:3000. Override with Cors__AllowedOrigins__0, __1, ... if needed.
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "file://", "http://localhost:3000" };
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowApp", policy =>
     {
-        policy.SetIsOriginAllowed(origin =>
-            origin.StartsWith("http://localhost") ||
-            origin.StartsWith("https://localhost") ||
-            origin == "https://projello-api.onrender.com" ||
-            origin.StartsWith("app://") ||           // Common for Electron
-            origin.StartsWith("file://")              // Sometimes used by Electron
-        )
+        policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
@@ -168,7 +183,8 @@ builder.Services.Configure<WebRtcOptions>(
     builder.Configuration.GetSection(WebRtcOptions.SectionName));
 builder.Services.AddSignalR().AddHubOptions<ProjectCallHub>(options =>
 {
-    options.EnableDetailedErrors = true;
+    // Detailed hub errors leak internals; only show them while developing
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
 });
 
 var app = builder.Build();

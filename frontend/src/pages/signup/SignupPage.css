@@ -54,11 +54,12 @@ body {
 }
 .signup-input {
   border-radius: 1000px;
-  background: var(--Shadow-Gray, #e5e5e2);
+  background: var(--on-light-field-bg);
   box-shadow:
     0 -2px 4px 0 rgba(249, 251, 236, 0.25) inset,
     0 2px 4px 0 rgba(0, 0, 0, 0.25) inset;
-  border: none;
+  /* 3:1 outline so the field is visible against the card */
+  border: 1px solid var(--on-light-control-border);
   padding: 16px 24px;
   font-size: 15px;
   color: #444;
@@ -67,6 +68,10 @@ body {
   box-sizing: border-box;
   transition: background 0.3s ease-in-out;
   margin-bottom: 16px;
+}
+.signup-input::placeholder {
+  color: var(--on-light-placeholder);
+  opacity: 1;
 }
 .signup-input:focus,
 .signup-input:active {
@@ -91,7 +96,7 @@ body {
   color: #666;
 }
 .signup-link {
-  color: var(--accent-3);
+  color: var(--on-light-link);
   cursor: pointer;
   text-decoration: none;
   font-weight: 600;
@@ -106,7 +111,7 @@ body {
   padding: 14px;
   border-radius: 1000px;
   border: none;
-  background: #aaaba4;
+  background: var(--button-secondary-bg);
   box-shadow: 0 4px 0 0 rgba(40, 51, 43, 0.5);
   color: #fff;
   font-weight: 700;
@@ -176,7 +181,7 @@ body {
 }
 */
 .signup-error-text {
-  color: red;
+  color: var(--on-light-error);
   text-align: center;
   font-size: 13px;
 }

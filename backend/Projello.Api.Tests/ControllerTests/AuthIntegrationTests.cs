@@ -4,7 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Projello.Api.DTOs;
 using Xunit;
 
@@ -14,10 +16,12 @@ namespace Projello.Api.Tests.Integration
     public class AuthIntegrationTests : IClassFixture<ProjelloApiFactory>
     {
         private readonly HttpClient _client;
+        private readonly ProjelloApiFactory _factory;
 
         public AuthIntegrationTests(ProjelloApiFactory factory)
         {
             // Creates a real HTTP client pointing at your background API
+            _factory = factory;
             _client = factory.CreateClient();
         }
 
@@ -250,7 +254,10 @@ namespace Projello.Api.Tests.Integration
             var authData = await loginResponse.Content.ReadFromJsonAsync<LoginResponseData>();
 
             // Act
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/disable-2fa");
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/disable-2fa")
+            {
+                Content = JsonContent.Create(new { Password = "Password123!" })
+            };
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authData!.Token);
             var response = await _client.SendAsync(request);
 
@@ -258,6 +265,27 @@ namespace Projello.Api.Tests.Integration
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             Assert.Contains("2FA has been disabled", content);
+        }
+
+        [Fact]
+        public async Task Disable2FA_WrongPassword_ReturnsBadRequest()
+        {
+            // Arrange
+            var email = $"disable2fa_wrong_{Guid.NewGuid()}@test.com";
+            await _client.PostAsJsonAsync("/api/auth/register", new UserRegisterDto { FullName = "Disable Tester", Email = email, Password = "Password123!" });
+            var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" });
+            var authData = await loginResponse.Content.ReadFromJsonAsync<LoginResponseData>();
+
+            // Act: a valid token but the wrong password
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/disable-2fa")
+            {
+                Content = JsonContent.Create(new { Password = "NotMyPassword1!" })
+            };
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authData!.Token);
+            var response = await _client.SendAsync(request);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
@@ -356,6 +384,70 @@ namespace Projello.Api.Tests.Integration
             // Assert
             Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
         }
+
+        [Fact]
+        public async Task DeletedAccount_OldToken_IsRejected()
+        {
+            // Arrange: sign in, then delete the account
+            var email = $"deleted_{Guid.NewGuid()}@test.com";
+            await _client.PostAsJsonAsync("/api/auth/register", new UserRegisterDto { FullName = "Soon Gone", Email = email, Password = "Password123!" });
+            var login = await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" });
+            var token = (await login.Content.ReadFromJsonAsync<LoginResponseData>())!.Token;
+
+            var delete = new HttpRequestMessage(HttpMethod.Delete, "/api/auth/delete-account");
+            delete.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            (await _client.SendAsync(delete)).EnsureSuccessStatusCode();
+
+            // Act: the token is still unexpired, but the account is gone
+            var me = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+            me.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await _client.SendAsync(me);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+        [Fact]
+        public async Task TwoFactor_FullFlow_EncryptsSecretAndRequiresChallenge()
+        {
+            // Arrange: a signed-in user turns on 2FA
+            var email = $"twofa_{Guid.NewGuid()}@test.com";
+            await _client.PostAsJsonAsync("/api/auth/register", new UserRegisterDto { FullName = "Two Factor", Email = email, Password = "Password123!" });
+            var first = await (await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" }))
+                .Content.ReadFromJsonAsync<LoginResponseData>();
+
+            var setup = new HttpRequestMessage(HttpMethod.Post, "/api/auth/generate-2fa-secret") { Content = JsonContent.Create(new { Email = email }) };
+            setup.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", first!.Token);
+            var secret = (await (await _client.SendAsync(setup)).Content.ReadFromJsonAsync<Dictionary<string, string>>())!["secretKey"];
+            string Code() => new OtpNet.Totp(OtpNet.Base32Encoding.ToBytes(secret)).ComputeTotp();
+
+            var activate = await _client.PostAsJsonAsync("/api/auth/verify-2fa", new { Email = email, Code = Code() });
+            activate.EnsureSuccessStatusCode();
+
+            // The secret is stored encrypted, not as the plain base32 value
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<Projello.Api.Data.AppDbContext>();
+                var stored = db.Users.Single(u => u.Email == email).TwoFactorSecret;
+                Assert.StartsWith("v1:", stored);
+                Assert.DoesNotContain(secret, stored);
+            }
+
+            // Act: log in again; the password step returns a challenge, not a token
+            var login = await (await _client.PostAsJsonAsync("/api/auth/login", new UserLoginDto { Email = email, Password = "Password123!" }))
+                .Content.ReadFromJsonAsync<LoginResponseData>();
+            Assert.True(login!.Requires2FA);
+            Assert.False(string.IsNullOrEmpty(login.ChallengeToken));
+
+            // Assert: a correct code without the challenge is refused (the old bypass)
+            var bypass = await _client.PostAsJsonAsync("/api/auth/verify-2fa", new { Email = email, Code = Code() });
+            Assert.Equal(HttpStatusCode.BadRequest, bypass.StatusCode);
+
+            // With the challenge it works, once
+            var ok = await _client.PostAsJsonAsync("/api/auth/verify-2fa", new { Email = email, Code = Code(), ChallengeToken = login.ChallengeToken });
+            ok.EnsureSuccessStatusCode();
+            var replay = await _client.PostAsJsonAsync("/api/auth/verify-2fa", new { Email = email, Code = Code(), ChallengeToken = login.ChallengeToken });
+            Assert.Equal(HttpStatusCode.BadRequest, replay.StatusCode);
+        }
     } // <-- Properly closes the class scope
 
     // ==================== DTO PAYLOAD RESPONSE CLASSES ====================
@@ -365,6 +457,7 @@ namespace Projello.Api.Tests.Integration
         public string Token { get; set; } = string.Empty;
         public string User { get; set; } = string.Empty;
         public bool Requires2FA { get; set; }
+        public string? ChallengeToken { get; set; }
     }
 
     public class ChangePasswordDto

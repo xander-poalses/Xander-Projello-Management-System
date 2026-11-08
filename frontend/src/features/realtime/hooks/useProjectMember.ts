@@ -1,6 +1,7 @@
 // frontend/src/features/realtime/hooks/useProjectMember.ts
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from '../../../config';
+import { getToken } from "../../../auth/tokenStore";
 
 export interface TeamMember {
   UserID: string;
@@ -21,7 +22,7 @@ export function useProjectMember(projectId: string | number) {
       }
 
       try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
