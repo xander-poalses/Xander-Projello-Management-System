@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { PhoneOutlined, WarningOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./single-project-view.css";
 import CallOverlay from "../../components/CallOverlay";
@@ -682,7 +683,7 @@ export default function SingleProjectViewPage() {
             className="single-project-view__call-button"
             onClick={handleStartVoiceCall}
           >
-            <span aria-hidden="true" className="single-project-view__call-button-text">☎</span>
+            <PhoneOutlined aria-hidden="true" />
             <span className="single-project-view__call-button-text">Start Call</span>
           </button>
         </div>
@@ -771,7 +772,7 @@ export default function SingleProjectViewPage() {
 
             {selectedStatus === "Completed" && (
               <div className="status-modal__warning">
-                <strong>⚠️ Warning:</strong> Setting the status to "Completed" will move this project to the History page.
+                <WarningOutlined aria-hidden="true" /> <strong>Warning:</strong> Setting the status to "Completed" will move this project to the History page.
               </div>
             )}
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { VideoCameraOutlined, VideoCameraAddOutlined } from "@ant-design/icons";
 import { useProjectCall } from "../features/realtime/hooks/useProjectCall";
 import "./CallOverlay.css";
 import outgoingRingtoneSrc from "../assets/notifcations/mixkit-waiting-ringtone-1354.wav";
@@ -255,7 +256,7 @@ const CallOverlay: React.FC<CallOverlayProps> = ({
                     playsInline
                     className="video"
                   />
-                  <div className="video-label">Remote</div>
+                  <div className="video-label">Other caller</div>
                 </div>
               </div>
 
@@ -273,8 +274,10 @@ const CallOverlay: React.FC<CallOverlayProps> = ({
                     className={`control-btn camera-btn ${cameraEnabled ? "is-on" : "is-off"}`}
                     onClick={() => setCameraMenuOpen((open) => !open)}
                     aria-haspopup="menu"
+                    aria-expanded={cameraMenuOpen}
                   >
-                    {cameraEnabled ? "📹 Camera" : "📷 Camera Off"}
+                    {cameraEnabled ? <VideoCameraOutlined aria-hidden="true" /> : <VideoCameraAddOutlined aria-hidden="true" />}
+                    {cameraEnabled ? "Camera on" : "Camera off"}
                   </button>
 
                   {cameraMenuOpen && (

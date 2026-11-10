@@ -368,10 +368,10 @@ export default function SplashPage() {
   // Just a canvas + the brand logo layered on top via CSS (check SplashPage.css for positioning)
   return (
     <div className="splash-container">
-      <canvas ref={canvasRef} className="splash-canvas" />
+      <canvas ref={canvasRef} className="splash-canvas" aria-hidden="true" />
       <img
         src={Logo}
-        alt="Logo"
+        alt="Projello"
         className="splash-brand-logo"
       />
     </div>

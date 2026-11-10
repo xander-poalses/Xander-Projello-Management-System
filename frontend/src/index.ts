@@ -134,14 +134,15 @@ const connectSrc = [
   'https://projello-api.onrender.com',
   'wss://projello-api.onrender.com',
   ...(isDev ? ['http://localhost:*', 'ws://localhost:*', 'ws://127.0.0.1:*'] : []),
-];//test
+];
 
   const cspDirectives = [
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // keep for Electron/Webpack dev compatibility
+    // The webpack dev build uses eval; the packaged build does not need it
+    `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self' data:",

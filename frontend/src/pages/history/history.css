@@ -4,7 +4,7 @@ body {
     padding: 0;
     left: 0;
     top: 0;
-    width: 100vw;
+    width: 100%;
 }
 
 /* --- Layout Wrapper Component Container --- */
@@ -91,7 +91,7 @@ body {
   color: var(--text-light-gray);
   cursor: pointer;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s ease;
 }
 
 .tab-toggle-btn:hover {

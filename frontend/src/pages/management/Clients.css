@@ -161,7 +161,7 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s ease;
 }
 
 .action-modal__close:hover {
@@ -229,7 +229,7 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   display: flex;
   align-items: center;
