@@ -118,7 +118,7 @@ export default function LoginPage({ onSwitchToSignUp, onSwitchToRegisterCompany,
             />
             
             {/* Conditionally render the error message if the error state is not empty */}
-            {error && <p className="login-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
+            {error && <p className="login-error-text" style={{ color: "var(--form-error)" }}>{error}</p>}
             
             {/* Conditionally render the success message if the successMsg state is not empty */}
             {successMsg && <p className="login-success-text" style={{ color: 'green', fontWeight: 'bold' }}>{successMsg}</p>}

@@ -95,7 +95,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
               maxLength={6}
               required
             />
-            {error && <p className="login-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
+            {error && <p className="login-error-text" style={{ color: "var(--form-error)" }}>{error}</p>}
             <div className="login-button-row" style={{ marginTop: "20px" }}>
               <button
                 type="button"

@@ -216,7 +216,7 @@ export default function DashboardPage() {
 
       <div className="filterBar">
         <div className="searchBar">
-          <img src={SearchIcon} alt="Search Icon" />
+          <img src={SearchIcon} alt="" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search projects..."

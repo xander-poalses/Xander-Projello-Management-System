@@ -1,5 +1,5 @@
 .StyledAllstatusspan {
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   font-weight: 500;
@@ -16,7 +16,7 @@
   height: 40px;
   padding-left: 16px;
   padding-right: 16px;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   border-radius: 999px;
   border: none;
   box-shadow:
@@ -31,7 +31,7 @@
 }
 
 .StyledButton:hover {
-  background: var(--on-light-field-bg-focus);
+  background: var(--form-field-bg-focus);
 }
 
 .StyledButton:active {

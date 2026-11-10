@@ -38,15 +38,15 @@
   padding: 10px 14px;
   border-radius: var(--radius-control);
   border: 1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent);
-  background: var(--on-light-field-bg);
-  color: var(--on-light-text);
+  background: var(--form-field-bg);
+  color: var(--form-text);
   box-shadow: var(--shadow-field);
   font: inherit;
   font-weight: 500;
 }
 
 .discussion-tab__field::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 

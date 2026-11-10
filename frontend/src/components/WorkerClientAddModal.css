@@ -11,7 +11,7 @@
 .reusable-entity-modal__error,
 .worker-add-modal__error,
 .client-add-modal__error {
-  color: var(--on-light-error);
+  color: var(--form-error);
   background-color: var(--error-red_20);
   padding: 12px 16px;
   border-radius: 8px;
@@ -37,7 +37,7 @@
 .client-add-modal__label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -47,7 +47,7 @@
 .worker-add-modal__label--required::after,
 .client-add-modal__label--required::after {
   content: " *";
-  color: var(--on-light-error);
+  color: var(--form-error);
 }
 
 /* Shared input controls */
@@ -61,13 +61,13 @@
 .client-add-modal__textarea,
 .client-add-modal__select {
   border-radius: 1000px;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   box-shadow: 0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
     0 2px 4px 0 rgb(var(--shadow-rgb) / 0.25) inset;
   border: none;
   padding: 16px 24px;
   font-size: 15px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-family: "Roboto", sans-serif;
   outline: none;
   width: 100%;
@@ -82,7 +82,7 @@
 
 /* Error */
 .client-add-modal__error {
-  color: var(--on-light-error);
+  color: var(--form-error);
   background-color: var(--error-red_20);
   padding: 12px 16px;
   border-radius: 8px;
@@ -109,8 +109,8 @@
 }
 
 .client-add-modal__cancel-button {
-  background: var(--on-light-field-bg);
-  color: var(--on-light-heading);
+  background: var(--form-field-bg);
+  color: var(--form-heading);
 }
 
 .client-add-modal__submit-button {
@@ -125,7 +125,7 @@
 }
 
 .entity-modal .ant-modal-content {
-  background-color: var(--on-light-card-bg);
+  background-color: var(--form-card-bg);
   border-radius: 32px;
   box-shadow: 0 20px 60px rgb(var(--shadow-rgb) / 0.3);
   overflow: hidden;
@@ -145,7 +145,7 @@
 }
 
 .entity-modal .ant-modal-title {
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   font-size: 36px;
   line-height: 1.1;
   font-weight: 800;
@@ -159,13 +159,13 @@
   height: 34px;
   border-radius: 10px;
   border: 1px solid rgb(var(--muted-rgb) / 0.75);
-  background: var(--white);
-  color: var(--on-light-muted);
+  background: var(--modal-bg);
+  color: var(--form-muted);
 }
 
 .entity-modal .ant-modal-close:hover {
-  background: var(--on-light-card-bg);
-  color: var(--on-light-text);
+  background: var(--form-card-bg);
+  color: var(--form-text);
 }
 
 .entity-modal__title-row {
@@ -184,13 +184,13 @@
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   color: var(--accent-1-text);
 }
 
 .entity-modal__title {
   margin: 0;
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   font-size: 36px;
   line-height: 1.1;
   font-weight: 800;
@@ -200,7 +200,7 @@
 .entity-modal__subtitle {
   display: block;
   margin-top: 8px;
-  color: var(--on-light-muted);
+  color: var(--form-muted);
   font-size: 13px;
   text-align: center;
 }
@@ -218,7 +218,7 @@
 }
 
 .entity-modal__label {
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   font-size: 14px;
   font-weight: 600;
 }
@@ -228,9 +228,9 @@
 .entity-modal__select .ant-select-selector {
   width: 100%;
   border-radius: 1000px !important;
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent) !important;
-  background: var(--on-light-field-bg) !important;
-  color: var(--on-light-text) !important;
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent) !important;
+  background: var(--form-field-bg) !important;
+  color: var(--form-text) !important;
   font-size: 15px;
   box-shadow:
     0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
@@ -252,7 +252,7 @@
 .entity-modal__textarea:focus,
 .entity-modal__select .ant-select-selector:focus,
 .entity-modal__select.ant-select-focused .ant-select-selector {
-  background: var(--on-light-field-bg-focus) !important;
+  background: var(--form-field-bg-focus) !important;
   border-color: transparent !important;
   box-shadow:
     0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,

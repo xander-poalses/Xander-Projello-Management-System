@@ -122,7 +122,7 @@ export default function SignUpPage({ onSwitchToLogin }: SignUpPageProps) {
               onChange={(e) => setInviteCode(e.target.value)}
             />
 
-            {error && <p style={{ color: "var(--on-light-error)" }}>{error}</p>}
+            {error && <p style={{ color: "var(--form-error)" }}>{error}</p>}
             {successMsg && <p style={{ color: "green", fontWeight: "bold" }}>{successMsg}</p>}
 
             <div className="signinText">

@@ -25,7 +25,7 @@
   margin-bottom: 6px;
   font-weight: 500;
   font-size: 14px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-family: "Roboto", sans-serif;
 }
 
@@ -38,8 +38,10 @@
 .project-add-modal__input {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--on-light-border);
-  border-radius: 6px;
+  border: 1px solid var(--form-border);
+  border-radius: var(--radius-control);
+  background: var(--form-field-bg);
+  color: var(--form-text);
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   transition: border-color 0.2s ease;
@@ -55,7 +57,7 @@
 .project-add-modal__textarea {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--on-light-border);
+  border: 1px solid var(--form-border);
   border-radius: 6px;
   font-size: 14px;
   font-family: "Roboto", sans-serif;

@@ -35,7 +35,7 @@ body {
   margin-left: clamp(100px, 30%, 300px);
 }
 .signup-card {
-  background-color: var(--on-light-card-bg);
+  background-color: var(--form-card-bg);
   border-radius: 32px;
   padding: 48px 40px;
   width: 100%;
@@ -48,21 +48,21 @@ body {
 .signup-title {
   font-size: 36px;
   font-weight: 800;
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   text-align: center;
   margin-bottom: 8px;
 }
 .signup-input {
   border-radius: 1000px;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   box-shadow:
     0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
     0 2px 4px 0 rgb(var(--shadow-rgb) / 0.25) inset;
   /* 3:1 outline so the field is visible against the card */
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent);
   padding: 16px 24px;
   font-size: 15px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -70,20 +70,20 @@ body {
   margin-bottom: 16px;
 }
 .signup-input::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 .signup-input:focus,
 .signup-input:active {
-  background: var(--on-light-field-bg-focus);
+  background: var(--form-field-bg-focus);
 }
 .signup-role-select {
-  background-color: var(--on-light-field-bg-focus);
+  background-color: var(--form-field-bg-focus);
   border: none;
   border-radius: 50px;
   padding: 16px 24px;
   font-size: 15px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -93,10 +93,10 @@ body {
 .signup-login-text {
   text-align: center;
   font-size: 13px;
-  color: var(--on-light-muted);
+  color: var(--form-muted);
 }
 .signup-link {
-  color: var(--on-light-link);
+  color: var(--form-link);
   cursor: pointer;
   text-decoration: none;
   font-weight: 600;
@@ -181,7 +181,7 @@ body {
 }
 */
 .signup-error-text {
-  color: var(--on-light-error);
+  color: var(--form-error);
   text-align: center;
   font-size: 13px;
 }

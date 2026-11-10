@@ -2,7 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: var(--on-light-heading);
+  background: var(--form-heading);
   display: flex;
   align-items: center;
   justify-content: center;

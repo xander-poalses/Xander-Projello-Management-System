@@ -37,16 +37,16 @@
   min-height: 44px;
   padding: 10px 14px;
   border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
-  background: var(--on-light-field-bg);
-  color: var(--on-light-text);
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent);
+  background: var(--form-field-bg);
+  color: var(--form-text);
   box-shadow: var(--shadow-field);
   font: inherit;
   font-weight: 500;
 }
 
 .command-menu__input::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 

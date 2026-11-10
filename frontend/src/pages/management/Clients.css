@@ -123,8 +123,8 @@
 }
 
 .action-modal {
-  background: var(--white);
-  border: 1px solid var(--on-light-border);
+  background: var(--modal-bg);
+  border: 1px solid var(--form-border);
   border-radius: 24px;
   padding: 0;
   min-width: 320px;
@@ -141,14 +141,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid color-mix(in srgb, var(--on-light-card-bg) var(--border-opacity), transparent);
-  background: var(--on-light-card-bg);
+  border-bottom: 1px solid color-mix(in srgb, var(--form-card-bg) var(--border-opacity), transparent);
+  background: var(--form-card-bg);
 }
 
 .action-modal__header .action-modal__title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--on-light-heading);
+  color: var(--form-heading);
   margin: 0;
 }
 
@@ -157,7 +157,7 @@
   border: none;
   font-size: 28px;
   line-height: 1;
-  color: var(--on-light-muted);
+  color: var(--form-muted);
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -165,8 +165,8 @@
 }
 
 .action-modal__close:hover {
-  color: var(--on-light-text);
-  background: var(--on-light-card-bg);
+  color: var(--form-text);
+  background: var(--form-card-bg);
 }
 
 .action-modal__body {
@@ -178,13 +178,13 @@
 
 .action-modal__sub {
   font-size: 0.9rem;
-  color: var(--on-light-muted);
+  color: var(--form-muted);
   margin: 0;
 }
 
 .action-modal__feedback {
   font-size: 0.95rem;
-  color: var(--on-light-text);
+  color: var(--form-text);
   margin: 0;
   line-height: 1.5;
   padding: 8px 0;
@@ -192,10 +192,10 @@
 
 .action-modal__textarea {
   width: 100%;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   border: none;
   border-radius: 20px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-size: 0.95rem;
   padding: 14px 20px;
   resize: vertical;
@@ -211,7 +211,7 @@
 
 .action-modal__textarea:focus,
 .action-modal__textarea:active {
-  background: var(--on-light-field-bg-focus);
+  background: var(--form-field-bg-focus);
 }
 
 .action-modal__actions {
@@ -265,13 +265,13 @@
 }
 
 .action-modal__btn--secondary {
-  background: var(--on-light-card-bg);
-  color: var(--on-light-text);
-  border: 1px solid var(--on-light-border);
+  background: var(--form-card-bg);
+  color: var(--form-text);
+  border: 1px solid var(--form-border);
 }
 
 .action-modal__btn--secondary:hover:not(:disabled) {
-  background: var(--on-light-border);
+  background: var(--form-border);
   transform: translateY(-1px);
 }
 
@@ -299,22 +299,22 @@
 
 .action-modal__btn--ghost {
   background: transparent;
-  color: var(--on-light-muted);
-  border: 1px solid var(--on-light-border);
+  color: var(--form-muted);
+  border: 1px solid var(--form-border);
   font-weight: 500;
 }
 
 .action-modal__btn--ghost:hover:not(:disabled) {
-  background: var(--on-light-card-bg);
-  color: var(--on-light-text);
+  background: var(--form-card-bg);
+  color: var(--form-text);
 }
 
 .action-modal__input {
   width: 100%;
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   border: none;
   border-radius: 999px;
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-size: 0.95rem;
   padding: 14px 20px;
   box-sizing: border-box;
@@ -329,7 +329,7 @@
 
 .action-modal__input:focus,
 .action-modal__input:active {
-  background: var(--on-light-field-bg-focus);
+  background: var(--form-field-bg-focus);
 }
 
 select.action-modal__input {
@@ -345,7 +345,7 @@ select.action-modal__input {
 .clients-page__message {
   padding: 20px;
   font-size: 1rem;
-  color: var(--on-light-text);
+  color: var(--form-text);
 }
 
 .clients-page__message--error {

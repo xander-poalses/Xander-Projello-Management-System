@@ -191,15 +191,17 @@ html, body {
   --bright-yellow: #deab3d;
 }
 
-/* Surfaces that stay light in both themes (sign-in cards, form modals), so these don't change with data-theme */
+/* Form surfaces: sign-in cards, modals, fields and search boxes. Light values here,
+   dark values in the block below, so they follow the theme switch. */
 :root {
-  --on-light-field-bg: #e5e5e2;
-  --on-light-text: #28332b;
-  --on-light-heading: #1a2420;
-  --on-light-muted: #5f5f5f;
-  --on-light-border: rgba(40, 51, 43, 0.12);
-  --on-light-card-bg: #f0f0ec;
-  --on-light-field-bg-focus: #dddddd;
+  --form-field-bg: #e5e5e2;
+  --form-text: #28332b;
+  --form-heading: #1a2420;
+  --form-muted: #5f5f5f;
+  --form-border: rgba(40, 51, 43, 0.12);
+  --form-card-bg: #f0f0ec;
+  --modal-bg: #ffffff;
+  --form-field-bg-focus: #dddddd;
   --brand-dark: #28332b;
   /* The call screen is dark in both themes */
   --call-bg: #1a1a1a;
@@ -213,12 +215,28 @@ html, body {
   --call-warning-bg: #4a3b1f;
   --call-warning-border: #665022;
   --call-black: #000000;
-  --on-light-placeholder: #5f5f5f;
-  --on-light-control-border: #81817c;
-  --on-light-link: #7e661e;
-  --on-light-accent-text: #516452;
-  --on-light-error: #ad4040;
+  --form-placeholder: #5f5f5f;
+  --form-control-border: #81817c;
+  --form-link: #7e661e;
+  --form-accent-text: #516452;
+  --form-error: #ad4040;
   --button-secondary-bg-hover: #66665f;
+}
+
+[data-theme="dark"] {
+  --form-field-bg: #1f2822;
+  --form-field-bg-focus: #263029;
+  --form-card-bg: #334239;
+  --form-text: #f7f7f3;
+  --form-heading: #f7f7f3;
+  --form-muted: #b4bdb6;
+  --form-border: rgba(247, 247, 243, 0.12);
+  --form-placeholder: #a3aea6;
+  --form-control-border: #8a998e;
+  --form-link: #e0c05d;
+  --form-accent-text: #88dca8;
+  --form-error: #de9a9a;
+  --modal-bg: #334239;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -334,16 +352,16 @@ h5 {
 /* Small control on a bar or card: search and sort on Jello Jobs */
 .pj-field {
   /* Light in both themes, like the Jello Jobs search and sort */
-  background: var(--on-light-field-bg);
-  color: var(--on-light-text);
+  background: var(--form-field-bg);
+  color: var(--form-text);
   border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent);
   box-shadow: var(--shadow-field);
   font-family: Roboto, sans-serif;
   font-weight: 500;
 }
 .pj-field::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 
@@ -383,9 +401,9 @@ h5 {
 .client-add-modal__input,
 .client-add-modal__textarea,
 .client-add-modal__select {
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent) !important;
-  background: var(--on-light-field-bg) !important;
-  color: var(--on-light-text) !important;
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent) !important;
+  background: var(--form-field-bg) !important;
+  color: var(--form-text) !important;
 }
 .entity-modal__input::placeholder,
 .entity-modal__textarea::placeholder,
@@ -395,7 +413,7 @@ h5 {
 .worker-add-modal__textarea::placeholder,
 .client-add-modal__input::placeholder,
 .client-add-modal__textarea::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 .ant-modal .ant-btn-primary,
@@ -587,4 +605,31 @@ h5 {
   margin: 0 0 var(--space-2);
   font-size: 13px;
   color: var(--text-muted);
+}
+
+/* Ant Design modals (create project, client, worker) follow the theme */
+.ant-modal .ant-modal-container,
+.ant-modal .ant-modal-content {
+  background: var(--modal-bg);
+  color: var(--form-text);
+}
+.ant-modal .ant-modal-title {
+  background: transparent;
+  color: var(--form-heading);
+}
+.ant-modal .ant-modal-close {
+  background: transparent;
+  color: var(--form-text);
+}
+.ant-modal .ant-modal-close:hover {
+  background: var(--accent-2-10_Opacity);
+}
+
+/* Native controls (date pickers, select arrows, scrollbars) match the theme */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
 }

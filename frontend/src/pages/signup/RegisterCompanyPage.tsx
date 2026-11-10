@@ -140,7 +140,7 @@ export default function RegisterCompanyPage({ onSwitchToLogin }: RegisterCompany
               <option value={4}>Owner</option>
             </select> */}
 
-            {error && <p className="signup-error-text" style={{ color: "var(--on-light-error)" }}>{error}</p>}
+            {error && <p className="signup-error-text" style={{ color: "var(--form-error)" }}>{error}</p>}
             {successMsg && (
               <p className="signup-success-text" style={{ color: 'green', fontWeight: 'bold' }}>
                 {successMsg}

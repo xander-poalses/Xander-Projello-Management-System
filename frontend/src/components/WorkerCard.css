@@ -28,8 +28,8 @@
   width: 48px;
   height: 48px;
   border-radius: 9999px;
-  background: var(--accent-2);
-  color: var(--text-light);
+  background: var(--avatar-bg);
+  color: var(--text-dark);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,5 +1,5 @@
 .StyledSearchclientsspan {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
@@ -17,10 +17,10 @@
   top: 0px;
   position: absolute;
   /* Matches the Jello Jobs search field */
-  background: var(--on-light-field-bg);
+  background: var(--form-field-bg);
   overflow: hidden;
   border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
+  border: 1px solid color-mix(in srgb, var(--form-control-border) var(--border-opacity), transparent);
   box-shadow: var(--shadow-field);
   display: flex;
   justify-content: flex-start;
@@ -43,14 +43,14 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--on-light-text);
+  color: var(--form-text);
   font-size: 16px;
   font-weight: 500;
   font-family: "Roboto", sans-serif;
 }
 
 .StyledSearchInput::placeholder {
-  color: var(--on-light-placeholder);
+  color: var(--form-placeholder);
   opacity: 1;
 }
 
