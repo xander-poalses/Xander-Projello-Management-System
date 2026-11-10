@@ -228,7 +228,8 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
                         />
                     </div>
                     <div className="action-modal__actions">
-                        <button className="action-modal__btn action-modal__btn--danger" onClick={doBlacklist} disabled={busy}>
+                        <button aria-busy={busy} className="action-modal__btn action-modal__btn--danger" onClick={doBlacklist} disabled={busy}>
+                            {busy && <span className="pj-spinner" aria-hidden="true" />}
                             {busy ? "Blacklisting..." : "Confirm Blacklist"}
                         </button>
                         <button className="action-modal__btn action-modal__btn--ghost" onClick={() => setStep("menu")}>Back</button>
@@ -247,7 +248,8 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
                         <p className="action-modal__sub">Are you sure you want to remove <strong>"{row.name}"</strong> from the blacklist?</p>
                     </div>
                     <div className="action-modal__actions">
-                        <button className="action-modal__btn action-modal__btn--warning" onClick={doUnblacklist} disabled={busy}>
+                        <button aria-busy={busy} className="action-modal__btn action-modal__btn--warning" onClick={doUnblacklist} disabled={busy}>
+                            {busy && <span className="pj-spinner" aria-hidden="true" />}
                             {busy ? "Removing..." : "Yes, Remove from Blacklist"}
                         </button>
                         <button className="action-modal__btn action-modal__btn--ghost" onClick={() => setStep("menu")}>Back</button>
@@ -293,11 +295,12 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
                         </div>
                     </div>
                     <div className="action-modal__actions">
-                        <button
+                        <button aria-busy={busy}
                             className="action-modal__btn action-modal__btn--primary"
                             onClick={handleSaveEdit}
                             disabled={busy}
                         >
+                            {busy && <span className="pj-spinner" aria-hidden="true" />}
                             {busy ? "Saving..." : "Save Changes"}
                         </button>
                         <button className="action-modal__btn action-modal__btn--ghost" onClick={() => setStep("menu")}>Back</button>

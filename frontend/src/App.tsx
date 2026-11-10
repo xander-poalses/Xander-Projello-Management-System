@@ -13,6 +13,7 @@ import BodyBlock from "./components/BodyBlock";
 import SplashPage from "./pages/splash/SplashPage";
 import RegisterCompanyPage from "./pages/signup/RegisterCompanyPage";
 import CommandMenu from "./components/CommandMenu";
+import ModalFocusManager from "./components/ModalFocusManager";
 import { useIncomingCallNotifications } from "./features/realtime/hooks/useIncomingCallNotifications"; // Do not remove
 
 import { useTeamNotifications } from "./features/realtime/hooks/useTeamNotifications"; // Do not remove
@@ -63,6 +64,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       {!hideNav && <SideNavBar />}
       {/* Ctrl+K menu is only for signed-in pages */}
       {!hideNav && <CommandMenu />}
+      <ModalFocusManager />
       <div style={{ flex: 1, marginLeft: !hideNav ? 225 : 0 }}>
         {/* Keyed by page so each page eases in when you navigate */}
         <div key={location.pathname} className="route-enter">

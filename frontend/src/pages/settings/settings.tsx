@@ -260,7 +260,7 @@ export default function SettingsPage() {
       {showAvatarModal && (
         <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgb(var(--shadow-rgb) / 0.53)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div className="modal-content" style={{ background: "var(--secondary-background)", borderRadius: 16, padding: 32, minWidth: 400, maxWidth: 600, boxShadow: "0 4px 32px rgb(var(--shadow-rgb) / 0.2)", position: "relative" }}>
-            <button onClick={() => setShowAvatarModal(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", fontSize: 24, cursor: "pointer" }}>&times;</button>
+            <button type="button" aria-label="Close" onClick={() => setShowAvatarModal(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", fontSize: 24, cursor: "pointer" }}>&times;</button>
             <h3 style={{ marginTop: 0 }}>Choose Your Avatar</h3>
             
             <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 16, justifyContent: "space-between" }}>

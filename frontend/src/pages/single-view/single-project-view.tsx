@@ -74,7 +74,7 @@ function RecentSitePhotosSection({
         scrollbarWidth: "thin"
       }}>
         {/* Add Photo Button - Now Functional */}
-        <button 
+        <button aria-busy={isUploading} 
           type="button" 
           className="single-project-view__photo-tile single-project-view__photo-tile--add"
           style={{ minWidth: "140px", height: "110px", flexShrink: 0 }}
@@ -83,6 +83,7 @@ function RecentSitePhotosSection({
         >
           <span className="single-project-view__photo-plus">+</span>
           <span className="single-project-view__photo-label">
+            {isUploading && <span className="pj-spinner" aria-hidden="true" />}
             {isUploading ? "Uploading..." : "Add Photo"}
           </span>
         </button>
@@ -783,12 +784,13 @@ export default function SingleProjectViewPage() {
               >
                 Cancel
               </button>
-              <button
+              <button aria-busy={statusUpdating}
                 type="button"
                 className="status-modal__confirm-btn"
                 onClick={handleConfirmStatusChange}
                 disabled={statusUpdating || selectedStatus === project.status}
               >
+                {statusUpdating && <span className="pj-spinner" aria-hidden="true" />}
                 {statusUpdating ? "Updating..." : "Confirm"}
               </button>
             </div>
@@ -832,11 +834,12 @@ export default function SingleProjectViewPage() {
                     placeholder="Enter project description..."
                   />
                   <div style={{ marginTop: "10px", display: "flex", gap: "8px" }}>
-                    <button
+                    <button aria-busy={descriptionSaving}
                       onClick={saveDescription}
                       disabled={descriptionSaving}
                       style={{ background: "var(--accent-1)", color: "var(--white)", padding: "8px 20px", borderRadius: "6px", fontWeight: 600 }}
                     >
+                      {descriptionSaving && <span className="pj-spinner" aria-hidden="true" />}
                       {descriptionSaving ? "Saving..." : "Save Changes"}
                     </button>
                     <button
@@ -1001,13 +1004,14 @@ export default function SingleProjectViewPage() {
             >
               Cancel
             </button>,
-            <button
+            <button aria-busy={renameSaving}
               key="save"
               type="button"
               className="single-project-view__call-button"
               onClick={handleRenameProject}
               disabled={renameSaving}
             >
+              {renameSaving && <span className="pj-spinner" aria-hidden="true" />}
               {renameSaving ? "Saving..." : "Save Name"}
             </button>,
           ]}

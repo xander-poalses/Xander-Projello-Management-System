@@ -78,7 +78,6 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
       if (!res.ok) throw new Error("Failed to fetch discussion");
 
       const data: DiscussionPost[] = await res.json();
-      console.log("GET /api/projects/:id/updates →", data.slice(0,5));
       setPosts(data);
     } catch (err: any) {
       setError(err.message || "Failed to load discussion");
@@ -164,7 +163,26 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   const handleCommentSubmit = async (e: React.FormEvent, updateId: number) => {
     e.preventDefault();
     const commentText = commentDrafts[updateId]?.trim();
-    if (!commentText) return;
+    if (!commentText || !currentUserId) return;
+
+    // Optimistic: show the comment straight away, roll back if the server refuses
+    const tempId = -Date.now();
+    let snapshot: DiscussionPost[] = [];
+    setPosts((current) => {
+      snapshot = current;
+      return current.map((post) =>
+        post.id !== updateId
+          ? post
+          : {
+              ...post,
+              comments: [
+                ...(post.comments ?? []),
+                { id: tempId, userId: currentUserId, userFullName: "You", commentText, createdAt: new Date().toISOString() },
+              ],
+            }
+      );
+    });
+    setCommentDrafts((current) => ({ ...current, [updateId]: "" }));
 
     try {
       setSubmittingId(updateId);
@@ -181,10 +199,12 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
 
       if (!res.ok) throw new Error("Failed to save comment");
 
-      setCommentDrafts((current) => ({ ...current, [updateId]: "" }));
-      await refreshPosts(); // Changed to prevent full page refresh
-    } catch (err: any) {
-      setError(err.message || "Failed to add comment");
+      await refreshPosts();
+    } catch {
+      setPosts(snapshot);
+      // Give them their text back so nothing is lost
+      setCommentDrafts((current) => ({ ...current, [updateId]: commentText }));
+      antdMessage.error("Couldn't post your comment. Try again.");
     } finally {
       setSubmittingId(null);
     }
@@ -336,6 +356,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
             />
             {/* Busy: loading label, no repeat posts while it's sending */}
             <button type="submit" className="btn-primary" style={{ minWidth: 120 }} disabled={submittingId === 0} aria-busy={submittingId === 0}>
+              {submittingId === 0 && <span className="pj-spinner" aria-hidden="true" />}
               {submittingId === 0 ? "Posting..." : "Post update"}
             </button>
           </div>

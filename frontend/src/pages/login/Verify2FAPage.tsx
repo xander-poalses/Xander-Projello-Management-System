@@ -104,11 +104,12 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
               >
                 Back to Login
               </button>
-              <button
+              <button aria-busy={loading}
                 type="submit"
                 className="login-submit-btn"
                 disabled={loading || code.length < 6}
               >
+                {loading && <span className="pj-spinner" aria-hidden="true" />}
                 {loading ? "Verifying..." : "Verify Code"}
               </button>
             </div>

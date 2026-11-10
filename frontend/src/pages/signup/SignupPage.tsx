@@ -150,11 +150,12 @@ export default function SignUpPage({ onSwitchToLogin }: SignUpPageProps) {
                 Cancel
               </button>
 
-              <button
+              <button aria-busy={loading}
                 type="submit"
                 className="login-submit-btn"
                 disabled={loading}
               >
+                {loading && <span className="pj-spinner" aria-hidden="true" />}
                 {loading ? "Creating..." : "Sign Up"}
               </button>
             </div>

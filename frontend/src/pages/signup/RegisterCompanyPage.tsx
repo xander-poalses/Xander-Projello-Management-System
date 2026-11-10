@@ -171,7 +171,8 @@ export default function RegisterCompanyPage({ onSwitchToLogin }: RegisterCompany
               >
                 Cancel
               </button>
-              <button type="submit" className="signup-submit-btn" disabled={loading}>
+              <button aria-busy={loading} type="submit" className="signup-submit-btn" disabled={loading}>
+                {loading && <span className="pj-spinner" aria-hidden="true" />}
                 {loading ? "Creating..." : "Create Company"}
               </button>
             </div>

@@ -83,7 +83,7 @@ export default function AddProjectMemberModal({
       <div className="action-modal" onClick={e => e.stopPropagation()}>
         <div className="action-modal__header">
           <h3 className="action-modal__title">Add Team Member</h3>
-          <button className="action-modal__close" onClick={onClose}>×</button>
+          <button type="button" className="action-modal__close" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <div className="action-modal__body">
@@ -111,11 +111,12 @@ export default function AddProjectMemberModal({
         </div>
 
         <div className="action-modal__actions">
-          <button
+          <button aria-busy={submitting}
             className="action-modal__btn action-modal__btn--primary"
             onClick={handleSubmit}
             disabled={submitting || !selectedUserId}
           >
+            {submitting && <span className="pj-spinner" aria-hidden="true" />}
             {submitting ? "Adding..." : "Add to Project"}
           </button>
           <button className="action-modal__btn action-modal__btn--ghost" onClick={onClose}>

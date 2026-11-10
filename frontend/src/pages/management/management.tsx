@@ -208,11 +208,12 @@ function ProjectActionModal({ project, onClose, onRefresh, allProjects }: Projec
             </div>
           </div>
           <div className="action-modal__actions">
-            <button
+            <button aria-busy={busy}
               className="action-modal__btn action-modal__btn--primary"
               onClick={handleSaveEdit}
               disabled={busy}
             >
+              {busy && <span className="pj-spinner" aria-hidden="true" />}
               {busy ? "Saving..." : "Save Changes"}
             </button>
             <button className="action-modal__btn action-modal__btn--ghost" onClick={() => setStep("menu")}>
