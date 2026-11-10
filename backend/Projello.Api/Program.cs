@@ -27,15 +27,16 @@ builder.WebHost.UseKestrel(options =>
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 
-builder.Services.AddSingleton(sp =>
+// Only register the client when keys are set: new Cloudinary() throws on an empty
+// cloud name, which used to take down every site-updates request, not just uploads
+var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+if (cloudinarySettings is { IsConfigured: true })
 {
-    var settings = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-    var account = new Account(
-        settings.CloudName,
-        settings.ApiKey,
-        settings.ApiSecret);
-    return new Cloudinary(account);
-});
+    builder.Services.AddSingleton(new Cloudinary(new Account(
+        cloudinarySettings.CloudName,
+        cloudinarySettings.ApiKey,
+        cloudinarySettings.ApiSecret)));
+}
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>

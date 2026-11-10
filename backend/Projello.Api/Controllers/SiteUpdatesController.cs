@@ -18,9 +18,10 @@ namespace Projello.Api.Controllers;
 public class SiteUpdatesController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly Cloudinary _cloudinary;
+    // Null when Cloudinary keys aren't configured; then only photo uploads are unavailable
+    private readonly Cloudinary? _cloudinary;
 
-    public SiteUpdatesController(AppDbContext context, Cloudinary cloudinary)
+    public SiteUpdatesController(AppDbContext context, Cloudinary? cloudinary = null)
     {
         _context = context;
         _cloudinary = cloudinary;
@@ -115,6 +116,10 @@ public class SiteUpdatesController : ControllerBase
         // Upload image to Cloudinary
         if (dto.Image != null)
         {
+            if (_cloudinary == null)
+                return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                    new { Message = "Photo uploads aren't set up on this server yet. Post without a photo for now." });
+
             using var stream = dto.Image.OpenReadStream();
             var uploadParams = new ImageUploadParams
             {

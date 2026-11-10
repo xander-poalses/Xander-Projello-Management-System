@@ -28,20 +28,38 @@ export function useTeamNotifications() {
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
 
-    const start = async () => {
-      const token = getToken();
-      if (!token) return;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+    // This hook mounts before sign-in finishes and while Render may still be waking up,
+    // so a single attempt often fails. Keep trying with the latest token.
+    const RETRY_DELAYS_MS = [2000, 5000, 10000, 30000];
+
+    const start = async (attempt = 0) => {
+      if (cancelled) return;
+
+      const retry = () => {
+        if (cancelled) return;
+        const delay = RETRY_DELAYS_MS[Math.min(attempt, RETRY_DELAYS_MS.length - 1)];
+        retryTimer = setTimeout(() => void start(attempt + 1), delay);
+      };
+
+      // Not signed in yet: check again shortly instead of giving up for the session
+      if (!getToken()) {
+        retry();
+        return;
+      }
 
       try {
         await teamNotificationClient.start();
 
+        unsubscribe?.();
         unsubscribe = teamNotificationClient.on("WorkerJoinedProject", (payload) => {
           antdMessage.success(payload.message || `${payload.memberName} joined ${payload.projectName}.`);
         });
       } catch (err) {
-        if (!cancelled) {
-          console.error("Team notification hub failed:", err);
-        }
+        if (cancelled) return;
+        console.warn(`Team notification hub not connected yet (attempt ${attempt + 1}), retrying:`, err);
+        retry();
       }
     };
 
@@ -49,6 +67,7 @@ export function useTeamNotifications() {
 
     return () => {
       cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
       unsubscribe?.();
     };
   }, []);
