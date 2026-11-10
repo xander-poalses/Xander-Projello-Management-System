@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "roboto",
+        "createdAt": "2026-11-08T20:39:40.529Z",
+        "reason": "user confirmed: Roboto is the project's bundled brand font (frontend/src/assets/fonts/roboto)"
+      }
+    ]
+  }
+}

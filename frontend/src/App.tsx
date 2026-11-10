@@ -3,7 +3,7 @@ import { HashRouter, Routes, Route, useNavigate, useLocation } from "react-route
 import DashboardPage from "./pages/dashboard/dashboard";
 import LoginPage from "./pages/login/LoginPage";
 import SignUpPage from "./pages/signup/SignupPage";
-import Verify2FAPage from "./pages/login/Verify2FAPage"; // Make sure this path matches where you saved it!
+import Verify2FAPage from "./pages/login/Verify2FAPage";
 import ManagementPage from "./pages/management/management";
 import SettingsPage from "./pages/settings/settings";
 import SingleProjectViewPage from "./pages/single-view/single-project-view";
