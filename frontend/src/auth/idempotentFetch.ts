@@ -2,10 +2,11 @@ import { API_BASE_URL } from "../config";
 
 const RETRY_DELAYS_MS = [800, 2000];
 
-const newKey = (): string =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+// randomUUID exists in Electron's Chromium; the project's TS lib just doesn't declare it
+const newKey = (): string => {
+  const c = (typeof crypto !== "undefined" ? crypto : undefined) as (Crypto & { randomUUID?: () => string }) | undefined;
+  return c?.randomUUID ? c.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
 
 // Every create/submit (POST) to the Projello API gets an Idempotency-Key. If the
 // connection drops, the request is retried with the same key, and the API replays the
