@@ -8,6 +8,12 @@ if (savedTheme) {
   document.documentElement.setAttribute("data-theme", savedTheme);
 }
 
+// Keep the window's title bar buttons in the current theme, wherever the theme is changed
+const shell = (window as unknown as { projelloShell?: { setTheme(theme: string): void } }).projelloShell;
+const reportTheme = () => shell?.setTheme(document.documentElement.getAttribute("data-theme") || "light");
+reportTheme();
+new MutationObserver(reportTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
 const container = document.getElementById("root");
 if (container) {
   const root = createRoot(container);

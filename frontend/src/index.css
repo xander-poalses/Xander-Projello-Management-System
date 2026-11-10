@@ -491,3 +491,15 @@ h5 {
 .ant-dropdown .ant-dropdown-menu-item-danger * {
   color: var(--error-text);
 }
+
+/* Draggable strip where the native title bar used to be. It stops short of the
+   window buttons on the right, which Electron draws in the brand colours. */
+.app-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 140px;
+  height: 32px;
+  z-index: 10000;
+  -webkit-app-region: drag;
+}

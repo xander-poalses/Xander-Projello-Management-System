@@ -11,16 +11,39 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
+// Projello branding for the packaged app and installer
+const appName = 'Projello';
+const publisher = 'Xander Poalses';
+const iconBase = './assets/icons/icon'; // .ico on Windows, .png on Linux
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    name: appName,
+    executableName: appName,
+    icon: iconBase,
+    appCopyright: `© ${new Date().getFullYear()} ${publisher}`,
+    // Shown in the exe's Properties > Details and in Task Manager
+    win32metadata: {
+      CompanyName: publisher,
+      FileDescription: 'Projello: project management for construction teams',
+      ProductName: appName,
+      InternalName: appName,
+      OriginalFilename: `${appName}.exe`,
+    },
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      name: appName,
+      authors: publisher,
+      description: 'Projello: project management for construction teams',
+      setupIcon: `${iconBase}.ico`,
+      setupExe: `${appName}-Setup.exe`,
+    }),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerRpm({ options: { icon: `${iconBase}-512.png` } }),
+    new MakerDeb({ options: { icon: `${iconBase}-512.png` } }),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),

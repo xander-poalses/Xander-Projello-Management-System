@@ -1,8 +1,8 @@
 {
   "name": "frontend",
-  "productName": "frontend",
+  "productName": "Projello",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Projello: project management for construction teams",
   "main": ".webpack/main",
   "private": true,
   "scripts": {
@@ -15,8 +15,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "AngievR05",
-    "email": "159420956+AngievR05@users.noreply.github.com"
+    "name": "Xander Poalses"
   },
   "license": "MIT",
   "devDependencies": {
