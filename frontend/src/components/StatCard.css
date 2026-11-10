@@ -2,8 +2,9 @@
   min-width: 100px;
   padding: 24px;
   background: var(--secondary-background-item, #f7f7f3);
-  border-radius: 20px;
-  border: 1px solid var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1));
+  border-radius: var(--radius-card);
+  border: 1px solid var(--accent-2-10_Opacity);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -21,8 +22,9 @@
   height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 20px;
-  background: var(--stat-card-icon-bg, #f0fdf4);
+  border-radius: var(--radius-pill);
+  background: var(--stat-card-icon-bg);
+  color: var(--stat-card-icon-fg);
   /* color: var(--stat-card-icon-fg, #ff0000); */
   flex: 0 0 auto;
 }
@@ -37,34 +39,36 @@
   color: var(--text-dark);
   font-size: 24px;
   font-family: "Roboto", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 32px;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-card__label {
-  color: var(--accent-2-40_Opacity);
+  color: var(--text-dark);
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   line-height: 20px;
 }
 
+/* Brand system colours, tinted behind the icon */
 .stat-card--success {
-  --stat-card-icon-bg: #f0fdf4;
-  --stat-card-icon-fg: #00a63e;
+  --stat-card-icon-bg: var(--success-green_20);
+  --stat-card-icon-fg: var(--accent-1-text);
 }
 
 .stat-card--warning {
-  --stat-card-icon-bg: #fff7ed;
-  --stat-card-icon-fg: #ea580c;
+  --stat-card-icon-bg: var(--warning-yellow_20);
+  --stat-card-icon-fg: var(--accent-3-text);
 }
 
 .stat-card--danger {
-  --stat-card-icon-bg: #fef2f2;
-  --stat-card-icon-fg: #dc2626;
+  --stat-card-icon-bg: var(--error-red_20);
+  --stat-card-icon-fg: var(--error-text);
 }
 
 .stat-card--neutral {
-  --stat-card-icon-bg: #f1f5f9;
-  --stat-card-icon-fg: #475569;
+  --stat-card-icon-bg: var(--accent-2-10_Opacity);
+  --stat-card-icon-fg: var(--text-dark);
 }

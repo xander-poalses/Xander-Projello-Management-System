@@ -160,6 +160,7 @@ html, body {
 /* Surfaces that stay light in both themes (sign-in cards, form modals), so these don't change with data-theme */
 :root {
   --on-light-field-bg: #e5e5e2;
+  --on-light-text: #28332b;
   --on-light-placeholder: #5f5f5f;
   --on-light-control-border: #81817c;
   --on-light-link: #7e661e;
@@ -235,4 +236,117 @@ h5 {
   font-weight: 500 !important;
   margin-bottom: 0.1rem;
   color: var(--text-dark);
+}
+/* ==========================================================================
+   Projello UI: the look of Jello Jobs, sign-in and the create screens.
+   Every other screen builds from these so they all line up.
+   ========================================================================== */
+:root {
+  --radius-control: 10px;
+  --radius-button: 12px;
+  --radius-card: 20px;
+  --radius-pill: 1000px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --bar-height: 50px;
+  --shadow-bar: 0 2px 4px 0 rgba(40, 51, 43, 0.2), 0 -3px 8px 0 rgba(40, 51, 43, 0.1) inset;
+  --shadow-card: 0 2px 4px 0 var(--accent-2-10_Opacity) inset;
+  --shadow-field: 0 2px 2px 0 rgba(40, 51, 43, 0.1) inset;
+  --shadow-press: 0 4px 0 0 rgba(40, 51, 43, 0.5);
+  --text-section: 1.25rem;
+  --text-page-title: 2rem;
+}
+
+/* Green bar: dashboard filter bar, management tabs, project header */
+.pj-bar {
+  background: var(--accent-1);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-bar);
+  border: 2px solid var(--accent-2-10_Opacity);
+}
+
+/* Rows and cards: the Jello Jobs list item */
+.pj-card {
+  background: var(--secondary-background-item);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--accent-2-10_Opacity);
+  box-shadow: var(--shadow-card);
+}
+
+/* Small control on a bar or card: search and sort on Jello Jobs */
+.pj-field {
+  /* Light in both themes, like the Jello Jobs search and sort */
+  background: var(--on-light-field-bg);
+  color: var(--on-light-text);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--on-light-control-border);
+  box-shadow: var(--shadow-field);
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+}
+.pj-field::placeholder {
+  color: var(--on-light-placeholder);
+  opacity: 1;
+}
+
+/* Page and section titles */
+.pj-page-title {
+  font-size: var(--text-page-title);
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  text-wrap: balance;
+}
+.pj-section-title {
+  font-size: var(--text-section);
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+}
+.pj-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  opacity: 1;
+  margin: var(--space-1) 0 0;
+}
+
+/* Form modals (create project, client, worker): same field rules as sign-in.
+   Visible 3:1 outline, readable placeholder, and white text on the primary button
+   (a global `* { color }` rule in the management styles was turning it dark). */
+.entity-modal__input,
+.entity-modal__textarea,
+.entity-modal__select .ant-select-selector,
+.reusable-entity-modal__input,
+.reusable-entity-modal__textarea,
+.reusable-entity-modal__select,
+.worker-add-modal__input,
+.worker-add-modal__textarea,
+.worker-add-modal__select,
+.client-add-modal__input,
+.client-add-modal__textarea,
+.client-add-modal__select {
+  border: 1px solid var(--on-light-control-border) !important;
+  background: var(--on-light-field-bg) !important;
+  color: var(--on-light-text) !important;
+}
+.entity-modal__input::placeholder,
+.entity-modal__textarea::placeholder,
+.reusable-entity-modal__input::placeholder,
+.reusable-entity-modal__textarea::placeholder,
+.worker-add-modal__input::placeholder,
+.worker-add-modal__textarea::placeholder,
+.client-add-modal__input::placeholder,
+.client-add-modal__textarea::placeholder {
+  color: var(--on-light-placeholder);
+  opacity: 1;
+}
+.ant-modal .ant-btn-primary,
+.ant-modal .ant-btn-primary *,
+.ant-modal .ant-btn-default,
+.ant-modal .ant-btn-default * {
+  color: var(--white) !important;
 }

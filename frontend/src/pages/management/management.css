@@ -33,28 +33,25 @@
     line-height: 24px;
 }
 
-/* Heading box used on the projects view. Matches table width and styling */
+/* Section header: same as the Clients and Workers headers */
 .management-page__heading-box {
     width: 100%;
-    background: var(--secondary-background-item, #f7f7f3);
-    border-radius: 20px;
-    padding: 16px 24px;
-    box-sizing: border-box;
     margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    box-shadow: 0 2px 4px 0 var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1)) inset;
-    border: 1px solid var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1));
 }
 
 .management-page__heading-box h2 {
     margin: 0;
-    font-size: 28px;
-    line-height: 1.15;
+    font-size: 24px;
+    line-height: 32px;
     font-weight: 700;
     color: var(--text-dark);
+}
+
+.management-page__heading-box p {
+    margin: 0;
+    color: var(--accent-2-40_Opacity);
+    font-size: 14px;
+    line-height: 20px;
 }
 
 .management-client-table_body {

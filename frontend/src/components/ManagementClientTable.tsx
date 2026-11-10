@@ -22,6 +22,8 @@ type ManagementClientTableProps = {
   onActionSelect?: (row: ManagementClientRow, actionKey: string) => void;
   className?: string;
   hideProjectsColumn?: boolean;
+  /** Label for the first column, for tables that list something other than clients */
+  nameHeader?: string;
 };
 
 export default function ManagementClientTable({
@@ -31,21 +33,22 @@ export default function ManagementClientTable({
   onActionSelect,
   className = "",
   hideProjectsColumn = false,
+  nameHeader = "Client",
 }: ManagementClientTableProps) {
   return (
     <section
-      className={`management-client-table ${className}`.trim()}
+      className={`management-client-table ${hideProjectsColumn ? "management-client-table--no-projects" : ""} ${className}`.trim()}
       role="table"
-      aria-label="Clients table"
+      aria-label={`${nameHeader}s table`}
     >
       {/* Header */}
       <div className="management-client-table__header" role="rowgroup">
         <div role="row" className="management-client-table__header-row">
-          <div className="management-client-table__cell management-client-table__cell--client" role="columnheader">Client</div>
+          <div className="management-client-table__cell management-client-table__cell--client" role="columnheader">{nameHeader}</div>
           {/* <div className="management-client-table__cell" role="columnheader">Total Paid</div>
           <div className="management-client-table__cell" role="columnheader">Outstanding</div> */}
           <div className="management-client-table__cell" role="columnheader">Status</div>
-          <div className="management-client-table__cell" role="columnheader">Projects</div>
+          {!hideProjectsColumn && <div className="management-client-table__cell" role="columnheader">Projects</div>}
           {/* <div className="management-client-table__cell management-client-table__cell--actions" role="columnheader" aria-hidden="true" /> */}
         </div>
       </div>
@@ -90,10 +93,11 @@ export default function ManagementClientTable({
               </span>
             </div>
 
-            <div className="management-client-table__cell" role="cell">
-              <div className="management-client-table__value">{row.projects} Projects</div>
-              {/* <div className="management-client-table__subvalue">{row.activeProjects} Projects</div> */}
-            </div>
+            {!hideProjectsColumn && (
+              <div className="management-client-table__cell" role="cell">
+                <div className="management-client-table__value">{row.projects} Projects</div>
+              </div>
+            )}
 
             
 

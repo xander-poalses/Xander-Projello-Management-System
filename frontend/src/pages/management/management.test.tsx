@@ -123,13 +123,13 @@ import ManagementPage from "./management";
     });
 
     // Verify default view is projects
-    expect(screen.getByText("Project Management")).toBeInTheDocument();
+    expect(screen.getByText("Every project in your company, with its client and status.")).toBeInTheDocument();
 
     // Navigate to Clients
     const clientsTab = screen.getByTestId("tab-clients");
     fireEvent.click(clientsTab);
     expect(screen.getByTestId("clients-view")).toBeInTheDocument();
-    expect(screen.queryByText("Project Management")).not.toBeInTheDocument();
+    expect(screen.queryByText("Every project in your company, with its client and status.")).not.toBeInTheDocument();
 
     // Navigate to Workers
     const workersTab = screen.getByTestId("tab-workers");

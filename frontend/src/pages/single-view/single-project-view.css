@@ -36,10 +36,9 @@
   gap: 12px;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 16px;
-  box-shadow:
-    0 2px 4px rgba(40, 51, 43, 0.2),
-    0 -3px 8px rgba(40, 51, 43, 0.1) inset;
+  border-radius: var(--radius-card);
+  border: 2px solid var(--accent-2-10_Opacity);
+  box-shadow: var(--shadow-bar);
 }
 
 .single-project-view__header-top-row {
@@ -97,10 +96,10 @@
   align-items: center;
   gap: 8px;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-button);
   padding: 10px 14px;
   background: var(--success-green);
-  color: var(--black);
+  color: var(--text-on-success);
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
@@ -114,12 +113,9 @@
   margin-left: 12px;
 }
 
-.single-project-view__call-button span {
-  color: var(--black);
-}
-
+.single-project-view__call-button span,
 .single-project-view__call-button-text {
-  color: var(--black);
+  color: var(--text-on-success);
 }
 
 .single-project-view__call-button:hover {
@@ -160,15 +156,22 @@
 
 .single-project-view__stats {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  /* Fill the row whatever the number of cards */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 
 .single-project-view__stat-card {
   background: var(--secondary-background-item);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   border: 1px solid var(--accent-2-10_Opacity);
-  padding: 14px 16px;
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4) var(--space-5);
+  /* The status card is a <button>: keep it identical to the others */
+  font: inherit;
+  color: var(--text-dark);
+  text-align: left;
+  align-items: flex-start;
   min-height: 78px;
   display: flex;
   flex-direction: column;
@@ -177,15 +180,17 @@
 }
 
 .single-project-view__stat-label {
-  font-size: 12px;
-  color: var(--text-light-gray);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
 }
 
 .single-project-view__stat-value {
-  font-size: 1.8rem;
-  line-height: 1.1;
+  font-size: 1.5rem;
+  line-height: 1.2;
   font-weight: 700;
   color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
 }
 
 .single-project-view__main-grid {
@@ -196,9 +201,10 @@
 
 .single-project-view__panel {
   background: var(--secondary-background-item);
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   border: 1px solid var(--accent-2-10_Opacity);
-  padding: 16px;
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
 }
 
 .single-project-view__panel-title {
@@ -215,7 +221,6 @@
 .single-project-view__project-description {
   margin: 0;
   color: var(--text-dark);
-  opacity: 0.85;
   font-size: 15px;
   line-height: 1.6;
   overflow: clip;
@@ -241,7 +246,7 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 13px;
-  color: var(--text-light-gray);
+  color: var(--text-dark);
 }
 
 .single-project-view__progress-track {
@@ -269,15 +274,15 @@
 .single-project-view__view-all-button {
   border: 0;
   background: transparent;
-  color: var(--text-light-gray);
-  font-size: 13px;
+  color: var(--accent-1-text);
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
 }
 
 .single-project-view__add-member-button {
-  color: var(--text-dark);
+  color: var(--accent-1-text);
 }
 
 .single-project-view__photo-grid {
@@ -288,19 +293,19 @@
 
 .single-project-view__photo-tile {
   min-height: 162px;
-  border-radius: 10px;
+  border-radius: calc(var(--radius-card) - var(--space-2));
   border: 1px solid var(--accent-2-10_Opacity);
 }
 
 .single-project-view__photo-tile--add {
-  border: 1px dashed var(--success-green);
-  background: var(--secondary-background);
+  border: 1px dashed var(--control-border);
+  background: var(--accent-2-5_Opacity);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: var(--accent-1);
+  color: var(--text-dark);
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -334,11 +339,8 @@
 }
 
 .single-project-view__photo-tile--placeholder {
-  background: linear-gradient(
-    135deg,
-    var(--secondary-background-item) 0%,
-    var(--shadow-gray) 100%
-  );
+  /* Flat empty slot (no gradients) */
+  background: var(--accent-2-10_Opacity);
   background-position: center;
   background-size: cover;
 }
@@ -347,10 +349,12 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: var(--card-bg);
+  /* Same surface as the other panels (was plain white) */
+  background: var(--secondary-background-item);
   border: 1px solid var(--accent-2-10_Opacity);
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
 }
 
 .single-project-view__rename-link {
@@ -406,9 +410,12 @@
 }
 
 .single-project-view__stat-card--clickable:hover {
-  background: var(--secondary-background-item);
+  background: var(--accent-2-5_Opacity);
   transform: translateY(-1px);
-  filter: brightness(0.98);
+}
+
+.single-project-view__stat-card--clickable:active {
+  transform: scale(0.97);
 }
 
 .status-modal-mask {

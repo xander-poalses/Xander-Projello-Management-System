@@ -55,7 +55,7 @@ function RecentSitePhotosSection({
           className="single-project-view__view-all-button"
           onClick={() => console.log("Navigate to Gallery")}
         >
-          View All →
+          View all photos
         </button>
       </div>
 

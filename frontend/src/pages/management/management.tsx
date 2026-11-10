@@ -381,7 +381,8 @@ export default function ManagementPage() {
         {activeView === "projects" && (
           <>
             <div className="management-page__heading-box">
-              <h2>Project Management</h2>
+              <h2>Projects</h2>
+              <p>Every project in your company, with its client and status.</p>
             </div>
             {loading && <div className="loading">Loading projects...</div>}
             {error && <div className="error">Error: {error}</div>}
@@ -390,6 +391,7 @@ export default function ManagementPage() {
             )}
             {!loading && !error && projects.length > 0 && (
               <ManagementClientTable
+                nameHeader="Project"
                 rows={tableRows}
                 onRowAction={handleRowAction}
                 onRowClick={handleRowClick}
