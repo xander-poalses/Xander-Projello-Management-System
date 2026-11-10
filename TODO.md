@@ -59,8 +59,8 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 - [ ] Replace `transition: all` with named properties (AddButton, FilterButton, SortButton, CallOverlay, history, Clients)
 - [ ] Replace `100vw` and `overflow-x: hidden` with `100%` and `overflow-x: clip`
 - [ ] Replace the emoji icons (👍, ☎, ⚠️) with one icon set
-- [ ] Remove the "ARCHIVED SECURELY" eyebrow and use sentence case for table heads and `.project-tag`
-- [ ] Remove em dashes from copy (AddProjectMemberModal, DiscussionTab, single-project-view)
+- [x] Remove the "ARCHIVED SECURELY" eyebrow and use sentence case for table heads and `.project-tag`
+- [x] Remove em dashes from copy (AddProjectMemberModal, DiscussionTab, single-project-view)
 - [x] Change "View All →" to a plain verb label
 - [ ] Video grid: use `minmax(0, 1fr)`, swap pure `#000` for a token, make autoplay video muted
 - [ ] Add `aria-hidden` or a label to the splash `<canvas>`
@@ -68,9 +68,9 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 ## 7. Accessibility (WCAG 2.2 AA)
 
 - [ ] Fix contrast: login and signup cancel buttons (2.32:1), modal default buttons (2.32 to 2.86:1), Clients warning button (3.19:1), error text (4.36:1)
-- [ ] Add `:focus-visible` outlines to every interactive element (only 2 exist)
+- [x] Add `:focus-visible` outlines to every interactive element (only 2 exist)
 - [ ] Use an outline for the input focus state, not a border change
-- [ ] Add a `prefers-reduced-motion` fallback for all animation
+- [x] Add a `prefers-reduced-motion` fallback for all animation
 - [ ] Add roles, labels and states (expanded, selected, busy, invalid) to custom controls
 - [ ] Check modals trap focus and return it on close
 - [ ] Test by hand with the keyboard, a screen reader and text scaling
@@ -78,18 +78,19 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 ## 8. Required UI patterns (CLAUDE.md)
 
 - [x] Skeleton loaders on every page that loads data
-- [ ] Stale-while-revalidate data fetching (for example, TanStack Query)
-- [ ] Optimistic updates for reactions, comments and task status, rolling back on failure
-- [ ] Idempotency keys on every create or submit request (with a backend check)
-- [ ] Undo toasts instead of the 5 `confirm()` dialogs, where it's safe
-- [ ] Busy states on buttons: loading label and spinner, block repeat clicks, keep input after a failure
-- [ ] Press feedback: `transform: scale(0.97)`
-- [ ] View transitions between pages
-- [ ] Ctrl+K command menu with shortcut hints
-- [ ] Blurry image placeholders for site update photos
-- [ ] `font-variant-numeric: tabular-nums` on money, counts and tables
-- [ ] `text-wrap: balance` on headings
-- [ ] Prefetch likely next pages (for example, the project view from the dashboard)
+- [x] Stale-while-revalidate data fetching (own small cache on Jello Jobs and the project view; other pages still fetch fresh)
+- [x] Optimistic updates for reactions, rolling back on failure
+- [ ] Optimistic updates for comments and task status
+- [x] Idempotency keys on every create or submit request (with a backend check)
+- [x] Undo toasts instead of the 5 `confirm()` dialogs, where it's safe
+- [ ] Busy states on buttons: loading labels and repeat-click blocking exist on sign-in, create and post; no spinners yet
+- [x] Press feedback: `transform: scale(0.97)`
+- [x] View transitions between pages
+- [x] Ctrl+K command menu with shortcut hints
+- [x] Blurry image placeholders for site update photos
+- [x] `font-variant-numeric: tabular-nums` on money, counts and tables
+- [x] `text-wrap: balance` on headings
+- [x] Prefetch likely next pages (for example, the project view from the dashboard)
 
 ## 9. Verification still to do
 
