@@ -120,6 +120,12 @@ const createWindow = (): void => {
   });
   mainWindow.on('close', () => saveWindowState(mainWindow));
 
+  // Windows/Electron bug: after a native dialog the page can stay unfocused, so inputs
+  // ignore clicks until DevTools is toggled. Give the page focus back whenever the window gets it.
+  mainWindow.on('focus', () => {
+    if (!mainWindow.webContents.isFocused()) mainWindow.webContents.focus();
+  });
+
   // Apply a stricter, environment-aware CSP (allows local API + dev tooling when not packaged)
   const isDev = !app.isPackaged;
 

@@ -11,6 +11,7 @@ import { ProjectAddModal } from "../../components/ProjectAddModal";
 import { getToken } from "../../auth/tokenStore";
 import { SkeletonRows } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
+import { message as antdMessage } from "antd";
 
 
 type ClientSummary = {
@@ -583,10 +584,10 @@ export default function ClientsPage() {
                                 }),
                             });
                             if (!res.ok) throw new Error(await res.text() || "Failed to create project");
-                            alert("Project created successfully!");
+                            antdMessage.success("Project created");
                             await refreshClientsPageData();
                         } catch (err: any) {
-                            alert("Failed to create project: " + err.message);
+                            antdMessage.error("Failed to create project: " + err.message);
                         } finally {
                             setShowProjectAddModal(false);
                             setSelectedClientForProject(null);

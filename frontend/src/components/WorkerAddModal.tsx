@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal, Select } from "antd";
+import { Button, Modal, Select, message as antdMessage } from "antd";
 import { UserPlus } from "lucide-react";
 import "./WorkerClientAddModal.css";
 
@@ -41,7 +41,7 @@ export const WorkerAddModal: React.FC<WorkerAddModalProps> = ({
 
   const handleSubmit = async () => {
     if (!formData.fullName.trim() || !formData.email.trim()) {
-      alert("Please fill in name and email");
+      antdMessage.warning("Please fill in name and email");
       return;
     }
 

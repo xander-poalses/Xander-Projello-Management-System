@@ -9,6 +9,7 @@ import CustomModal from "../../components/CustomModal";
 import { getToken } from "../../auth/tokenStore";
 import { SkeletonCards } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
+import { message as antdMessage } from "antd";
 
 interface UserDisplay {
   id: string;
@@ -125,7 +126,7 @@ export default function WorkersPage() {
       console.error("Failed to add worker:", err);
       setWorkerModalOpen(false);
       setTimeout(() => setWorkerModalOpen(true), 100);
-      alert("Failed to add worker: " + (err.message || "Unknown error"));
+      antdMessage.error("Failed to add worker: " + (err.message || "Unknown error"));
     }
   };
 
@@ -358,9 +359,9 @@ export default function WorkersPage() {
 const handleCopyCode = async (value: string) => {
   try {
     await navigator.clipboard.writeText(value);
-    alert("Code copied to clipboard.");
+    antdMessage.success("Code copied");
   } catch (err) {
     console.error("Copy failed:", err);
-    alert("Failed to copy code.");
+    antdMessage.error("Failed to copy code.");
   }
 };

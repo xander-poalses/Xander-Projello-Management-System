@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CustomModal from "./CustomModal";
-import { Button } from "antd";
+import { Button, message as antdMessage } from "antd";
 import { PlusCircle } from "lucide-react";
 import "./WorkerClientAddModal.css";
 import "./ProjectAddModal.css";
@@ -47,15 +47,15 @@ export const ProjectAddModal: React.FC<ProjectAddModalProps> = ({
 
   const handleSubmit = () => {
     if (!formData.name.trim()) {
-      alert("Project name is required");
+      antdMessage.warning("Project name is required");
       return;
     }
     if (!formData.clientName.trim()) {
-      alert("Client name is required");
+      antdMessage.warning("Client name is required");
       return;
     }
     if (clientOptions && clientOptions.length > 0 && !clientOptions.includes(formData.clientName)) {
-      alert("Please select a valid client from the list.");
+      antdMessage.warning("Please select a valid client from the list.");
       return;
     }
     onSubmit(formData);

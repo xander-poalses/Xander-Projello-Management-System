@@ -12,6 +12,7 @@ import { getToken } from "../../auth/tokenStore";
 import { readCache, fetchAndCache, prefetch, STALE_AFTER_MS } from "../../auth/dataCache";
 import { SkeletonRows } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
+import { message as antdMessage } from "antd";
 
 interface ProjectFormData {
   name: string;
@@ -201,10 +202,10 @@ export default function DashboardPage() {
 
       const createdProject = await response.json();
       setProjects((prev) => [createdProject, ...prev]);
-      alert("Project created successfully!");
+      antdMessage.success("Project created");
       setShowProjectAddModal(false);
     } catch (error: any) {
-      alert(`Failed to create project: ${error.message || error}`);
+      antdMessage.error(`Failed to create project: ${error.message || error}`);
     }
   };
 

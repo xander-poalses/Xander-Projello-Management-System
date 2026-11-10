@@ -566,10 +566,10 @@ export default function SingleProjectViewPage() {
       }
 
       await fetchSiteUpdates();
-      alert("Photo uploaded successfully!");
+      antdMessage.success("Photo uploaded");
     } catch (err: any) {
       console.error("Upload error:", err);
-      alert("Failed to upload photo: " + err.message);
+      antdMessage.error("Failed to upload photo: " + err.message);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
