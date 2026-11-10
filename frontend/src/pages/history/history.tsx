@@ -123,7 +123,7 @@ export default function HistoryPage() {
                 onClick={() => navigate(`/single-view/${project.projectID}`)} // 3. Redirect to the single view page layout matching your App.tsx route
                 style={{ cursor: "pointer" }} // 4. Added inline style for mouse pointer visual affordance
               >
-                <div className="archive-card-status-badge">ARCHIVED SECURELY</div>
+                <div className="archive-card-status-badge">{project.status === "Archived" ? "Archived" : "Completed"}</div>
                 <h3 className="archive-project-title">{project.name}</h3>
                 <span className="archive-client-label">Client Account: {project.clientName || "Internal Account"}</span>
                 <p className="archive-project-desc">{project.description || "No project text summary provided upon closing initialization."}</p>

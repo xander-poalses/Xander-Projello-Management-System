@@ -503,3 +503,88 @@ h5 {
   z-index: 10000;
   -webkit-app-region: drag;
 }
+
+/* ==========================================================================
+   CLAUDE.md baseline, applied everywhere
+   ========================================================================== */
+
+/* Visible keyboard focus that doesn't shift layout */
+/* !important: several older component rules set outline: none, which hid focus entirely */
+:is(button, a, input, select, textarea, summary, [role="button"], [role="tab"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Press feedback: scale with a transform, never change layout size */
+:where(button, [role="button"]):not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Disabled controls look and behave disabled */
+:where(button, [role="button"]):disabled {
+  cursor: not-allowed;
+}
+
+/* Headings break evenly; numbers in tables and stats don't jump */
+:where(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+:where(table, [role="table"], .stat-card__value, .single-project-view__stat-value, .management-client-table__value) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Touch targets at least 44px; primary actions 52px where there's room */
+:where(.add-button, .btn-primary, .btn-secondary, .login-submit-btn, .login-cancel-btn,
+       .signup-submit-btn, .signup-cancel-btn, .action-modal__btn, .discussion-reaction-btn,
+       .management-client-table__action-button, .single-project-view__call-button) {
+  min-height: 44px;
+}
+:where(.login-submit-btn, .signup-submit-btn) {
+  min-height: 52px;
+}
+
+/* Respect reduced motion for every animation and transition */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Photos load blurred over a soft placeholder, then sharpen */
+.pj-blur-up {
+  background: var(--skeleton-base);
+  filter: blur(16px);
+  transform: scale(1.02);
+  transition: filter 0.35s ease-out, transform 0.35s ease-out;
+}
+.pj-blur-up.is-loaded {
+  filter: none;
+  transform: none;
+}
+
+/* Page entrance: ease-out fade and small lift (off under reduced motion) */
+.route-enter {
+  animation: route-enter 220ms ease-out;
+}
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Shown while saved data is being refreshed in the background */
+.pj-refresh-note {
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+  color: var(--text-muted);
+}

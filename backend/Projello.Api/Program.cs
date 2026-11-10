@@ -220,6 +220,8 @@ app.Use(async (context, next) =>
 });
 
 app.UseAuthorization();
+// After auth, so keys are scoped to the signed-in user
+app.UseMiddleware<Projello.Api.Services.IdempotencyMiddleware>();
 app.UseRateLimiter();
 app.MapControllers();
 app.MapHub<ProjectCallHub>("/callhub");

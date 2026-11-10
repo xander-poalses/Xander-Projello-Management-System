@@ -5,6 +5,8 @@ import { API_BASE_URL } from "../../config";
 import { getToken } from "../../auth/tokenStore";
 import { Skeleton, SkeletonGroup } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
+import { deleteWithUndo } from "../../components/undoToast";
+import { message as antdMessage } from "antd";
 
 type DiscussionReaction = {
   id: number;
@@ -122,11 +124,27 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
     } catch { /* ignore */ }
   }, []);
 
+  // Optimistic: the reaction toggles straight away and rolls back if the server refuses
   const handleReact = async (updateId: number, emoji: string) => {
-    try {
-      setSubmittingId(updateId);
-      const token = getToken();
+    if (!currentUserId) return;
+    let snapshot: DiscussionPost[] = [];
+    setPosts((current) => {
+      snapshot = current;
+      return current.map((post) => {
+        if (post.id !== updateId) return post;
+        const reactions = post.reactions ?? [];
+        const mine = reactions.find((r) => r.emoji === emoji && r.userId === currentUserId);
+        return {
+          ...post,
+          reactions: mine
+            ? reactions.filter((r) => r !== mine)
+            : [...reactions, { id: -Date.now(), userId: currentUserId, userFullName: "You", emoji, createdAt: new Date().toISOString() }],
+        };
+      });
+    });
 
+    try {
+      const token = getToken();
       const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/react`, {
         method: "POST",
         headers: {
@@ -137,12 +155,9 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
       });
 
       if (!res.ok) throw new Error("Failed to save reaction");
-
-      await refreshPosts(); //Changed to prevent full page refresh
-    } catch (err: any) {
-      setError(err.message || "Failed to add reaction");
-    } finally {
-      setSubmittingId(null);
+    } catch {
+      setPosts(snapshot);
+      antdMessage.error("Couldn't save your reaction. Try again.");
     }
   };
 
@@ -176,49 +191,48 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
   };
 
   // NEW: Delete entire post (image + caption + all comments)
-  const handleDeletePost = async (updateId: number) => {
-    if (!confirm("Delete this entire post and all its comments? This cannot be undone.")) return;
-
-    try {
-      setSubmittingId(updateId);
-      const token = getToken();
-
-      const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      if (!res.ok) throw new Error("Failed to delete post");
-
-      await refreshPosts();
-    } catch (err: any) {
-      setError(err.message || "Failed to delete post");
-    } finally {
-      setSubmittingId(null);
-    }
+    const handleDeletePost = (updateId: number) => {
+    let snapshot: DiscussionPost[] = [];
+    deleteWithUndo({
+      message: "Post deleted",
+      hide: () => setPosts((current) => {
+        snapshot = current;
+        return current.filter((p) => p.id !== updateId);
+      }),
+      restore: () => setPosts(snapshot),
+      commit: async () => {
+        const token = getToken();
+        const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}`, {
+          method: "DELETE",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error("Failed to delete post");
+      },
+      failureMessage: "Couldn't delete the post. It's been put back.",
+    });
   };
 
   // NEW: Delete single comment
-  const handleDeleteComment = async (updateId: number, commentId: number) => {
-    if (!confirm("Delete this comment?")) return;
-
-    try {
-      setSubmittingId(commentId);
-      const token = getToken();
-
-      const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/comments/${commentId}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      if (!res.ok) throw new Error("Failed to delete comment");
-
-      await refreshPosts();
-    } catch (err: any) {
-      setError(err.message || "Failed to delete comment");
-    } finally {
-      setSubmittingId(null);
-    }
+    const handleDeleteComment = (updateId: number, commentId: number) => {
+    let snapshot: DiscussionPost[] = [];
+    deleteWithUndo({
+      message: "Comment deleted",
+      hide: () => setPosts((current) => {
+        snapshot = current;
+        return current.map((p) =>
+          p.id === updateId ? { ...p, comments: (p.comments ?? []).filter((c) => c.id !== commentId) } : p);
+      }),
+      restore: () => setPosts(snapshot),
+      commit: async () => {
+        const token = getToken();
+        const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/updates/${updateId}/comments/${commentId}`, {
+          method: "DELETE",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error("Failed to delete comment");
+      },
+      failureMessage: "Couldn't delete the comment. It's been put back.",
+    });
   };
 
   const handleCreatePost = async (e: React.FormEvent) => {
@@ -320,8 +334,9 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
               accept="image/*"
               onChange={handleImageChange}
             />
-            <button type="submit" className="btn-primary" style={{ minWidth: 120 }}>
-              Post update
+            {/* Busy: loading label, no repeat posts while it's sending */}
+            <button type="submit" className="btn-primary" style={{ minWidth: 120 }} disabled={submittingId === 0} aria-busy={submittingId === 0}>
+              {submittingId === 0 ? "Posting..." : "Post update"}
             </button>
           </div>
         </form>
@@ -360,7 +375,10 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                 <div style={{ position: "relative" }}>
                   <img
                     src={post.imageUrl}
-                    alt="Post"
+                    alt={post.caption ? `Site photo: ${post.caption}` : "Site photo"}
+                    className="pj-blur-up"
+                    loading="lazy"
+                    onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
                     onClick={() => openImageZoom(post.imageUrl)}
                     style={{ width: "100%", maxHeight: 360, objectFit: "cover", display: "block" }}
                   />
@@ -402,7 +420,8 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                       type="button"
                       onClick={() => handleReact(post.id, emoji)}
                       className={`discussion-reaction-btn ${userReacted(emoji) ? "discussion-reaction-btn-reacted" : ""}`}
-                      disabled={submittingId === post.id}
+                      aria-pressed={userReacted(emoji)}
+                      aria-label={`React ${emoji}, ${reactionCounts[emoji] || 0} so far`}
                     >
                       <span style={{ marginRight: 6 }}>{emoji}</span>
                       <span style={{ fontWeight: 600 }}>{reactionCounts[emoji] || 0}</span>

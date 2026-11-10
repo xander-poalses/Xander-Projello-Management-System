@@ -9,6 +9,7 @@ import { ProjectAddModal } from "../../components/ProjectAddModal";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../config";
 import { getToken } from "../../auth/tokenStore";
+import { readCache, fetchAndCache, prefetch, STALE_AFTER_MS } from "../../auth/dataCache";
 import { SkeletonRows } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
 
@@ -21,9 +22,14 @@ interface ProjectFormData {
 
 export default function DashboardPage() {
   const [sortOption, setSortOption] = useState<"az" | "date" | "workers">("az");
-    const [projects, setProjects] = useState<any[]>([]);
-  const [projectsLoading, setProjectsLoading] = useState(true);
+      // Stale-while-revalidate: start from the last list we saw, then refresh
+  const cachedProjects = readCache<any[]>("/api/projects");
+  const [projects, setProjects] = useState<any[]>(cachedProjects?.data ?? []);
+  const [projectsLoading, setProjectsLoading] = useState(!cachedProjects);
   const [projectsError, setProjectsError] = useState(false);
+  const [refreshing, setRefreshing] = useState(
+    !!cachedProjects && Date.now() - cachedProjects.savedAt > STALE_AFTER_MS
+  );
   const [search, setSearch] = useState("");
   const [showProjectAddModal, setShowProjectAddModal] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState<number>(0);
@@ -33,21 +39,22 @@ export default function DashboardPage() {
   useEffect(() => {
     const token = getToken();
 
-    fetch(`${API_BASE_URL}/api/Projects`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized or error fetching projects");
-        return res.json();
+        fetchAndCache<any[]>("/api/projects")
+      .then((data) => {
+        setProjects(data);
+        setProjectsError(false);
       })
-            .then((data) => setProjects(data))
       .catch(() => {
-        setProjects([]);
-        setProjectsError(true);
+        // Keep showing cached projects if we have them; only error when there's nothing to show
+        if (!cachedProjects) {
+          setProjects([]);
+          setProjectsError(true);
+        }
       })
-      .finally(() => setProjectsLoading(false));
+      .finally(() => {
+        setProjectsLoading(false);
+        setRefreshing(false);
+      });
 
     if (token) {
       try {
@@ -285,6 +292,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="jelloGallery-outer">
+                {refreshing && <p className="pj-refresh-note" role="status">Showing saved projects while they update</p>}
         <div className="jelloGallery">
                     {projectsLoading ? (
             <SkeletonRows count={4} label="Loading projects" />
@@ -303,7 +311,8 @@ export default function DashboardPage() {
                 clientName={project.clientName || project.ClientName || "Unknown Client"}
                 dueDate={project.dueDate || project.DueDate || ""}
                 workers={project.members ? project.members.length : 0}
-                onClick={() => navigate(`/single-view/${project.projectID || project.ProjectID}`)}
+                                onClick={() => navigate(`/single-view/${project.projectID || project.ProjectID}`)}
+                onPrefetch={() => prefetch(`/api/projects/${project.projectID || project.ProjectID}`)}
               />
             ))
           )}

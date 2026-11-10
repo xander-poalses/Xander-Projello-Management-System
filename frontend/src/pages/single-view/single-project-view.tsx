@@ -12,6 +12,8 @@ import CustomModal from "../../components/CustomModal";
 
 import { useIncomingCallNotifications } from "../../features/realtime/hooks/useIncomingCallNotifications";
 import { getToken } from "../../auth/tokenStore";
+import { deleteWithUndo } from "../../components/undoToast";
+import { readCache, fetchAndCache } from "../../auth/dataCache";
 import { Skeleton, SkeletonGroup } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
 
@@ -362,21 +364,15 @@ export default function SingleProjectViewPage() {
         return;
       }
 
+            // Prefetched from Jello Jobs on hover: show it straight away, then refresh
+      const cached = readCache<ProjectDetails>(`/api/projects/${id}`);
+      if (cached) {
+        setProject(cached.data);
+        setLoading(false);
+      }
+
       try {
-        const token = getToken();
-        const headers: HeadersInit = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
-          method: "GET",
-          headers,
-        });
-
-        if (!res.ok) {
-          throw new Error(`Status ${res.status}: ${res.statusText}`);
-        }
-
-        const data: ProjectDetails = await res.json();
+        const data = await fetchAndCache<ProjectDetails>(`/api/projects/${id}`);
         setProject(data);
       } catch (err) {
         console.error("Failed to fetch project:", err);
@@ -518,25 +514,25 @@ export default function SingleProjectViewPage() {
   };
 
   // Delete milestone
-  const handleDeleteMilestone = async (id: number) => {
-    if (!window.confirm("Delete this milestone?")) return;
-
-    try {
-      const token = getToken();
-      const res = await fetch(`${API_BASE_URL}/api/milestones/${id}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      if (res.ok) {
-        fetchMilestones();
-      } else {
-        antdMessage.error("Failed to delete milestone");
-      }
-    } catch (err) {
-      console.error(err);
-      antdMessage.error("Error deleting milestone");
-    }
+    const handleDeleteMilestone = (id: number) => {
+    let snapshot: typeof milestones = [];
+    deleteWithUndo({
+      message: "Milestone deleted",
+      hide: () => setMilestones((current) => {
+        snapshot = current;
+        return current.filter((m) => m.milestoneID !== id);
+      }),
+      restore: () => setMilestones(snapshot),
+      commit: async () => {
+        const token = getToken();
+        const res = await fetch(`${API_BASE_URL}/api/milestones/${id}`, {
+          method: "DELETE",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error("Failed to delete milestone");
+      },
+      failureMessage: "Couldn't delete the milestone. It's been put back.",
+    });
   };
 
   // Update title
@@ -909,7 +905,7 @@ export default function SingleProjectViewPage() {
             {teamMembers.map((m: any) => (
               <div key={m.userID ?? m.UserID} className="team-member-row">
                 <div className="team-member-row__info">
-                  {m.FullName || m.fullName} — <strong>{m.AssignedAs || m.assignedAs}</strong>
+                  {m.FullName || m.fullName} · <strong>{m.AssignedAs || m.assignedAs}</strong>
                 </div>
 
                 {[1, 4].includes(currentUserRole) && project.status !== "Completed" && (

@@ -2,6 +2,10 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import { installIdempotentFetch } from "./auth/idempotentFetch";
+
+// Before anything renders, so every create request carries an Idempotency-Key
+installIdempotentFetch();
 
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme) {

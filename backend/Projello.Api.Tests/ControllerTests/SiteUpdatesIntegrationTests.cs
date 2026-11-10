@@ -47,6 +47,33 @@ namespace Projello.Api.Tests.ControllerTests
         }
 
         [Fact]
+        public async Task CreateUpdate_SameIdempotencyKeyTwice_CreatesOnePost()
+        {
+            var projectId = await CreateOwnedProjectAsync();
+            var key = Guid.NewGuid().ToString();
+
+            async Task<HttpResponseMessage> Send()
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, $"/api/projects/{projectId}/updates")
+                {
+                    Content = new MultipartFormDataContent { { new StringContent("Slab poured"), "Caption" } }
+                };
+                request.Headers.Add("Idempotency-Key", key);
+                return await _client.SendAsync(request);
+            }
+
+            var first = await Send();
+            var retry = await Send(); // e.g. the connection dropped and the app retried
+
+            Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, retry.StatusCode);
+            Assert.True(retry.Headers.Contains("Idempotent-Replay"));
+
+            var posts = await (await _client.GetAsync($"/api/projects/{projectId}/updates")).Content.ReadFromJsonAsync<JsonElement>();
+            Assert.Equal(1, posts.GetArrayLength());
+        }
+
+        [Fact]
         public async Task CreateTextUpdate_WithoutCloudinaryKeys_ReturnsOk()
         {
             var projectId = await CreateOwnedProjectAsync();

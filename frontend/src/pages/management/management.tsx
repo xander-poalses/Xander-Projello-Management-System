@@ -239,7 +239,7 @@ export default function ManagementPage() {
   const [showProjectModal, setShowProjectModal] = useState(false);
 
   const formatCurrency = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return "—";
+    if (value === null || value === undefined) return "Not set";
     return new Intl.NumberFormat("en-ZA", {
       style: "currency",
       currency: "ZAR",
@@ -261,7 +261,7 @@ export default function ManagementPage() {
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
-        throw new Error(`Status ${response.status}: ${response.statusText}${errorText ? ` — ${errorText}` : ""}`);
+        throw new Error(`Status ${response.status}: ${response.statusText}${errorText ? `: ${errorText}` : ""}`);
       }
 
       const data: any[] = await response.json();
@@ -342,9 +342,9 @@ export default function ManagementPage() {
       initials: clientInitials,
       name: project.name,
       company: clientName,
-      totalPaid: project.totalPaid != null ? formatCurrency(Number(project.totalPaid)) : "—",
-      outstanding: project.outstanding != null ? formatCurrency(Number(project.outstanding)) : "—",
-      projects: "—",
+      totalPaid: project.totalPaid != null ? formatCurrency(Number(project.totalPaid)) : "Not set",
+      outstanding: project.outstanding != null ? formatCurrency(Number(project.outstanding)) : "Not set",
+      projects: "",
       activeProjects: project.status === "Active" ? "1" : "0",
       status: project.status,
       statusTone: project.status === "Active" ? "success" : "neutral",

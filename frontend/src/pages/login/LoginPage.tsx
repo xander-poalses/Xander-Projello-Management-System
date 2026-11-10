@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from '../../config';
 import { PasswordInput } from "../../components/PasswordInput";
 import { setToken } from "../../auth/tokenStore";
+import { clearCache } from "../../auth/dataCache";
 
 // Import the Godzilla roar audio file for the success sound effect
 const godzillaRoar = require("../../assets/zilla-1.mp3").default; 
@@ -73,6 +74,7 @@ export default function LoginPage({ onSwitchToSignUp, onSwitchToRegisterCompany,
   // Function to finalize the login process after successful authentication
   const completeLogin = (token: string) => {
     // Save the authentication token to localStorage so the user stays logged in
+    clearCache(); // a new sign-in never sees the previous account's cached data
     setToken(token);
     
     setSuccessMsg("Login successful! Redirecting...");

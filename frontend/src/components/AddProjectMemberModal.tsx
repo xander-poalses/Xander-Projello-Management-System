@@ -95,7 +95,7 @@ export default function AddProjectMemberModal({
             <option value="">Select a worker...</option>
             {workers.map((w) => (
               <option key={w.id} value={w.id}>
-                {w.fullName} — {w.email}
+                {w.fullName} · {w.email}
               </option>
             ))}
           </select>

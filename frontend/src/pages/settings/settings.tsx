@@ -11,6 +11,7 @@ import { QRCodeSVG } from 'qrcode.react'; // Secured: Local rendering instead of
 import { message as antdMessage } from "antd";
 import { API_BASE_URL } from "../../config";
 import { getToken, clearToken } from "../../auth/tokenStore";
+import { clearCache } from "../../auth/dataCache";
 
 const getUserInfoFromToken = () => {
   const token = getToken();
@@ -449,6 +450,8 @@ export default function SettingsPage() {
               className="btn-primary btn-logout"
               onClick={() => {
                 clearToken();
+                // Don't leave this account's projects cached for whoever signs in next
+                clearCache();
                 navigate("/login");
               }}
             >

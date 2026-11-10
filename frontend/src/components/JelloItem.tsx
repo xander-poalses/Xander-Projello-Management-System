@@ -8,6 +8,8 @@ interface JelloItemProps {
     dueDate: string;
     workers: number;
     onClick?: () => void;
+    /** Called on hover or focus, to load the project before it's opened */
+    onPrefetch?: () => void;
 }
 
 const formatDueDate = (value: string) => {
@@ -27,14 +29,18 @@ export default function JelloItem({
     dueDate,
     workers,
     onClick,
+    onPrefetch,
 }: JelloItemProps) {
     const navigate = useNavigate();
     return (
         <div
             className="JelloItem clickable"
             onClick={onClick || (() => navigate("/single-view"))}
+            onMouseEnter={onPrefetch}
+            onFocus={onPrefetch}
             tabIndex={0}
             role="button"
+            aria-label={`${name}, ${clientName}, due ${formatDueDate(dueDate)}, ${workers} ${workers === 1 ? "worker" : "workers"}`}
             onKeyDown={e => {
                 if (e.key === "Enter" || e.key === " ") (onClick ? onClick() : navigate("/single-view"));
             }}
@@ -46,7 +52,7 @@ export default function JelloItem({
 
             <div className="JelloInfo">
                 <div className="Item_Date"> <h5>{formatDueDate(dueDate)}</h5> </div>
-                <div className="Item_ActiveWorkers"> <h5>{workers} Workers</h5> </div>
+                <div className="Item_ActiveWorkers"> <h5>{workers} {workers === 1 ? "Worker" : "Workers"}</h5> </div>
             </div>
         </div>
     );

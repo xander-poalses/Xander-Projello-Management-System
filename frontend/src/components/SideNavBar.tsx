@@ -95,20 +95,29 @@ export default function SideNavBar() {
                         <img src={BearLogo} alt="Projello Logo" className="side-nav-logo" />
                     </div>
                     <a
+                        href="#/dashboard"
                         className={`pageNavLink${location.pathname === "/dashboard" ? " active" : ""}`}
-                        onClick={() => navigate("/dashboard")}
+                        aria-current={location.pathname === "/dashboard" ? "page" : undefined}
+                        title="Jello Jobs (Ctrl+1)"
+                        onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}
                     >
                         <h5>Jello Jobs</h5>
                     </a>
                     <a
+                        href="#/history"
                         className={`pageNavLink${location.pathname === "/history" ? " active" : ""}`}
-                        onClick={() => navigate("/history")}
+                        aria-current={location.pathname === "/history" ? "page" : undefined}
+                        title="History (Ctrl+2)"
+                        onClick={(e) => { e.preventDefault(); navigate("/history"); }}
                     >
                         <h5>History</h5>
                     </a>
                     <a
+                        href="#/management"
                         className={`pageNavLink${location.pathname === "/management" ? " active" : ""}`}
-                        onClick={() => navigate("/management")}
+                        aria-current={location.pathname === "/management" ? "page" : undefined}
+                        title="Management (Ctrl+3)"
+                        onClick={(e) => { e.preventDefault(); navigate("/management"); }}
                     >
                         <h5>Management</h5>
                     </a>
@@ -120,6 +129,8 @@ export default function SideNavBar() {
                     onClick={() => navigate("/settings")}
                     tabIndex={0}
                     role="button"
+                    aria-label="Open settings"
+                    title="Settings (Ctrl+4)"
                     style={{ cursor: "pointer" }}
                     onKeyDown={e => { 
                         if (e.key === "Enter" || e.key === " ") {

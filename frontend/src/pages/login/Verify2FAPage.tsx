@@ -5,6 +5,7 @@ import Logo from "../../assets/Frame 160.svg";
 import "./LoginPage.css"; // Reusing your login styling to keep it consistent
 import { API_BASE_URL } from "../../config";
 import { setToken } from "../../auth/tokenStore";
+import { clearCache } from "../../auth/dataCache";
 
 const godzillaRoar = require("../../assets/zilla-1.mp3").default;
 interface Verify2FAPageProps {
@@ -52,6 +53,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
 
       if (response.ok) {
         // Success: Save the final JWT token to localStorage
+        clearCache(); // a new sign-in never sees the previous account's cached data
         setToken(data.token);
 
         // Play the "Godzilla" roar sound effect
