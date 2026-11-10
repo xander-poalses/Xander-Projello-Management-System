@@ -201,9 +201,24 @@ namespace Projello.Api.Data
             var changed = e.Properties
                 .Where(p => p.IsModified && p.Metadata.Name is not ("DeletedAt" or "DeletedById")
                             && !Equals(p.OriginalValue, p.CurrentValue))
-                .Select(p => $"{p.Metadata.Name}: {p.OriginalValue ?? "empty"} to {p.CurrentValue ?? "empty"}");
+                .Select(p => $"{Label(p.Metadata.Name)}: {Show(p.OriginalValue)} to {Show(p.CurrentValue)}");
             var details = string.Join("; ", changed);
             return string.IsNullOrEmpty(details) ? name ?? "" : $"{name}: {details}";
         }
+
+        // "TotalPaid" -> "Total paid", "ProjectID" -> "Project ID"
+        private static string Label(string field)
+        {
+            var words = System.Text.RegularExpressions.Regex.Replace(field, "(?<=[a-z])(?=[A-Z])", " ");
+            return words.Length > 1 ? words[0] + words[1..].ToLowerInvariant().Replace(" id", " ID") : words;
+        }
+
+        private static string Show(object? value) => value switch
+        {
+            null => "empty",
+            decimal d => d.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+            DateTime dt => dt.ToString("d MMM yyyy", System.Globalization.CultureInfo.InvariantCulture),
+            _ => value.ToString() is { Length: > 0 } text ? text : "empty",
+        };
     }
 }

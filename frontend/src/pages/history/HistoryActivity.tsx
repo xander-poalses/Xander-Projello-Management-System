@@ -14,7 +14,7 @@ const authHeaders = (): HeadersInit => {
 };
 
 const when = (iso: string) =>
-  new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleString("en-ZA", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 // For Owners and Admins: restore deleted projects and see who changed what
 export default function HistoryActivity({ onRestored }: { onRestored?: () => void }) {
