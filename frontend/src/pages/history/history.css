@@ -22,7 +22,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
@@ -78,7 +78,7 @@ body {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   padding-bottom: 0.5rem;
 }
 
@@ -121,7 +121,7 @@ body {
 .filter-search-box {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--control-border);
+  border: 1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent);
   border-radius: 6px;
   background-color: var(--card-bg);
   font-size: 0.9rem;
@@ -137,7 +137,7 @@ body {
 }
 
 .filter-search-box:focus {
-  border-color: var(--deep-green-accent);
+  border-color: color-mix(in srgb, var(--deep-green-accent) var(--border-opacity), transparent);
 }
 
 .dropdown-filter-wrapper {
@@ -148,7 +148,7 @@ body {
   width: 100%;
   padding: 0.75rem;
   border-radius: 6px;
-  border: 1px solid var(--border-color);
+  border: 1px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   background: var(--card-bg);
   font-size: 0.9rem;
   color: var(--text-dark);
@@ -157,7 +157,7 @@ body {
 }
 
 .filter-dropdown-select:focus {
-  border-color: var(--deep-green-accent);
+  border-color: color-mix(in srgb, var(--deep-green-accent) var(--border-opacity), transparent);
 }
 
 /* --- Alert Messages & Interface Feedback States --- */
@@ -178,7 +178,7 @@ body {
   padding: 4rem 2rem;
   background: var(--sage-green-bg);
   border-radius: 8px;
-  border: 1px dashed var(--border-color);
+  border: 1px dashed color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   color: var(--text-light-gray);
   font-size: 1.05rem;
   font-weight: 500;
@@ -187,8 +187,8 @@ body {
 .spinner-element {
   width: 30px;
   height: 30px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--deep-green-accent);
+  border: 3px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
+  border-top-color: color-mix(in srgb, var(--deep-green-accent) var(--border-opacity), transparent);
   border-radius: 50%;
   margin: 0 auto 1rem auto;
   animation: spinHistoryAnimation 0.8s linear infinite;
@@ -208,7 +208,7 @@ body {
 /* --- Check-In Activity Cards --- */
 .history-card {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgb(var(--shadow-rgb) / 0.03);
@@ -306,7 +306,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--sage-green-bg);
+  border-top: 1px solid color-mix(in srgb, var(--sage-green-bg) var(--border-opacity), transparent);
   padding-top: 0.75rem;
   margin-top: 0.5rem;
   flex-wrap: wrap;
@@ -323,7 +323,7 @@ body {
 
 .reaction-bubble {
   background: var(--sage-green-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
   font-size: 0.95rem;
@@ -349,7 +349,7 @@ body {
   background: var(--sage-green-bg);
   padding: 0.25rem;
   border-radius: 6px;
-  border: 1px solid var(--border-color);
+  border: 1px solid color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
 }
 
 .emoji-picker-btn {
@@ -431,7 +431,7 @@ body {
   justify-content: space-between;
   font-size: 0.8rem;
   color: var(--text-light-gray);
-  border-top: 1px dashed var(--border-color);
+  border-top: 1px dashed color-mix(in srgb, var(--border-color) var(--border-opacity), transparent);
   padding-top: 1rem;
   flex-wrap: wrap;
   gap: 0.5rem;

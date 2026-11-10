@@ -294,6 +294,8 @@ h5 {
    Every other screen builds from these so they all line up.
    ========================================================================== */
 :root {
+  /* Neutral borders and outlines sit at 40% so they read as quiet edges */
+  --border-opacity: 40%;
   --radius-control: 10px;
   --radius-button: 12px;
   --radius-card: 20px;
@@ -335,7 +337,7 @@ h5 {
   background: var(--on-light-field-bg);
   color: var(--on-light-text);
   border-radius: var(--radius-control);
-  border: 1px solid var(--on-light-control-border);
+  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
   box-shadow: var(--shadow-field);
   font-family: Roboto, sans-serif;
   font-weight: 500;
@@ -381,7 +383,7 @@ h5 {
 .client-add-modal__input,
 .client-add-modal__textarea,
 .client-add-modal__select {
-  border: 1px solid var(--on-light-control-border) !important;
+  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent) !important;
   background: var(--on-light-field-bg) !important;
   color: var(--on-light-text) !important;
 }
@@ -449,7 +451,7 @@ h5 {
   min-height: 36px;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--control-border);
+  border: 1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent);
   background: var(--secondary-background-item);
   color: var(--text-dark);
   font: inherit;

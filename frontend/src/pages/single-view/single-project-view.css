@@ -148,6 +148,7 @@
 
 .single-project-view__tab--active {
   color: var(--white);
+  /* State indicator: stays solid */
   border-bottom-color: var(--white);
   /* Darken instead of lighten so white text keeps 4.5:1 */
   background: rgb(var(--shadow-rgb) / 0.15);
@@ -298,7 +299,7 @@
 }
 
 .single-project-view__photo-tile--add {
-  border: 1px dashed var(--control-border);
+  border: 1px dashed color-mix(in srgb, var(--control-border) var(--border-opacity), transparent);
   background: var(--accent-2-5_Opacity);
   display: flex;
   flex-direction: column;

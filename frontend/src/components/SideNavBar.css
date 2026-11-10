@@ -85,7 +85,7 @@
 
 .pageNavContainer a.active {
   background: var(--accent-3);
-  border: 2px solid var(--white);
+  border: 2px solid color-mix(in srgb, var(--white) var(--border-opacity), transparent);
   color: var(--background);
   font-family: Roboto, sans-serif;
   font-weight: 700;

@@ -20,7 +20,7 @@
   background: var(--on-light-field-bg);
   overflow: hidden;
   border-radius: var(--radius-control);
-  border: 1px solid var(--on-light-control-border);
+  border: 1px solid color-mix(in srgb, var(--on-light-control-border) var(--border-opacity), transparent);
   box-shadow: var(--shadow-field);
   display: flex;
   justify-content: flex-start;

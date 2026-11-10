@@ -3,7 +3,7 @@
   width: 100%;
   padding: var(--space-6) var(--space-5);
   border-radius: var(--radius-card);
-  border: 1px dashed var(--control-border);
+  border: 1px dashed color-mix(in srgb, var(--control-border) var(--border-opacity), transparent);
   background: var(--accent-2-5_Opacity);
   display: flex;
   flex-direction: column;

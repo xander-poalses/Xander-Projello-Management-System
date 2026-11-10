@@ -66,12 +66,12 @@ const Verify2FA = ({ email, onVerificationSuccess, onCancel }: Verify2FAProps) =
 
 const styles = {
   container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'var(--secondary-background-item)' },
-  card: { backgroundColor: 'var(--white)', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 12px rgb(var(--shadow-rgb) / 0.05)', maxWidth: '400px', width: '100%', textAlign: 'center' as const, borderTop: '6px solid var(--control-border)' },
+  card: { backgroundColor: 'var(--white)', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 12px rgb(var(--shadow-rgb) / 0.05)', maxWidth: '400px', width: '100%', textAlign: 'center' as const, borderTop: '6px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)' },
   header: { color: 'var(--text-dark)', marginBottom: '15px', fontFamily: 'system-ui, sans-serif' },
   text: { color: 'var(--text-muted)', fontSize: '14px', marginBottom: '25px' },
   error: { backgroundColor: 'var(--error-red_20)', color: 'var(--error-text)', padding: '10px', borderRadius: '6px', marginBottom: '20px' },
   form: { display: 'flex', flexDirection: 'column', gap: '15px' },
-  input: { padding: '12px', fontSize: '24px', textAlign: 'center' as const, letterSpacing: '8px', borderRadius: '6px', border: '1px solid var(--control-border)', outline: 'none' },
+  input: { padding: '12px', fontSize: '24px', textAlign: 'center' as const, letterSpacing: '8px', borderRadius: '6px', border: '1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)', outline: 'none' },
   button: { padding: '12px', backgroundColor: 'var(--control-border)', color: 'var(--white)', border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold' as const, cursor: 'pointer' },
   cancelButton: { padding: '10px', backgroundColor: 'transparent', color: 'var(--text-muted)', border: 'none', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline' }
 };

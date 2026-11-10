@@ -95,7 +95,7 @@
   gap: 12px;
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid var(--on-light-field-bg);
+  border-top: 1px solid color-mix(in srgb, var(--on-light-field-bg) var(--border-opacity), transparent);
 }
 
 .reusable-entity-modal .ant-modal-footer .ant-btn {

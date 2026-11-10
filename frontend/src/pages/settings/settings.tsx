@@ -283,7 +283,7 @@ export default function SettingsPage() {
                   }}
                   placeholder="e.g. ffa000"
                   className="settings-hex-input"
-                  style={{ width: 100, background: "var(--field-bg)", border: "1px solid var(--control-border)", color: "var(--text-dark)", fontFamily: "Roboto", fontWeight: 500, fontSize: 16, borderRadius: 10, padding: "2px 4px" }}
+                  style={{ width: 100, background: "var(--field-bg)", border: "1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)", color: "var(--text-dark)", fontFamily: "Roboto", fontWeight: 500, fontSize: 16, borderRadius: 10, padding: "2px 4px" }}
                   maxLength={6}
                 />
               </div>
@@ -419,7 +419,7 @@ export default function SettingsPage() {
                   value={verificationCode}
                   onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                   maxLength={6}
-                  style={{ marginRight: 8, padding: '10px', textAlign: 'center', letterSpacing: '2px', fontSize: '16px', borderRadius: '4px', border: '1px solid var(--control-border)' }}
+                  style={{ marginRight: 8, padding: '10px', textAlign: 'center', letterSpacing: '2px', fontSize: '16px', borderRadius: '4px', border: '1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)' }}
                 />
                 <button
                   className="btn-primary"

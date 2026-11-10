@@ -95,7 +95,7 @@ export default function Setup2FA({ userEmail }: Setup2FAProps) {
 
   // Styling in between the component for testing purposes, will be moved to CSS file later
   return (
-    <div style={{ padding: '20px', border: '1px solid var(--control-border)', borderRadius: '8px', maxWidth: '500px' }}>
+    <div style={{ padding: '20px', border: '1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)', borderRadius: '8px', maxWidth: '500px' }}>
       <h3>Secure Your Account</h3>
       <p>Enable Two-Factor Authentication using an app like Google Authenticator or Authy.</p>
 
@@ -131,7 +131,7 @@ export default function Setup2FA({ userEmail }: Setup2FAProps) {
               placeholder="123456"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))} // Restrict entry input to digits only
-              style={{ padding: '10px', width: '150px', textAlign: 'center', fontSize: '18px', letterSpacing: '4px', marginRight: '10px', borderRadius: '4px', border: '1px solid var(--control-border)' }}
+              style={{ padding: '10px', width: '150px', textAlign: 'center', fontSize: '18px', letterSpacing: '4px', marginRight: '10px', borderRadius: '4px', border: '1px solid color-mix(in srgb, var(--control-border) var(--border-opacity), transparent)' }}
             />
             <button 
               type="submit"
