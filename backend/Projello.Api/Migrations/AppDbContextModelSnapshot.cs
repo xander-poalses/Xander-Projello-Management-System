@@ -341,6 +341,9 @@ namespace Projello.Api.Migrations
 
                     b.HasKey("InviteID");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("CompanyID");
 
                     b.ToTable("CompanyInvites");
@@ -533,6 +536,10 @@ namespace Projello.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("ProjectUpdates");
                 });
 
@@ -644,6 +651,10 @@ namespace Projello.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UpdateId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("UpdateComments");
                 });
 
@@ -670,6 +681,10 @@ namespace Projello.Api.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UpdateId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UpdateReactions");
                 });
@@ -862,7 +877,7 @@ namespace Projello.Api.Migrations
                     b.HasOne("Projello.Api.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BlacklistedBy");
@@ -916,7 +931,7 @@ namespace Projello.Api.Migrations
                     b.HasOne("Projello.Api.Models.Client", "Client")
                         .WithMany("Projects")
                         .HasForeignKey("ClientID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Projello.Api.Models.User", "CreatedBy")
@@ -945,6 +960,21 @@ namespace Projello.Api.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Projello.Api.Models.ProjectUpdate", b =>
+                {
+                    b.HasOne("Projello.Api.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Projello.Api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Projello.Api.Models.Reaction", b =>
@@ -981,6 +1011,36 @@ namespace Projello.Api.Migrations
                     b.Navigation("AssignedTo");
 
                     b.Navigation("Milestone");
+                });
+
+            modelBuilder.Entity("Projello.Api.Models.UpdateComment", b =>
+                {
+                    b.HasOne("Projello.Api.Models.ProjectUpdate", null)
+                        .WithMany()
+                        .HasForeignKey("UpdateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Projello.Api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Projello.Api.Models.UpdateReaction", b =>
+                {
+                    b.HasOne("Projello.Api.Models.ProjectUpdate", null)
+                        .WithMany()
+                        .HasForeignKey("UpdateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Projello.Api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Projello.Api.Models.User", b =>

@@ -25,7 +25,10 @@ namespace Projello.Api.Tests
             {
                 services.RemoveAll<DbContextOptions<AppDbContext>>();
                 services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-                services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(_databaseName));
+                // The in-memory store has no transactions; ignore them like a no-op
+                services.AddDbContext<AppDbContext>(options => options
+                    .UseInMemoryDatabase(_databaseName)
+                    .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning)));
             });
         }
     }

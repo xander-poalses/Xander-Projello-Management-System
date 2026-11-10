@@ -59,6 +59,63 @@ namespace Projello.Api.Data
                 .WithMany()
                 .HasForeignKey(i => i.CompanyID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Invite codes are looked up by value, so they must be unique
+            builder.Entity<CompanyInvite>()
+                .HasIndex(i => i.Code)
+                .IsUnique();
+
+            // Deleting a client or company must never silently wipe projects:
+            // move or delete the projects first (was Cascade)
+            builder.Entity<Project>()
+                .HasOne(p => p.Client)
+                .WithMany(c => c.Projects)
+                .HasForeignKey(p => p.ClientID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Client>()
+                .HasOne(c => c.Company)
+                .WithMany()
+                .HasForeignKey(c => c.CompanyID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Discussion posts, reactions and comments had no foreign keys, so deleting a
+            // project or user left orphaned rows. They now belong to their project/post/user.
+            builder.Entity<ProjectUpdate>()
+                .HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(u => u.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProjectUpdate>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UpdateReaction>()
+                .HasOne<ProjectUpdate>()
+                .WithMany()
+                .HasForeignKey(r => r.UpdateId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UpdateReaction>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UpdateComment>()
+                .HasOne<ProjectUpdate>()
+                .WithMany()
+                .HasForeignKey(c => c.UpdateId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UpdateComment>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 }
 }

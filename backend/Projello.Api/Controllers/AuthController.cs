@@ -57,6 +57,9 @@ namespace Projello.Api.Controllers
                 company = invite.Company;
             }
 
+            // Create the user and use up the invite together, or not at all
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             var user = new User
             {
                 UserName = model.Email,
@@ -90,6 +93,7 @@ namespace Projello.Api.Controllers
                     }
                 }
 
+                await transaction.CommitAsync();
                 return Ok(new { Message = "User created successfully" });
             }
 
@@ -395,6 +399,10 @@ namespace Projello.Api.Controllers
                 return BadRequest(new { Message = "Company name is required." });
             }
 
+            // Company and owner are created together, so a failed sign-up
+            // (for example a weak password) no longer leaves an empty company behind
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             // 1. Create the Company
             var company = new Company
             {
@@ -422,6 +430,7 @@ namespace Projello.Api.Controllers
                 // 3. Link company back to owner
                 company.OwnerUserId = user.Id;
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return Ok(new { Message = "Company registered successfully. You are now the Owner." });
             }
