@@ -41,8 +41,12 @@ public class Client
     public User? BlacklistedBy { get; set; }
 
     // updating
-    public string Status { get; set; } = "Active";
-    public decimal TotalPaid { get; set; } = 0;
-    public decimal Outstanding { get; set; } = 0;
+        public string Status { get; set; } = "Active";
+        // Payments live on projects; a client's totals are the sum of its projects
+
+    // Soft delete: a deleted record is hidden everywhere but can be restored
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedById { get; set; }
+
    
 }

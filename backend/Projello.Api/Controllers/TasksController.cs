@@ -115,6 +115,8 @@ namespace Projello.Api.Controllers
         [HttpGet("project/{projectId}")]
         public async Task<ActionResult<IEnumerable<TaskReadDto>>> GetTasksByProject(int projectId)
         {
+            // A project that doesn't exist (or was deleted) is "not found", not "forbidden"
+            if (!await _context.Projects.AnyAsync(p => p.ProjectID == projectId)) return NotFound();
             if (!await IsUserForemanOrAdmin(projectId)) return Forbid();
 
             var tasks = await _context.Tasks

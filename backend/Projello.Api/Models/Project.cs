@@ -24,7 +24,12 @@ public class Project
     public ICollection<Milestone> Milestones { get; set; } = new List<Milestone>();
     public ICollection<ProjectMember> Members { get; set; } = new List<ProjectMember>();
 
-    public decimal? TotalPaid { get; set; }
-    public decimal? Outstanding { get; set; }
-    //test//  
+        // The one place payments are stored (clients add these up). Rand, 2 decimals.
+    public decimal TotalPaid { get; set; }
+        public decimal Outstanding { get; set; }
+
+    // Soft delete: a deleted record is hidden everywhere but can be restored
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedById { get; set; }
+  
 }

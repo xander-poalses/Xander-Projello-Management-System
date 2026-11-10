@@ -4,11 +4,7 @@ namespace Projello.Api.DTOs;
 
 public class ClientUpdateDto
 {
-    [Range(0, double.MaxValue)]
-    public decimal? TotalPaid { get; set; }
-
-    [Range(0, double.MaxValue)]
-    public decimal? Outstanding { get; set; }
+    // Payments are edited per project (PUT /api/projects/{id}/payments)
 
     [MaxLength(50)]
     public string? Status { get; set; }

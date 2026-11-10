@@ -13,6 +13,7 @@ import CustomModal from "../../components/CustomModal";
 import { useIncomingCallNotifications } from "../../features/realtime/hooks/useIncomingCallNotifications";
 import { getToken } from "../../auth/tokenStore";
 import { deleteWithUndo } from "../../components/undoToast";
+import ProjectPayments from "../../components/ProjectPayments";
 import { readCache, fetchAndCache } from "../../auth/dataCache";
 import { Skeleton, SkeletonGroup } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
@@ -28,6 +29,8 @@ type ProjectDetails= {
   dueDate: string | null;
   CreatedAt: string;
   photoTiles?: string[];
+  totalPaid?: number | null;
+  outstanding?: number | null;
 };
 
 type SiteImageUpdate = {
@@ -879,6 +882,11 @@ export default function SingleProjectViewPage() {
         accept="image/*"
         onChange={handleFileChange}
       />
+
+      {/* Payments: Owners and Admins only. Client totals add these up. */}
+      {[1, 4].includes(currentUserRole) && (
+        <ProjectPayments projectId={project.projectID} totalPaid={project.totalPaid} outstanding={project.outstanding} />
+      )}
 
       {/* Team Members Section + Add Button */}
       <div className="single-project-view__panel">

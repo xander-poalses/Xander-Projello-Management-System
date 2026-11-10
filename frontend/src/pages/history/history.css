@@ -434,3 +434,51 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+/* Recently deleted and recent changes (Owners and Admins) */
+.history-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+.history-activity section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.history-activity__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.history-activity__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: var(--secondary-background-item);
+  border: 1px solid var(--accent-2-10_Opacity);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  color: var(--text-dark);
+}
+.history-activity__row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.history-activity__summary {
+  font-size: 14px;
+  color: var(--text-dark);
+  overflow-wrap: anywhere;
+}
+.history-activity__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

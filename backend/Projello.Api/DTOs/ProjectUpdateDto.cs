@@ -20,7 +20,6 @@ namespace Projello.Api.DTOs
 
 
         public string Status { get; set; } = "Planning";
-        public decimal? TotalPaid { get; set; }
-        public decimal? Outstanding { get; set; }
+                // Payments have their own endpoint, so renaming a project can't wipe them
     }
 }

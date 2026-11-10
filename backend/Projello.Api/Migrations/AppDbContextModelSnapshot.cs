@@ -214,6 +214,50 @@ namespace Projello.Api.Migrations
                     b.ToTable("Attachments");
                 });
 
+            modelBuilder.Entity("Projello.Api.Models.AuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId", "CreatedAt");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("Projello.Api.Models.Client", b =>
                 {
                     b.Property<int>("ClientID")
@@ -246,6 +290,12 @@ namespace Projello.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedById")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsBlacklisted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -259,15 +309,9 @@ namespace Projello.Api.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Outstanding")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<decimal>("TotalPaid")
-                        .HasColumnType("numeric");
 
                     b.HasKey("ClientID");
 
@@ -446,6 +490,12 @@ namespace Projello.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedById")
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -457,8 +507,9 @@ namespace Projello.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<decimal?>("Outstanding")
-                        .HasColumnType("numeric");
+                    b.Property<decimal>("Outstanding")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateOnly?>("StartDate")
                         .HasColumnType("date");
@@ -468,8 +519,9 @@ namespace Projello.Api.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
-                    b.Property<decimal?>("TotalPaid")
-                        .HasColumnType("numeric");
+                    b.Property<decimal>("TotalPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.HasKey("ProjectID");
 

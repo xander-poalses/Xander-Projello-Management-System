@@ -351,3 +351,22 @@ select.action-modal__input {
 .clients-page__message--error {
   color: var(--error-text);
 }
+
+/* Client totals (summed from projects) in the edit modal */
+.action-modal__totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin: 0;
+}
+.action-modal__totals dt {
+  font-size: 13px;
+  color: var(--form-muted);
+}
+.action-modal__totals dd {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--form-heading);
+  font-variant-numeric: tabular-nums;
+}

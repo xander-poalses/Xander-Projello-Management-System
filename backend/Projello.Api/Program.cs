@@ -38,6 +38,9 @@ if (cloudinarySettings is { IsConfigured: true })
         cloudinarySettings.ApiSecret)));
 }
 
+// Lets the database context record who made each change (audit trail)
+builder.Services.AddHttpContextAccessor();
+
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -190,6 +193,17 @@ builder.Services.AddSignalR().AddHubOptions<ProjectCallHub>(options =>
 });
 
 var app = builder.Build();
+
+// Apply any pending migrations on start, so a deploy never runs against an old schema.
+// Skipped for the in-memory test database, which has no migrations.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (db.Database.IsRelational())
+    {
+        await db.Database.MigrateAsync();
+    }
+}
 
 app.UseForwardedHeaders();
 

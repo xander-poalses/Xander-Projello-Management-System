@@ -71,9 +71,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
     const [busy, setBusy] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
 
-    const [editTotalPaid, setEditTotalPaid] = useState(0);
-    const [editOutstanding, setEditOutstanding] = useState(0);
-    const [editStatus, setEditStatus] = useState("Active");
+        const [editStatus, setEditStatus] = useState("Active");
     
 
     const isBlacklisted = row.status === "Blacklisted";
@@ -82,9 +80,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
 
     useEffect(() => {
         if (step === "edit-payments") {
-            setEditTotalPaid(parseAmount(row.totalPaid));
-            setEditOutstanding(parseAmount(row.outstanding));
-            setEditStatus(row.status);
+                        setEditStatus(row.status);
         }
     }, [step]);
 
@@ -140,16 +136,12 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
                     "Content-Type": "application/json",
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
-                body: JSON.stringify({
-                    totalPaid: editTotalPaid,
-                    outstanding: editOutstanding,
-                    status: editStatus,
-                }),
+                                body: JSON.stringify({ status: editStatus }),
             });
 
             if (!res.ok) throw new Error("Failed to update client");
 
-            setFeedback(`Updated successfully. Status is now "${editStatus}".`);
+                        setFeedback(`Status is now ${editStatus}.`);
             await onRefresh();
         } catch {
             setFeedback("Failed to update client. Please try again.");
@@ -197,7 +189,7 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
                                 className="action-modal__btn action-modal__btn--secondary"
                                 onClick={() => setStep("edit-payments")}
                             >
-                                Edit Payments & Status
+                                Edit status
                             </button>
                         )}
 
@@ -271,34 +263,27 @@ function ClientActionModal({ row, onClose, onRefresh, onAddProject, currentUserR
         return (
             <div className="action-modal-overlay" onClick={onClose}>
                 <div className="action-modal" onClick={e => e.stopPropagation()}>
-                    <ModalHeader title={`Edit ${row.name}`} onClose={onClose} />
+                                        <ModalHeader title={`Edit ${row.name}`} onClose={onClose} />
                     <div className="action-modal__body">
-                        <div style={{ marginBottom: 12 }}>
-                            <label>Total Paid (R)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                value={editTotalPaid}
-                                onChange={e => setEditTotalPaid(Math.max(0, parseFloat(e.target.value) || 0))}
-                                style={{ width: "100%", padding: 8 }}
-                            />
-                        </div>
-                        <div style={{ marginBottom: 12 }}>
-                            <label>Outstanding (R)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                value={editOutstanding}
-                                onChange={e => setEditOutstanding(Math.max(0, parseFloat(e.target.value) || 0))}
-                                style={{ width: "100%", padding: 8 }}
-                            />
-                        </div>
+                        {/* Payments are recorded per project; these are the client's totals */}
+                        <dl className="action-modal__totals">
+                            <div>
+                                <dt>Total paid</dt>
+                                <dd>{formatCurrency(parseAmount(row.totalPaid))}</dd>
+                            </div>
+                            <div>
+                                <dt>Outstanding</dt>
+                                <dd>{formatCurrency(parseAmount(row.outstanding))}</dd>
+                            </div>
+                        </dl>
+                        <p className="action-modal__sub">Add up from this client's projects. Change payments on each project's page.</p>
                         <div>
-                            <label>Status</label>
+                            <label htmlFor="client-status">Status</label>
                             <select
+                                id="client-status"
+                                className="action-modal__input"
                                 value={editStatus}
                                 onChange={e => setEditStatus(e.target.value)}
-                                style={{ width: "100%", padding: 8 }}
                             >
                                 <option value="Active">Active</option>
                                 <option value="Pending">Pending</option>

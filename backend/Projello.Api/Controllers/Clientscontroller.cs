@@ -54,8 +54,8 @@ namespace Projello.Api.Controllers
                     clientID = c.ClientID,
                     name = c.Name,
                     company = c.Company?.Name ?? "",
-                    totalPaid = c.TotalPaid,
-                    outstanding = c.Outstanding,
+                                        totalPaid = await _context.Projects.Where(p => p.ClientID == c.ClientID).SumAsync(p => p.TotalPaid),
+                    outstanding = await _context.Projects.Where(p => p.ClientID == c.ClientID).SumAsync(p => p.Outstanding),
                     projects = $"{totalProjects} total",
                     activeProjects = $"{activeProjects} active",
                     status = c.Status,
@@ -91,8 +91,8 @@ namespace Projello.Api.Controllers
                 clientID = client.ClientID,
                 name = client.Name,
                 company = client.Company?.Name ?? "",
-                totalPaid = client.TotalPaid,
-                outstanding = client.Outstanding,
+                                totalPaid = await _context.Projects.Where(p => p.ClientID == client.ClientID).SumAsync(p => p.TotalPaid),
+                outstanding = await _context.Projects.Where(p => p.ClientID == client.ClientID).SumAsync(p => p.Outstanding),
                 projects = $"{totalProjects} total",
                 activeProjects = $"{activeProjects} active",
                 status = client.Status,
@@ -148,11 +148,7 @@ namespace Projello.Api.Controllers
             if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
-            if (dto.TotalPaid.HasValue)
-                client.TotalPaid = dto.TotalPaid.Value;
-
-            if (dto.Outstanding.HasValue)
-                client.Outstanding = dto.Outstanding.Value;
+            
 
             if (!string.IsNullOrWhiteSpace(dto.Status))
             {
@@ -252,8 +248,8 @@ public async Task<ActionResult<ClientSummaryDto>> GetClientSummary()
     var summary = new ClientSummaryDto
     {
         // Sums of what has been recorded per client (the same figures the clients table shows)
-        TotalRevenue = await query.SumAsync(c => c.TotalPaid),
-        Outstanding = await query.SumAsync(c => c.Outstanding),
+                TotalRevenue = await _context.Projects.Where(p => query.Select(c => c.ClientID).Contains(p.ClientID)).SumAsync(p => p.TotalPaid),
+        Outstanding = await _context.Projects.Where(p => query.Select(c => c.ClientID).Contains(p.ClientID)).SumAsync(p => p.Outstanding),
         ActiveClients = activeClients,
         BlacklistClients = blacklistedClients
     };

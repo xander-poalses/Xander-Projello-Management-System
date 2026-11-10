@@ -157,9 +157,7 @@ namespace Projello.Api.Controllers
             project.StartDate = dto.StartDate.HasValue ? DateOnly.FromDateTime(dto.StartDate.Value) : null;
             project.DueDate = dto.DueDate.HasValue ? DateOnly.FromDateTime(dto.DueDate.Value) : null;
 
-            // Map the new financials securely onto the database record
-            project.TotalPaid = dto.TotalPaid;
-            project.Outstanding = dto.Outstanding;
+            
 
             // Save changes cleanly without looking for 'ProjectExists'
             await _context.SaveChangesAsync();
@@ -188,6 +186,24 @@ namespace Projello.Api.Controllers
         //     await _context.SaveChangesAsync();
         //     return NoContent();
         // }
+
+                // --- UPDATE PAYMENTS ---
+        // Owners and Admins record what has been paid and what is still owed
+        [HttpPut("{id}/payments")]
+        public async Task<IActionResult> UpdateProjectPayments(int id, [FromBody] ProjectPaymentsDto dto)
+        {
+            if (!CompanyScope.IsCompanyManager(GetUserRole())) return Forbid();
+
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null) return NotFound();
+            if (!await _context.IsProjectInCompanyAsync(id, await MyCompanyIdAsync())) return Forbid();
+
+            project.TotalPaid = Math.Round(dto.TotalPaid, 2);
+            project.Outstanding = Math.Round(dto.Outstanding, 2);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { project.TotalPaid, project.Outstanding });
+        }
 
         // --- UPDATE STATUS ONLY ---
         [HttpPut("{id}/status")]
@@ -218,10 +234,48 @@ namespace Projello.Api.Controllers
             if (project == null) return NotFound();
             if (!await _context.IsProjectInCompanyAsync(id, await MyCompanyIdAsync())) return Forbid();
 
-            _context.Projects.Remove(project);
+                        // Soft delete: hidden everywhere, restorable from History
+            project.DeletedAt = DateTime.UtcNow;
+            project.DeletedById = GetCurrentUserId();
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // --- RECENTLY DELETED (GET: api/projects/deleted) ---
+        [HttpGet("deleted")]
+        public async Task<IActionResult> GetDeletedProjects()
+        {
+            if (!CompanyScope.IsCompanyManager(GetUserRole())) return Forbid();
+            var companyId = await MyCompanyIdAsync();
+
+            var deleted = await _context.Projects.IgnoreQueryFilters()
+                .Where(p => p.DeletedAt != null && p.Client.CompanyID == companyId)
+                .OrderByDescending(p => p.DeletedAt)
+                .Select(p => new { projectID = p.ProjectID, name = p.Name, clientName = p.Client.Name, deletedAt = p.DeletedAt })
+                .ToListAsync();
+
+            return Ok(deleted);
+        }
+
+        // --- RESTORE (POST: api/projects/{id}/restore) ---
+        [HttpPost("{id}/restore")]
+        public async Task<IActionResult> RestoreProject(int id)
+        {
+            if (!CompanyScope.IsCompanyManager(GetUserRole())) return Forbid();
+            var companyId = await MyCompanyIdAsync();
+
+            var project = await _context.Projects.IgnoreQueryFilters()
+                .Include(p => p.Client)
+                .FirstOrDefaultAsync(p => p.ProjectID == id && p.DeletedAt != null);
+            if (project == null) return NotFound();
+            if (companyId == null || project.Client.CompanyID != companyId) return Forbid();
+
+            project.DeletedAt = null;
+            project.DeletedById = null;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = $"{project.Name} restored." });
         }
 
         [HttpPost("{projectId}/members")]

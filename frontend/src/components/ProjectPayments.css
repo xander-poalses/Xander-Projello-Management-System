@@ -1,0 +1,59 @@
+.project-payments__figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.project-payments__figures dt {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.project-payments__figures dd {
+  margin: var(--space-1) 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-payments__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.project-payments__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.project-payments__input {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-payments__input[aria-invalid="true"] {
+  border-color: var(--error-red);
+}
+
+.project-payments__error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--error-text);
+  font-size: 14px;
+}
+
+.project-payments__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

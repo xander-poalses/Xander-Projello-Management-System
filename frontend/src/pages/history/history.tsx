@@ -5,6 +5,19 @@ import "./history.css";
 import { getToken } from "../../auth/tokenStore";
 import { SkeletonCards } from "../../components/Skeleton";
 import EmptyState from "../../components/EmptyState";
+import HistoryActivity from "./HistoryActivity";
+
+// Owners (1) and Admins (4) can restore deleted projects and see the change log
+const isManager = () => {
+  try {
+    const token = getToken();
+    if (!token) return false;
+    const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+    return [1, 4].includes(parseInt(payload.RoleID || "0"));
+  } catch {
+    return false;
+  }
+};
 
 // Interface definitions aligning with Projello's UpdateReadDto contracts
 interface CompletedProjectItem {
@@ -77,14 +90,14 @@ export default function HistoryPage() {
       {/* Top Banner Control Board */}
       <header className="history-header">
         <div>
-          <h2 className="history-title">System History & Archival Audits</h2>
+          <h2 className="history-title">History</h2>
           <p className="history-subtitle">
-            Review verified closed project scopes and historical data.
+            Completed projects, plus deleted projects and recent changes.
           </p>
         </div>
         <div className="header-actions">
           <button className="refresh-history-btn" onClick={loadDashboardData} disabled={loading}>
-            {loading ? "Syncing Workspace..." : "Force Sync Data"}
+            {loading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </header>
@@ -94,7 +107,8 @@ export default function HistoryPage() {
         <div className="search-input-wrapper">
           <input 
             type="text" 
-            placeholder="Filter archive by project name or briefs..."
+            placeholder="Search completed projects"
+            aria-label="Search completed projects"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="filter-search-box"
@@ -125,15 +139,15 @@ export default function HistoryPage() {
               >
                 <div className="archive-card-status-badge">{project.status === "Archived" ? "Archived" : "Completed"}</div>
                 <h3 className="archive-project-title">{project.name}</h3>
-                <span className="archive-client-label">Client Account: {project.clientName || "Internal Account"}</span>
-                <p className="archive-project-desc">{project.description || "No project text summary provided upon closing initialization."}</p>
+                <span className="archive-client-label">{project.clientName || "No client"}</span>
+                <p className="archive-project-desc">{project.description || "No description"}</p>
                 
                 <div className="archive-project-meta-footer">
                   <div>
-                    <strong>Began:</strong> {project.startDate ? new Date(project.startDate).toLocaleDateString() : "N/A"}
+                    <strong>Started:</strong> {project.startDate ? new Date(project.startDate).toLocaleDateString() : "Not set"}
                   </div>
                   <div>
-                    <strong>Closed:</strong> {project.dueDate ? new Date(project.dueDate).toLocaleDateString() : "N/A"}
+                    <strong>Closed:</strong> {project.dueDate ? new Date(project.dueDate).toLocaleDateString() : "Not set"}
                   </div>
                 </div>
               </div>
@@ -141,6 +155,8 @@ export default function HistoryPage() {
           </div>
         )
       )}
+
+      {isManager() && <HistoryActivity onRestored={loadDashboardData} />}
     </div>
   );
 }

@@ -633,3 +633,21 @@ h5 {
 [data-theme="dark"] {
   color-scheme: dark;
 }
+
+/* Small spinner for busy buttons: sits next to the loading label */
+.pj-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  vertical-align: -0.15em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: pj-spin 0.7s linear infinite;
+}
+@keyframes pj-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
