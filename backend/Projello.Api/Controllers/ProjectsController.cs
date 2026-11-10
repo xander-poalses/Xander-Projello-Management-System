@@ -38,8 +38,11 @@ namespace Projello.Api.Controllers
             var userId = GetCurrentUserId();
             var role = GetUserRole();
 
+            // Members are needed for the worker count on Jello Jobs
             var query = _context.Projects
                 .Include(p => p.Client)
+                .Include(p => p.Members)
+                    .ThenInclude(pm => pm.User)
                 .AsQueryable();
 
             // ← NEW: Get current user's company for proper scoping
@@ -84,31 +87,7 @@ namespace Projello.Api.Controllers
 
             if (!await _context.CanAccessProjectAsync(id, await MyCompanyIdAsync(), userId, role)) return Forbid();
 
-            var memberDtos = project.Members.Select(m => new ProjectMemberDto
-            {
-                UserID = m.UserID,
-                FullName = m.User.FullName,
-                AssignedAs = m.AssignedAs
-            }).ToList();
-
-            return Ok(new ProjectReadDto
-            {
-                ProjectID = project.ProjectID,
-                Name = project.Name,
-                Description = project.Description,
-                Status = project.Status,
-                StartDate = project.StartDate,
-                DueDate = project.DueDate,
-                CreatedAt = project.CreatedAt,
-                ClientID = project.ClientID,
-                ClientName = project.Client?.Name ?? "Unknown",
-                IsClientBlacklisted = project.Client?.IsBlacklisted ?? false,
-                Members = memberDtos,
-
-               
-                TotalPaid = project.TotalPaid,
-                Outstanding = project.Outstanding
-            });
+            return Ok(MapToReadDto(project));
         }
 
         // --- CREATE (POST: api/projects) ---
@@ -357,17 +336,27 @@ namespace Projello.Api.Controllers
         private async Task<int?> MyCompanyIdAsync() =>
             (await _userManager.FindByIdAsync(GetCurrentUserId()!))?.CompanyId;
 
+        // One mapping for the list and the detail view, so both return the same fields
+        // (the list used to leave out members and the start date)
         private ProjectReadDto MapToReadDto(Project p) => new ProjectReadDto
         {
             ProjectID = p.ProjectID,
             Name = p.Name,
             Description = p.Description,
             Status = p.Status,
+            StartDate = p.StartDate,
             DueDate = p.DueDate,
             CreatedAt = p.CreatedAt,
             ClientID = p.ClientID,
             ClientName = p.Client?.Name ?? "Unknown",
             IsClientBlacklisted = p.Client?.IsBlacklisted ?? false,
+
+            Members = p.Members.Select(m => new ProjectMemberDto
+            {
+                UserID = m.UserID,
+                FullName = m.User?.FullName ?? "Unknown user",
+                AssignedAs = m.AssignedAs
+            }).ToList(),
 
             TotalPaid = p.TotalPaid,
             Outstanding = p.Outstanding

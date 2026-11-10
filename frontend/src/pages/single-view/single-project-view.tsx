@@ -907,7 +907,7 @@ export default function SingleProjectViewPage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {teamMembers.map((m: any) => (
-              <div key={m.UserID} className="team-member-row">
+              <div key={m.userID ?? m.UserID} className="team-member-row">
                 <div className="team-member-row__info">
                   {m.FullName || m.fullName} — <strong>{m.AssignedAs || m.assignedAs}</strong>
                 </div>

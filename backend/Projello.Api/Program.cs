@@ -180,6 +180,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<Projello.Api.Services.Realtime.PresenceTracker>();
 builder.Services.Configure<WebRtcOptions>(
     builder.Configuration.GetSection(WebRtcOptions.SectionName));
 builder.Services.AddSignalR().AddHubOptions<ProjectCallHub>(options =>

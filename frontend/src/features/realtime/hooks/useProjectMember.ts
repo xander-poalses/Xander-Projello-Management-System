@@ -39,9 +39,6 @@ export function useProjectMember(projectId: string | number) {
 
         const projectData = await res.json();
         
-        console.log("🔍 Full Project Data:", projectData);           // ← Important
-        console.log("🔍 Members field?", projectData.members);
-        console.log("🔍 Members field (capital M)?", projectData.Members);
 
         // Try different possible property names
         const memberList = projectData.members ||

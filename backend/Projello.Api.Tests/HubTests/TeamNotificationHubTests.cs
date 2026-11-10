@@ -3,6 +3,7 @@ using Moq;
 using System.Security.Claims;
 using Xunit;
 using Projello.Api.Hubs;
+using Projello.Api.Services.Realtime;
 
 namespace Projello.Api.Tests.Hubs
 {
@@ -10,11 +11,12 @@ namespace Projello.Api.Tests.Hubs
     {
         private readonly TeamNotificationHub _hub;
         private readonly Mock<HubCallerContext> _mockContext;
+        private readonly PresenceTracker _presence = new();
 
         public TeamNotificationHubTests()
         {
             // 1. Instantiate the Hub
-            _hub = new TeamNotificationHub();
+            _hub = new TeamNotificationHub(_presence);
 
             // 2. Mock the HubCallerContext
             _mockContext = new Mock<HubCallerContext>();
@@ -47,6 +49,21 @@ namespace Projello.Api.Tests.Hubs
 
             // Assert
             Assert.Null(exception); // Verifies the method completed without crashing
+            Assert.True(_presence.IsOnline(userId));
+        }
+
+        [Fact]
+        public async Task Disconnect_LastConnection_MarksUserOffline()
+        {
+            _mockContext.Setup(c => c.UserIdentifier).Returns("user-xyz");
+
+            await _hub.OnConnectedAsync();
+            await _hub.OnConnectedAsync(); // second device
+            await _hub.OnDisconnectedAsync(null);
+            Assert.True(_presence.IsOnline("user-xyz"));
+
+            await _hub.OnDisconnectedAsync(null);
+            Assert.False(_presence.IsOnline("user-xyz"));
         }
 
         [Fact]

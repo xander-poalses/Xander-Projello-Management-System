@@ -6,6 +6,7 @@ using Projello.Api.Data;
 using Projello.Api.DTOs;
 using Projello.Api.Models;
 using System.Security.Claims;
+using Projello.Api.Services.Realtime;
 
 namespace Projello.Api.Controllers
 {
@@ -16,11 +17,13 @@ namespace Projello.Api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly AppDbContext _context;
+        private readonly PresenceTracker? _presence;
 
-        public UsersController(UserManager<User> userManager, AppDbContext context)
+        public UsersController(UserManager<User> userManager, AppDbContext context, PresenceTracker? presence = null)
         {
             _userManager = userManager;
             _context = context;
+            _presence = presence;
         }
 
         // --- READ: LIST ALL USERS (Searchable) ---
@@ -55,6 +58,9 @@ namespace Projello.Api.Controllers
                     IsTwoFactorEnabled = u.IsTwoFactorEnabled,
                 })
                 .ToListAsync();
+
+            // Online status comes from open app connections, not the database
+            foreach (var user in users) user.IsOnline = _presence?.IsOnline(user.Id) ?? false;
 
             return Ok(users);
         }

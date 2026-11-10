@@ -45,8 +45,9 @@ namespace Projello.Api.Controllers
             var result = new List<object>();
             foreach (var c in clients)
             {
+                var totalProjects = await _context.Projects.CountAsync(p => p.ClientID == c.ClientID);
                 var activeProjects = await _context.Projects
-                    .CountAsync(p => p.ClientID == c.ClientID && p.Status != "Completed");
+                    .CountAsync(p => p.ClientID == c.ClientID && p.Status != "Completed" && p.Status != "Archived");
 
                 result.Add(new
                 {
@@ -55,7 +56,7 @@ namespace Projello.Api.Controllers
                     company = c.Company?.Name ?? "",
                     totalPaid = c.TotalPaid,
                     outstanding = c.Outstanding,
-                    projects = $"{activeProjects} total",
+                    projects = $"{totalProjects} total",
                     activeProjects = $"{activeProjects} active",
                     status = c.Status,
                     isBlacklisted = c.IsBlacklisted
@@ -81,8 +82,9 @@ namespace Projello.Api.Controllers
             if (currentUser?.CompanyId == null || client.CompanyID != currentUser.CompanyId)
                 return Forbid();
 
+            var totalProjects = await _context.Projects.CountAsync(p => p.ClientID == client.ClientID);
             var activeProjects = await _context.Projects
-                .CountAsync(p => p.ClientID == client.ClientID && p.Status != "Completed");
+                .CountAsync(p => p.ClientID == client.ClientID && p.Status != "Completed" && p.Status != "Archived");
 
             return Ok(new
             {
@@ -91,7 +93,7 @@ namespace Projello.Api.Controllers
                 company = client.Company?.Name ?? "",
                 totalPaid = client.TotalPaid,
                 outstanding = client.Outstanding,
-                projects = $"{activeProjects} total",
+                projects = $"{totalProjects} total",
                 activeProjects = $"{activeProjects} active",
                 status = client.Status,
                 isBlacklisted = client.IsBlacklisted
@@ -249,9 +251,9 @@ public async Task<ActionResult<ClientSummaryDto>> GetClientSummary()
 
     var summary = new ClientSummaryDto
     {
-        // Keep null until a verified finance source is available
-        TotalRevenue = null,
-        Outstanding = null,
+        // Sums of what has been recorded per client (the same figures the clients table shows)
+        TotalRevenue = await query.SumAsync(c => c.TotalPaid),
+        Outstanding = await query.SumAsync(c => c.Outstanding),
         ActiveClients = activeClients,
         BlacklistClients = blacklistedClients
     };

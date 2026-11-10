@@ -142,6 +142,32 @@ namespace Projello.Api.Tests.Controllers
             Assert.Equal(1, projects.First().ProjectID);
         }
 
+
+        [Fact]
+        public async Task GetProjects_IncludesMembersAndStartDate()
+        {
+            // Jello Jobs shows "N Workers" from the list, so the list must carry members
+            SetCurrentUser("owner-1", "4");
+            var worker = new User { Id = "worker-1", FullName = "Wally Worker", CompanyId = 10 };
+            _context.Users.Add(worker);
+            _context.Projects.Add(new Project
+            {
+                ProjectID = 7, Name = "Crew Project", CreatedByUserID = "owner-1",
+                StartDate = new DateOnly(2026, 11, 1),
+                Client = new Client { CompanyID = 10, Name = "Test Client" }
+            });
+            _context.ProjectMembers.Add(new ProjectMember { ProjectID = 7, UserID = "worker-1", User = worker, AssignedAs = "Worker" });
+            await _context.SaveChangesAsync();
+
+            var result = await _controller.GetProjects();
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var project = Assert.Single(Assert.IsAssignableFrom<IEnumerable<ProjectReadDto>>(ok.Value));
+            var member = Assert.Single(project.Members);
+            Assert.Equal("Wally Worker", member.FullName);
+            Assert.Equal(new DateOnly(2026, 11, 1), project.StartDate);
+        }
+
         #endregion
 
         #region GetProject(id) Tests (Coverage for Security Checks & 404s)
