@@ -12,7 +12,7 @@ const focusables = (dialog: HTMLElement) =>
 
 // Gives every custom modal: dialog role and name, focus moved inside,
 // Tab kept inside, Escape to close, and focus returned on close.
-export default function ModalFocusManager() {
+export default function ModalFocusManager(): null {
   useEffect(() => {
     let lastFocused: HTMLElement | null = null;
 
