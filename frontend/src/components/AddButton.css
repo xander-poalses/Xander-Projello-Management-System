@@ -19,38 +19,38 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background-color: var(--accent-1, #5e745f);
+  background-color: var(--accent-1);
   border: none;
   border-radius: 12px;
   cursor: pointer;
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: var(--white, #ffffff);
+  color: var(--white);
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .add-button:hover:not(:disabled) {
-  background-color: var(--accent-1, #4e644f);
+  background-color: var(--accent-1);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgb(var(--shadow-rgb) / 0.12);
   filter: brightness(1.05);
 }
 
 .add-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgb(var(--shadow-rgb) / 0.08);
 }
 
 .add-button:disabled {
-  background-color: #5e745f30;
+  background-color: rgb(var(--accent-1-rgb) / 0.19);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .add-button:focus-visible {
-  outline: 2px solid #95a66d;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -61,7 +61,7 @@
   font-size: 18px;
   font-weight: 600;
   line-height: 1;
-  color: var(--white, #ffffff);
+  color: var(--white);
 }
 
 /* ============================================================================
@@ -70,5 +70,5 @@
 .add-button__label {
   font-size: 14px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--white);
 }

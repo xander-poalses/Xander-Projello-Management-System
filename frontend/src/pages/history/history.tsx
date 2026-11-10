@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"; // 1. Imported the navigation ho
 import { API_BASE_URL } from "../../config"; 
 import "./history.css";
 import { getToken } from "../../auth/tokenStore";
+import { SkeletonCards } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 // Interface definitions aligning with Projello's UpdateReadDto contracts
 interface CompletedProjectItem {
@@ -104,16 +106,14 @@ export default function HistoryPage() {
 
       {/* Main Panel Operations Render */}
       {loading ? (
-        <div className="history-skeleton-loader">
-          <div className="spinner-element"></div>
-          <p>Compiling historical data arrays from Projello Cloud Core...</p>
-        </div>
+                <SkeletonCards count={3} columns={3} height={150} label="Loading project history" />
       ) : (
         /* COMPLETED PROJECTS ARCHIVE */
         filteredArchive.length === 0 ? (
-          <div className="history-empty-state">
-            <p>No completed or archived project rows detected inside this operational footprint.</p>
-          </div>
+                    <EmptyState
+            title="No completed projects yet"
+            message="When a project is marked Completed or Archived, it moves here."
+          />
         ) : (
           <div className="archive-grid-layout">
             {filteredArchive.map((project) => (

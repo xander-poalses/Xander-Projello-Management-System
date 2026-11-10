@@ -1,0 +1,42 @@
+/* Same surface as a Jello Jobs row, with a dashed edge so it reads as "nothing here yet" */
+.pj-empty-state {
+  width: 100%;
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--control-border);
+  background: var(--accent-2-5_Opacity);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.pj-empty-state__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-wrap: balance;
+}
+
+.pj-empty-state__message {
+  margin: 0;
+  max-width: 48ch;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.pj-empty-state__action {
+  margin-top: var(--space-3);
+}
+
+.pj-empty-state--error {
+  border-color: var(--error-red);
+  background: var(--error-red_20);
+}
+
+.pj-empty-state--error .pj-empty-state__title {
+  color: var(--error-text);
+}

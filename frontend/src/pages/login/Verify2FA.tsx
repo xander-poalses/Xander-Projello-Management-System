@@ -65,15 +65,15 @@ const Verify2FA = ({ email, onVerificationSuccess, onCancel }: Verify2FAProps) =
 };
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f4f7f5' },
-  card: { backgroundColor: '#ffffff', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', maxWidth: '400px', width: '100%', textAlign: 'center' as const, borderTop: '6px solid #7C9082' },
-  header: { color: '#2c3e35', marginBottom: '15px', fontFamily: 'system-ui, sans-serif' },
-  text: { color: '#5a6b62', fontSize: '14px', marginBottom: '25px' },
-  error: { backgroundColor: '#fee2e2', color: '#b91c1c', padding: '10px', borderRadius: '6px', marginBottom: '20px' },
+  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'var(--secondary-background-item)' },
+  card: { backgroundColor: 'var(--white)', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 12px rgb(var(--shadow-rgb) / 0.05)', maxWidth: '400px', width: '100%', textAlign: 'center' as const, borderTop: '6px solid var(--control-border)' },
+  header: { color: 'var(--text-dark)', marginBottom: '15px', fontFamily: 'system-ui, sans-serif' },
+  text: { color: 'var(--text-muted)', fontSize: '14px', marginBottom: '25px' },
+  error: { backgroundColor: 'var(--error-red_20)', color: 'var(--error-text)', padding: '10px', borderRadius: '6px', marginBottom: '20px' },
   form: { display: 'flex', flexDirection: 'column', gap: '15px' },
-  input: { padding: '12px', fontSize: '24px', textAlign: 'center' as const, letterSpacing: '8px', borderRadius: '6px', border: '1px solid #ccc', outline: 'none' },
-  button: { padding: '12px', backgroundColor: '#7C9082', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold' as const, cursor: 'pointer' },
-  cancelButton: { padding: '10px', backgroundColor: 'transparent', color: '#7C9082', border: 'none', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline' }
+  input: { padding: '12px', fontSize: '24px', textAlign: 'center' as const, letterSpacing: '8px', borderRadius: '6px', border: '1px solid var(--control-border)', outline: 'none' },
+  button: { padding: '12px', backgroundColor: 'var(--control-border)', color: 'var(--white)', border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold' as const, cursor: 'pointer' },
+  cancelButton: { padding: '10px', backgroundColor: 'transparent', color: 'var(--text-muted)', border: 'none', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline' }
 };
 
 export default Verify2FA;

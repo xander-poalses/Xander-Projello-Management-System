@@ -1,5 +1,5 @@
 * {
-  color: var(--text-dark, #28332b);
+  color: var(--text-dark);
 }
 
 .settings-outer {
@@ -28,7 +28,7 @@
 }
 
 .settings-message {
-  background: var(--warning-yellow, #deab3d);
+  background: var(--warning-yellow);
   color: var(--background);
   border: 1px solid var(--accent-3);
   border-radius: 6px;
@@ -97,7 +97,7 @@
 }
 .qr-container img {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgb(var(--shadow-rgb) / 0.08);
 }
 .input-group {
   display: flex;
@@ -210,7 +210,7 @@ body {
 .theme-label {
   font-weight: 500;
   font-size: 1rem;
-  color: var(--text-dark, #28332b);
+  color: var(--text-dark);
 }
 
 /* Colour field in the avatar picker */

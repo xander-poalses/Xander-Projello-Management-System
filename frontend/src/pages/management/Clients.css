@@ -68,7 +68,7 @@
   background: var(--secondary-background-item);
   border: 1px solid var(--accent-2-10_Opacity);
   border-radius: var(--radius-control);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 30px rgb(var(--shadow-rgb) / 0.12);
   z-index: 100;
   min-width: 140px;
   top: 0;
@@ -115,7 +115,7 @@
 .action-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgb(var(--shadow-rgb) / 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,8 +123,8 @@
 }
 
 .action-modal {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--white);
+  border: 1px solid var(--on-light-border);
   border-radius: 24px;
   padding: 0;
   min-width: 320px;
@@ -132,7 +132,7 @@
   width: 90%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 60px rgb(var(--shadow-rgb) / 0.25);
   overflow: hidden;
 }
 
@@ -141,14 +141,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #f3f4f6;
-  background: #f9f9f6;
+  border-bottom: 1px solid var(--on-light-card-bg);
+  background: var(--on-light-card-bg);
 }
 
 .action-modal__header .action-modal__title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #28332b;
+  color: var(--on-light-heading);
   margin: 0;
 }
 
@@ -157,7 +157,7 @@
   border: none;
   font-size: 28px;
   line-height: 1;
-  color: #6b7280;
+  color: var(--on-light-muted);
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -165,8 +165,8 @@
 }
 
 .action-modal__close:hover {
-  color: #0a0a0a;
-  background: #f3f4f6;
+  color: var(--on-light-text);
+  background: var(--on-light-card-bg);
 }
 
 .action-modal__body {
@@ -178,13 +178,13 @@
 
 .action-modal__sub {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--on-light-muted);
   margin: 0;
 }
 
 .action-modal__feedback {
   font-size: 0.95rem;
-  color: #0a0a0a;
+  color: var(--on-light-text);
   margin: 0;
   line-height: 1.5;
   padding: 8px 0;
@@ -192,10 +192,10 @@
 
 .action-modal__textarea {
   width: 100%;
-  background: #e5e5e2;
+  background: var(--on-light-field-bg);
   border: none;
   border-radius: 20px;
-  color: #444;
+  color: var(--on-light-text);
   font-size: 0.95rem;
   padding: 14px 20px;
   resize: vertical;
@@ -204,14 +204,14 @@
   font-family: inherit;
   min-height: 80px;
   box-shadow:
-    0 -2px 4px 0 rgba(249, 251, 236, 0.25) inset,
-    0 2px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
+    0 2px 4px 0 rgb(var(--shadow-rgb) / 0.25) inset;
   transition: background 0.3s ease-in-out;
 }
 
 .action-modal__textarea:focus,
 .action-modal__textarea:active {
-  background: #dddddd;
+  background: var(--on-light-field-bg-focus);
 }
 
 .action-modal__actions {
@@ -235,11 +235,11 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 0 0 rgba(40, 51, 43, 0.35);
+  box-shadow: 0 4px 0 0 rgb(var(--ink-rgb) / 0.35);
 }
 
 .action-modal__btn:active {
-  box-shadow: 0 4px 0 0 rgba(40, 51, 43, 0.35) inset;
+  box-shadow: 0 4px 0 0 rgb(var(--ink-rgb) / 0.35) inset;
   transform: translateY(3px);
 }
 
@@ -251,70 +251,70 @@
 }
 
 .action-modal__btn--primary {
-  background: #5e745f;
-  color: #ffffff;
+  background: var(--accent-1);
+  color: var(--white);
 }
 
 .action-modal__btn--primary:hover:not(:disabled) {
-  background: #4a5f4c;
+  background: var(--accent-1-hover);
 }
 
 .action-modal__btn--primary:active:not(:disabled) {
-  box-shadow: 0 4px 0 0 rgba(40, 51, 43, 0.35) inset;
+  box-shadow: 0 4px 0 0 rgb(var(--ink-rgb) / 0.35) inset;
   transform: translateY(3px);
 }
 
 .action-modal__btn--secondary {
-  background: #f3f4f6;
-  color: #0a0a0a;
-  border: 1px solid #e5e7eb;
+  background: var(--on-light-card-bg);
+  color: var(--on-light-text);
+  border: 1px solid var(--on-light-border);
 }
 
 .action-modal__btn--secondary:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--on-light-border);
   transform: translateY(-1px);
 }
 
 .action-modal__btn--danger {
-  background: #dc2626;
-  color: #ffffff;
+  background: var(--error-red);
+  color: var(--white);
 }
 
 .action-modal__btn--danger:hover:not(:disabled) {
-  background: #b91c1c;
+  background: var(--error-red);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgb(var(--error-rgb) / 0.3);
 }
 
 .action-modal__btn--warning {
-  background: #d97706;
-  color: #ffffff;
+  background: var(--warning-yellow);
+  color: var(--white);
 }
 
 .action-modal__btn--warning:hover:not(:disabled) {
-  background: #b45309;
+  background: var(--warning-yellow);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  box-shadow: 0 4px 12px rgb(var(--warning-rgb) / 0.3);
 }
 
 .action-modal__btn--ghost {
   background: transparent;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
+  color: var(--on-light-muted);
+  border: 1px solid var(--on-light-border);
   font-weight: 500;
 }
 
 .action-modal__btn--ghost:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #0a0a0a;
+  background: var(--on-light-card-bg);
+  color: var(--on-light-text);
 }
 
 .action-modal__input {
   width: 100%;
-  background: #e5e5e2;
+  background: var(--on-light-field-bg);
   border: none;
   border-radius: 999px;
-  color: #444;
+  color: var(--on-light-text);
   font-size: 0.95rem;
   padding: 14px 20px;
   box-sizing: border-box;
@@ -323,13 +323,13 @@
   margin-bottom: 14px;
   transition: background 0.3s ease-in-out;
   box-shadow:
-    0 -2px 4px 0 rgba(249, 251, 236, 0.25) inset,
-    0 2px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
+    0 2px 4px 0 rgb(var(--shadow-rgb) / 0.25) inset;
 }
 
 .action-modal__input:focus,
 .action-modal__input:active {
-  background: #dddddd;
+  background: var(--on-light-field-bg-focus);
 }
 
 select.action-modal__input {
@@ -345,7 +345,7 @@ select.action-modal__input {
 .clients-page__message {
   padding: 20px;
   font-size: 1rem;
-  color: #0a0a0a;
+  color: var(--on-light-text);
 }
 
 .clients-page__message--error {

@@ -36,7 +36,7 @@
   grid-template-columns: minmax(220px, 1.8fr) repeat(3, minmax(110px, 1fr)) minmax(120px, 1fr) 64px;
   align-items: center;
   padding: 20px 28px;
-  border-top: 1px solid var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1));
+  border-top: 1px solid var(--accent-2-10_Opacity);
   /* box-shadow: 0 2px 4px 0 var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1)) inset; */
   display: grid;
   grid-template-columns: minmax(280px, 12.8fr) repeat(3, minmax(150px, 0.1fr)) minmax(12px, 0.1fr) 14px;
@@ -53,7 +53,7 @@
 }
 
 .management-client-table__row--clickable:hover {
-  background-color: var(--accent-2-5_Opacity, rgba(40, 51, 43, 0.02));
+  background-color: var(--accent-2-5_Opacity);
 }
 
 /* Data cells */
@@ -96,7 +96,7 @@
   font-size: 16px;
   font-weight: 600;
   flex: 0 0 auto;
-  border: 1px solid var(--accent-2-10_Opacity, rgba(40, 51, 43, 0.1));
+  border: 1px solid var(--accent-2-10_Opacity);
 }
 
 .management-client-table__identity-copy {

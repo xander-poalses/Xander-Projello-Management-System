@@ -3,6 +3,8 @@ import "./single-project-view.css";
 import "./DiscussionTab.css";
 import { API_BASE_URL } from "../../config";
 import { getToken } from "../../auth/tokenStore";
+import { Skeleton, SkeletonGroup } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 type DiscussionReaction = {
   id: number;
@@ -275,27 +277,41 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
     };
   }, [imagePreviewUrl]);
 
-  if (loading) return <p style={{ padding: 20 }}>Loading discussion...</p>;
-  if (error) return <p style={{ padding: 20, color: "var(--error-text)" }}>{error}</p>;
+    if (loading) {
+    return (
+      <SkeletonGroup label="Loading discussion" className="discussion-tab">
+        <Skeleton height={190} radius="var(--radius-card)" />
+        <Skeleton height={260} radius="var(--radius-card)" />
+      </SkeletonGroup>
+    );
+  }
+  if (error) {
+    return (
+      <div className="discussion-tab">
+        <EmptyState tone="error" title="Couldn't load the discussion" message="Check your connection and open the tab again." />
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 16, maxWidth: 980, margin: "0 auto" }}>
-      <section style={{ marginBottom: 20, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 16 }}>
-        <h2 style={{ margin: 0 }}>Discussion</h2>
-        <p style={{ margin: "8px 0 0", color: "#64748b" }}>
+        <div className="discussion-tab">
+      <section className="discussion-tab__composer">
+        <h2 className="pj-section-title">Discussion</h2>
+        <p className="discussion-tab__subtitle">
           Share updates, react, and reply in the project thread.
         </p>
 
-        <form onSubmit={handleCreatePost} style={{ marginTop: 14 }}>
+                <form onSubmit={handleCreatePost} className="discussion-tab__form">
           <textarea
             value={newPostCaption}
             onChange={(e) => setNewPostCaption(e.target.value)}
             placeholder="Write an update..."
-            rows={4}
-            style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, resize: "vertical" }}
+                        rows={4}
+            aria-label="Write an update"
+            className="discussion-tab__field discussion-tab__textarea"
           />
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-            <label htmlFor="discussion-image" style={{ fontSize: 14 }}>
+          <div className="discussion-tab__form-row">
+            <label htmlFor="discussion-image" className="discussion-tab__label">
               Attach an image
             </label>
             <input
@@ -311,7 +327,13 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
         </form>
       </section>
 
-      <section style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <section className="discussion-tab__post-list">
+        {posts.length === 0 && (
+          <EmptyState
+            title="No updates yet"
+            message="Post the first update above: progress, a photo from site, or a question for the team."
+          />
+        )}
         {posts.map(post => {
           //Safe access to reactions
           const safeReactions = post.reactions ?? [];
@@ -324,14 +346,12 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
             safeReactions.some(r => r.emoji === emoji && r.userId === currentUserId);
 
           return (
-            <article key={post.id} 
-                  style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, overflow: "hidden" }}
-            >
+                        <article key={post.id} className="discussion-tab__post-card">
               {/* Post header: author + timestamp */}
-              <div style={{ padding: 16, borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div className="discussion-tab__post-header">
                 <div>
-                 <div style={{ fontWeight: 700 }}>{post.userFullName || "Unknown user"}</div>
-                  <div style={{ fontSize: 12, color: "#64748b" }}>{post.createdAt ? new Date(post.createdAt).toLocaleString() : ""}</div>
+                  <div className="discussion-tab__author">{post.userFullName || "Unknown user"}</div>
+                  <div className="discussion-tab__meta">{post.createdAt ? new Date(post.createdAt).toLocaleString() : ""}</div>
                 </div>
               </div>
 
@@ -352,10 +372,10 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                       position: "absolute",
                       top: 12,
                       right: 12,
-                      background: "rgba(239, 68, 68, 0.9)",
-                      color: "white",
+                      background: "rgb(var(--error-rgb) / 0.9)",
+                      color: "var(--white)",
                       border: "none",
-                      borderRadius: 6,
+                                            borderRadius: "var(--radius-control)",
                       padding: "6px 12px",
                       fontSize: 13,
                       cursor: "pointer"
@@ -366,10 +386,10 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                 </div>
               )}
 
-              <div style={{ padding: 16 }}>
+                            <div className="discussion-tab__post-content">
                 {/* Caption */}
                 {post.caption && (
-                  <p style={{ marginTop: 0, marginBottom: 12, lineHeight: 1.6 }}>
+                  <p className="discussion-tab__post-caption">
                     {post.caption}
                   </p>
                 )}
@@ -391,7 +411,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                 </div>
 
                 {/* Comments header */}
-                <div style={{ fontWeight: 700, marginBottom: 10 }}>
+                                <div className="discussion-tab__comments-label">
                   Comments {post.comments?.length ? `(${post.comments.length})` : ""}
                 </div>
 
@@ -399,10 +419,10 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {post.comments && post.comments.length > 0 ? (
                     post.comments.map((comment) => (
-                      <div key={comment.id} style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: 12 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                                            <div key={comment.id} className="discussion-tab__comment">
+                        <div className="discussion-tab__comment-header">
                           <strong>{comment.userFullName || "Unknown user"}</strong>
-                          <span style={{ fontSize: 12, color: "#64748b" }}>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
+                          <span className="discussion-tab__meta">{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
                         </div>
                         <p style={{ margin: "8px 0 0", lineHeight: 1.5 }}>{comment.commentText}</p>
                         
@@ -412,7 +432,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                             type="button"
                             onClick={() => handleDeleteComment(post.id, comment.id)}
                             disabled={submittingId === comment.id}
-                            style={{ marginTop: 8, fontSize: 13, color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}
+                            style={{ marginTop: 8, fontSize: 13, color: "var(--error-text)", background: "none", border: "none", cursor: "pointer" }}
                           >
                             Delete
                           </button>
@@ -420,18 +440,18 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
                       </div>
                     ))
                   ) : (
-                    <div style={{ color: "#64748b", fontSize: 13 }}>No comments yet — be the first to reply.</div>
+                                        <div className="discussion-tab__meta">No comments yet. Be the first to reply.</div>
                   )}
                 </div>
 
                 {/* Comment composer */}
-                <form onSubmit={(e) => handleCommentSubmit(e, post.id)} style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "center" }}>
+                                <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="discussion-tab__comment-form">
                   <input
                     aria-label="Write a comment"
                     value={commentDrafts[post.id] || ""}
                     onChange={(e) => setCommentDrafts((current) => ({ ...current, [post.id]: e.target.value }))}
-                    placeholder="Write a comment..."
-                    style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 10px" }}
+                                        placeholder="Write a comment..."
+                    className="discussion-tab__field"
                   />
                   <button type="submit" className="btn-secondary" disabled={submittingId === post.id}>Reply</button>
                 </form>
@@ -447,7 +467,7 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0, 0, 0, 0.8)",
+            background: "rgb(var(--shadow-rgb) / 0.8)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -463,8 +483,8 @@ export default function DiscussionTab({ projectId }: DiscussionTabProps) {
               maxWidth: "95vw",
               maxHeight: "95vh",
               objectFit: "contain",
-              borderRadius: 12,
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4)",
+                            borderRadius: "var(--radius-card)",
+              boxShadow: "0 20px 60px rgb(var(--shadow-rgb) / 0.4)",
             }}
           />
         </div>

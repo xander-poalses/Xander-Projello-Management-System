@@ -90,10 +90,10 @@ describe("WorkersPage Component", () => {
   it("renders loading message initially and then populates workers excluding global Admins", async () => {
     render(<WorkersPage />);
     
-    expect(screen.getByText(/Loading workers.../i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading workers/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading workers.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading workers/i)).not.toBeInTheDocument();
     });
 
     const workerCards = screen.getAllByTestId("worker-card");
@@ -108,7 +108,7 @@ describe("WorkersPage Component", () => {
     render(<WorkersPage />);
 
     await waitFor(() => {
-      expect(screen.queryByText("Loading workers...")).not.toBeInTheDocument();
+      expect(screen.queryByText("Loading workers")).not.toBeInTheDocument();
     });
 
     const statCards = screen.getAllByTestId("stat-card");
@@ -126,7 +126,7 @@ it("filters items reactively through user search input", async () => {
     render(<WorkersPage />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading workers.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading workers/i)).not.toBeInTheDocument();
     });
 
     const searchInput = screen.getByTestId("search-input");

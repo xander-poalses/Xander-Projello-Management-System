@@ -9,6 +9,8 @@ import { ProjectAddModal } from "../../components/ProjectAddModal";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../config";
 import { getToken } from "../../auth/tokenStore";
+import { SkeletonRows } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface ProjectFormData {
   name: string;
@@ -19,7 +21,9 @@ interface ProjectFormData {
 
 export default function DashboardPage() {
   const [sortOption, setSortOption] = useState<"az" | "date" | "workers">("az");
-  const [projects, setProjects] = useState<any[]>([]);
+    const [projects, setProjects] = useState<any[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState(false);
   const [search, setSearch] = useState("");
   const [showProjectAddModal, setShowProjectAddModal] = useState(false);
   const [currentUserRole, setCurrentUserRole] = useState<number>(0);
@@ -38,8 +42,12 @@ export default function DashboardPage() {
         if (!res.ok) throw new Error("Unauthorized or error fetching projects");
         return res.json();
       })
-      .then((data) => setProjects(data))
-      .catch(() => setProjects([]));
+            .then((data) => setProjects(data))
+      .catch(() => {
+        setProjects([]);
+        setProjectsError(true);
+      })
+      .finally(() => setProjectsLoading(false));
 
     if (token) {
       try {
@@ -278,8 +286,15 @@ export default function DashboardPage() {
 
       <div className="jelloGallery-outer">
         <div className="jelloGallery">
-          {sortedProjects.length === 0 ? (
-            <p>No projects found.</p>
+                    {projectsLoading ? (
+            <SkeletonRows count={4} label="Loading projects" />
+          ) : projectsError ? (
+            <EmptyState tone="error" title="Couldn't load your projects" message="Check your connection and open Jello Jobs again." />
+          ) : sortedProjects.length === 0 ? (
+            <EmptyState
+              title={search.trim() ? "No projects match your search" : "No projects yet"}
+              message={search.trim() ? "Try a different name or client." : "Projects you create or join show up here."}
+            />
           ) : (
             sortedProjects.map((project) => (
               <JelloItem

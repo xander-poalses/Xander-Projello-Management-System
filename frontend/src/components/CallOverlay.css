@@ -13,7 +13,7 @@
 .overlay-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgb(var(--shadow-rgb) / 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,12 +21,12 @@
 }
 
 .overlay-container {
-  background: #1a1a1a;
+  background: var(--call-bg);
   width: 92%;
   max-width: 820px;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 30px rgb(var(--shadow-rgb) / 0.6);
   display: flex;
   flex-direction: column;
   max-height: 90vh;
@@ -35,30 +35,30 @@
 
 /* Header */
 .overlay-header {
-  background: #222;
+  background: var(--call-bg);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--call-border);
 }
 
 .overlay-header h2 {
   margin: 0;
-  color: #f0f0f0;
+  color: var(--call-text);
   font-size: 1.35rem;
 }
 
 .call-subtitle {
   margin: 4px 0 0;
-  color: #aaa;
+  color: var(--call-muted);
   font-size: 0.95rem;
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #ccc;
+  color: var(--call-muted);
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
@@ -67,14 +67,14 @@
 }
 
 .close-btn:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  background: rgb(var(--white-rgb) / 0.1);
 }
 
 /* ====================== PRE-CALL SCREEN ====================== */
 .pre-call-screen {
   padding: 24px;
-  background: #1f1f1f;
+  background: var(--call-bg);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -83,7 +83,7 @@
 
 .participants-section h3 {
   margin: 0 0 16px 0;
-  color: #eee;
+  color: var(--call-text);
   font-size: 1.15rem;
 }
 
@@ -99,22 +99,22 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #2a2a2a;
+  background: var(--call-surface);
   padding: 12px 16px;
   border-radius: 12px;
   transition: all 0.2s;
 }
 
 .user-item:hover {
-  background: #333;
+  background: var(--call-border);
 }
 
 .avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #5e745f;
-  color: white;
+  background: var(--accent-1);
+  color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,18 +128,18 @@
 
 .user-name {
   font-weight: 500;
-  color: #f0f0f0;
+  color: var(--call-text);
 }
 
 .user-role {
   font-size: 0.85rem;
-  color: #999;
+  color: var(--call-muted);
 }
 
 .user-checkbox {
   width: 20px;
   height: 20px;
-  accent-color: #5e745f;
+  accent-color: var(--accent-1);
 }
 
 .pre-call-actions {
@@ -160,23 +160,23 @@
 }
 
 .btn-join {
-  background: #5e745f;
-  color: white;
+  background: var(--accent-1);
+  color: var(--white);
 }
 
 .btn-join:disabled {
-  background: #555;
+  background: var(--call-border);
   cursor: not-allowed;
 }
 
 .btn-cancel {
-  background: #383838;
-  color: #ddd;
+  background: var(--call-surface);
+  color: var(--call-text);
 }
 
 /* ====================== ACTIVE CALL SCREEN ====================== */
 .call-screen {
-  background: #0f0f0f;
+  background: var(--call-bg);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -194,15 +194,15 @@
 
 .video-tile {
   position: relative;
-  background: #000;
+  background: var(--call-black);
   border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 16 / 10;
-  border: 2px solid #333;
+  border: 2px solid var(--call-border);
 }
 
 .video-tile.self {
-  border-color: #5e745f;
+  border-color: var(--accent-1);
 }
 
 .video {
@@ -215,8 +215,8 @@
   position: absolute;
   bottom: 12px;
   left: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: rgb(var(--shadow-rgb) / 0.7);
+  color: var(--white);
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -226,12 +226,12 @@
 /* Status */
 .call-status {
   text-align: center;
-  color: #bbb;
+  color: var(--call-muted);
   font-size: 1rem;
 }
 
 .error-text {
-  color: #ff6b6b;
+  color: var(--call-danger-text);
   margin-top: 8px;
 }
 
@@ -248,24 +248,24 @@
   padding: 12px 20px;
   border-radius: 50px;
   border: none;
-  background: #2a2a2a;
-  color: white;
+  background: var(--call-surface);
+  color: var(--white);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .control-btn:hover {
-  background: #3a3a3a;
+  background: var(--call-surface);
   transform: translateY(-2px);
 }
 
 .control-btn.end-call {
-  background: #c42b2b;
+  background: var(--call-danger);
 }
 
 .control-btn.end-call:hover {
-  background: #e63939;
+  background: var(--call-danger-hover);
 }
 
 .camera-control {
@@ -273,11 +273,11 @@
 }
 
 .camera-btn.is-off {
-  background: #4a3b1f;
+  background: var(--call-warning-bg);
 }
 
 .camera-btn.is-off:hover {
-  background: #665022;
+  background: var(--call-warning-border);
 }
 
 .camera-menu {
@@ -288,9 +288,9 @@
   min-width: 220px;
   padding: 8px;
   border-radius: 14px;
-  background: #171717;
-  border: 1px solid #313131;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  background: var(--call-bg);
+  border: 1px solid var(--call-surface);
+  box-shadow: 0 18px 40px rgb(var(--shadow-rgb) / 0.45);
   z-index: 2;
 }
 
@@ -298,7 +298,7 @@
   width: 100%;
   border: none;
   background: transparent;
-  color: #f0f0f0;
+  color: var(--call-text);
   text-align: left;
   padding: 10px 12px;
   border-radius: 10px;
@@ -308,18 +308,18 @@
 
 .camera-menu__item:hover,
 .camera-menu__item.is-active {
-  background: rgba(94, 116, 95, 0.22);
+  background: rgb(var(--accent-1-rgb) / 0.22);
 }
 
 .camera-menu__divider {
   height: 1px;
   margin: 6px 4px;
-  background: #2c2c2c;
+  background: var(--call-surface);
 }
 
 .camera-menu__empty {
   padding: 10px 12px;
-  color: #9b9b9b;
+  color: var(--call-muted);
   font-size: 0.92rem;
 }
 

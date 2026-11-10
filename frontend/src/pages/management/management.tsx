@@ -7,6 +7,8 @@ import ClientsPage from "./Clients";
 import WorkersPage from "./Workers";
 import { API_BASE_URL } from "../../config";
 import { getToken } from "../../auth/tokenStore";
+import { SkeletonRows } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Project {
   projectID: number;
@@ -384,10 +386,10 @@ export default function ManagementPage() {
               <h2>Projects</h2>
               <p>Every project in your company, with its client and status.</p>
             </div>
-            {loading && <div className="loading">Loading projects...</div>}
-            {error && <div className="error">Error: {error}</div>}
+                        {loading && <SkeletonRows count={3} label="Loading projects" />}
+            {error && <EmptyState tone="error" title="Couldn't load projects" message={error} />}
             {!loading && !error && projects.length === 0 && (
-              <p>No projects found.</p>
+              <EmptyState title="No projects yet" message="Create a project from Jello Jobs and it shows up here." />
             )}
             {!loading && !error && projects.length > 0 && (
               <ManagementClientTable

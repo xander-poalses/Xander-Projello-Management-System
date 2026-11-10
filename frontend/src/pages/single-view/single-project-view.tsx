@@ -12,6 +12,8 @@ import CustomModal from "../../components/CustomModal";
 
 import { useIncomingCallNotifications } from "../../features/realtime/hooks/useIncomingCallNotifications";
 import { getToken } from "../../auth/tokenStore";
+import { Skeleton, SkeletonGroup } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 type ProjectDetails= {
   projectID: number;
@@ -627,7 +629,16 @@ export default function SingleProjectViewPage() {
   };
 
   if (loading) {
-    return <div className="single-project-view__state single-project-view__state--loading">Loading project...</div>;
+        return (
+      <SkeletonGroup label="Loading project" className="single-project-view">
+        <Skeleton height={112} radius="var(--radius-card)" />
+        <div className="single-project-view__stats">
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} height={88} radius="var(--radius-card)" />)}
+        </div>
+        <Skeleton height={140} radius="var(--radius-card)" />
+        <Skeleton height={240} radius="var(--radius-card)" />
+      </SkeletonGroup>
+    );
   }
 
   if (error || !project) {
@@ -814,7 +825,7 @@ export default function SingleProjectViewPage() {
                       width: "100%",
                       minHeight: "140px",
                       padding: "12px",
-                      border: "1px solid #d9d9d9",
+                      border: "1px solid var(--accent-2-10_Opacity)",
                       borderRadius: "6px",
                       fontSize: "15px",
                       resize: "vertical"
@@ -825,7 +836,7 @@ export default function SingleProjectViewPage() {
                     <button
                       onClick={saveDescription}
                       disabled={descriptionSaving}
-                      style={{ background: "#5e745f", color: "white", padding: "8px 20px", borderRadius: "6px", fontWeight: 600 }}
+                      style={{ background: "var(--accent-1)", color: "var(--white)", padding: "8px 20px", borderRadius: "6px", fontWeight: 600 }}
                     >
                       {descriptionSaving ? "Saving..." : "Save Changes"}
                     </button>
@@ -892,7 +903,7 @@ export default function SingleProjectViewPage() {
         </div>
 
         {teamMembers.length === 0 ? (
-          <p>No team members yet.</p>
+                    <EmptyState title="No team members yet" message="Add the foremen and workers on this site so they can see it and post updates." />
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {teamMembers.map((m: any) => (
@@ -963,7 +974,7 @@ export default function SingleProjectViewPage() {
             width: "100%",
             padding: "10px 12px",
             fontSize: "15px",
-            border: "1px solid #d9d9d9",
+            border: "1px solid var(--accent-2-10_Opacity)",
             borderRadius: "6px",
             outline: "none",
           }}

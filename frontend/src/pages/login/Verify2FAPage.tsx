@@ -80,7 +80,7 @@ export default function Verify2FAPage({ onLoginSuccess }: Verify2FAPageProps) {
       <div className="login-left">
         <div className="login-card">
           <h1 className="login-title" id="tfaHeading">Two-Step Verification</h1>
-          <p style={{ color: "#aaa", marginBottom: "20px" }}>
+          <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>
             Enter the 6-digit code from your authenticator app.
           </p>
           <form onSubmit={handleVerify}>

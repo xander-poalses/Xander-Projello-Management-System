@@ -2,7 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: #1a2420;
+  background: var(--on-light-heading);
   display: flex;
   align-items: center;
   justify-content: center;

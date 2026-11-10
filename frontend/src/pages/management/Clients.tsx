@@ -9,6 +9,8 @@ import { API_BASE_URL } from "../../config";
 import ClientAddModal from "../../components/ClientAddModal";
 import { ProjectAddModal } from "../../components/ProjectAddModal";
 import { getToken } from "../../auth/tokenStore";
+import { SkeletonRows } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 
 type ClientSummary = {
@@ -522,10 +524,12 @@ export default function ClientsPage() {
                     </div>
                 </div>
 
-                {loading ? (
-                    <p className="clients-page__message">Loading clients...</p>
+                                {loading ? (
+                    <SkeletonRows count={3} label="Loading clients" />
                 ) : error ? (
-                    <p className="clients-page__message--error">Error: {error}</p>
+                    <EmptyState tone="error" title="Couldn't load clients" message={error} />
+                ) : filteredRows.length === 0 ? (
+                    <EmptyState title="No clients yet" message="Add your first client to start creating projects for them." />
                 ) : (
                     <ManagementClientTable
                         rows={filteredRows}

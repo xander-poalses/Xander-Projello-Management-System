@@ -1,81 +1,137 @@
+/* Discussion tab: Jello Jobs cards, fields and spacing */
 .discussion-tab {
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  color: var(--text-dark);
 }
 
-.discussion-tab__header {
-  margin-bottom: 20px;
+.discussion-tab__composer,
+.discussion-tab__post-card {
+  background: var(--secondary-background-item);
+  border: 1px solid var(--accent-2-10_Opacity);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
-.discussion-tab__title {
-  margin: 0;
+.discussion-tab__composer {
+  padding: var(--space-5);
 }
 
-.discussion-tab__loading,
-.discussion-tab__error,
-.discussion-tab__empty {
-  padding: 20px;
+.discussion-tab__subtitle {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
-.discussion-tab__error {
-  color: var(--error-red);
+.discussion-tab__form {
+  margin-top: var(--space-4);
+}
+
+/* Same field look as the Jello Jobs search */
+.discussion-tab__field {
+  width: 100%;
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--control-border);
+  background: var(--on-light-field-bg);
+  color: var(--on-light-text);
+  box-shadow: var(--shadow-field);
+  font: inherit;
+  font-weight: 500;
+}
+
+.discussion-tab__field::placeholder {
+  color: var(--on-light-placeholder);
+  opacity: 1;
+}
+
+.discussion-tab__field:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.discussion-tab__textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.discussion-tab__form-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.discussion-tab__label {
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .discussion-tab__post-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-4);
 }
 
 .discussion-tab__post-card {
-  background: var(--card-bg);
-  border: 1px solid var(--shadow-gray);
-  border-radius: 12px;
   overflow: hidden;
 }
 
+.discussion-tab__post-header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--accent-2-10_Opacity);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.discussion-tab__author {
+  font-weight: 700;
+}
+
+.discussion-tab__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .discussion-tab__post-content {
-  padding: 14px 16px;
+  padding: var(--space-4) var(--space-5);
 }
 
 .discussion-tab__post-caption {
-  margin: 0 0 12px 0;
+  margin: 0 0 var(--space-3);
   font-size: 15px;
-  line-height: 1.5;
-  color: var(--text-dark);
-}
-
-.discussion-tab__post-meta {
-  font-size: 12px;
-  color: var(--text-light-gray);
-  margin-bottom: 12px;
-}
-
-.discussion-tab__reactions {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-  padding: 10px 0;
-  border-top: 1px solid var(--secondary-background);
-  border-bottom: 1px solid var(--secondary-background);
-}
-
-.discussion-tab__reaction {
-  font-size: 20px;
-  cursor: pointer;
+  line-height: 1.6;
 }
 
 .discussion-tab__comments-label {
-  font-size: 13px;
-  color: var(--text-light-gray);
-  margin-bottom: 8px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
 }
 
-.discussion-tab__comment-input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--shadow-gray);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--white);
-  color: var(--text-dark);
+.discussion-tab__comment {
+  background: var(--accent-2-5_Opacity);
+  border: 1px solid var(--accent-2-10_Opacity);
+  border-radius: var(--radius-control);
+  padding: var(--space-3);
+}
+
+.discussion-tab__comment-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.discussion-tab__comment-form {
+  margin-top: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
 }

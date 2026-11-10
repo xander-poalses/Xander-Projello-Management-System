@@ -226,7 +226,7 @@ export default function SettingsPage() {
               <img
                 src={`data:image/svg+xml;utf8,${encodeURIComponent(avatarSvg)}`}
                 alt="Avatar Preview"
-                style={{ width: 80, height: 80, borderRadius: "50%", background: `#${avatarBg}`, cursor: "pointer", boxShadow: "0 2px 8px #0001" }}
+                style={{ width: 80, height: 80, borderRadius: "50%", background: `#${avatarBg}`, cursor: "pointer", boxShadow: "0 2px 8px rgb(var(--shadow-rgb) / 0.07)" }}
                 onClick={() => {
                   setModalBg(avatarBg || "");
                   setModalSelectedSeed(avatarSeed || "");
@@ -238,7 +238,7 @@ export default function SettingsPage() {
               <img
                 src={UserDefaultPfp}
                 alt="Default User Avatar"
-                style={{ width: 80, height: 80, borderRadius: "50%", background: "#C5D3C9", cursor: "pointer", boxShadow: "0 2px 8px #0001" }}
+                style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--avatar-bg)", cursor: "pointer", boxShadow: "0 2px 8px rgb(var(--shadow-rgb) / 0.07)" }}
                 title="Click to change avatar"
                 onClick={() => {
                   setModalBg("");
@@ -257,8 +257,8 @@ export default function SettingsPage() {
 
       {/* Avatar Picker Modal */}
       {showAvatarModal && (
-        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#0008", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div className="modal-content" style={{ background: "var(--secondary-background)", borderRadius: 16, padding: 32, minWidth: 400, maxWidth: 600, boxShadow: "0 4px 32px #0003", position: "relative" }}>
+        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgb(var(--shadow-rgb) / 0.53)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className="modal-content" style={{ background: "var(--secondary-background)", borderRadius: 16, padding: 32, minWidth: 400, maxWidth: 600, boxShadow: "0 4px 32px rgb(var(--shadow-rgb) / 0.2)", position: "relative" }}>
             <button onClick={() => setShowAvatarModal(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", fontSize: 24, cursor: "pointer" }}>&times;</button>
             <h3 style={{ marginTop: 0 }}>Choose Your Avatar</h3>
             
@@ -293,8 +293,8 @@ export default function SettingsPage() {
               {BOTTT_SEEDS.map(seed => (
                 <div key={seed} 
                      style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", 
-                              border: modalSelectedSeed === seed ? "2px solid #ffa000" : "2px solid transparent", 
-                              borderRadius: 12, padding: 6, background: modalSelectedSeed === seed ? "#fffbe6" : "#f7f7f3" }} 
+                              border: modalSelectedSeed === seed ? "2px solid var(--accent-3)" : "2px solid transparent", 
+                              borderRadius: 12, padding: 6, background: modalSelectedSeed === seed ? "var(--picker-selected-bg)" : "var(--secondary-background-item)" }} 
                      onClick={() => setModalSelectedSeed(seed)}>
                   {/* Rendered as an image, like the other avatars, so the typed colour can't inject markup */}
                   <img
@@ -305,7 +305,7 @@ export default function SettingsPage() {
                       backgroundColor: [`#${modalBg}`]
                     }).toString())}`}
                   />
-                  <span style={{ fontSize: 13, color: "#28332b" }}>{seed}</span>
+                  <span style={{ fontSize: 13, color: "var(--text-dark)" }}>{seed}</span>
                 </div>
               ))}
             </div>
@@ -402,11 +402,11 @@ export default function SettingsPage() {
               {/* Secured Local Generation: QR drawn inside the canvas memory grid safely */}
               <div className="qr-container" style={{ textAlign: "center", margin: "16px 0" }}>
                 {authenticatorUri ? (
-                  <div style={{ padding: '16px', backgroundColor: 'white', display: 'inline-block', borderRadius: '8px', border: '1px solid #eee' }}>
-                    <QRCodeSVG value={authenticatorUri} size={200} level="H" fgColor="#2c3e35" />
+                  <div style={{ padding: '16px', backgroundColor: 'var(--white)', display: 'inline-block', borderRadius: '8px', border: '1px solid var(--accent-2-10_Opacity)' }}>
+                    <QRCodeSVG value={authenticatorUri} size={200} level="H" fgColor="var(--accent-1-hover)" />
                   </div>
                 ) : (
-                  <p style={{ color: '#888' }}>Initializing secure parameters...</p>
+                  <p style={{ color: 'var(--text-muted)' }}>Initializing secure parameters...</p>
                 )}
               </div>
               
@@ -419,7 +419,7 @@ export default function SettingsPage() {
                   value={verificationCode}
                   onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                   maxLength={6}
-                  style={{ marginRight: 8, padding: '10px', textAlign: 'center', letterSpacing: '2px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  style={{ marginRight: 8, padding: '10px', textAlign: 'center', letterSpacing: '2px', fontSize: '16px', borderRadius: '4px', border: '1px solid var(--control-border)' }}
                 />
                 <button
                   className="btn-primary"

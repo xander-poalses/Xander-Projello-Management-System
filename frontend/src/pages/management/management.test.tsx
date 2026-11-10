@@ -92,10 +92,10 @@ import ManagementPage from "./management";
   it("renders loading initially and fetches project data successfully", async () => {
     render(<ManagementPage />);
 
-    expect(screen.getByText(/Loading projects.../i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading projects/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
     expect(screen.getByTestId("projects-table")).toBeInTheDocument();
@@ -107,7 +107,7 @@ import ManagementPage from "./management";
     render(<ManagementPage />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
     // Build Corp -> BC, Apex Industries -> AI
@@ -119,7 +119,7 @@ import ManagementPage from "./management";
     render(<ManagementPage />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
     // Verify default view is projects
@@ -141,7 +141,7 @@ import ManagementPage from "./management";
  it("opens the project action modal upon row action", async () => {
     render(<ManagementPage />);
     await waitFor(() => {
-        expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
     const rows = screen.getAllByTestId("project-row");
@@ -154,7 +154,7 @@ import ManagementPage from "./management";
 
 it("opens the project action modal when a row is clicked", async () => {
   render(<ManagementPage />);
-  await waitFor(() => expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument());
 
   const rows = screen.getAllByTestId("project-row");
   fireEvent.click(rows[0]); // This triggers handleRowAction
@@ -175,10 +175,10 @@ it("opens the project action modal when a row is clicked", async () => {
     render(<ManagementPage />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText(/No projects found./i)).toBeInTheDocument();
+    expect(screen.getByText(/No projects yet/i)).toBeInTheDocument();
   });
 
     it("opens the project edit modal and allows editing payments", async () => {
@@ -186,7 +186,7 @@ it("opens the project action modal when a row is clicked", async () => {
 
     // Wait for initial load
     await waitFor(() => {
-      expect(screen.queryByText(/Loading projects.../i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Loading projects/i)).not.toBeInTheDocument();
     });
 
     const actionBtn = screen.getByTestId(`action-btn-${mockProjects[0].projectID}`);

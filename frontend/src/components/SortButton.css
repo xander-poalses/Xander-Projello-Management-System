@@ -1,5 +1,5 @@
 .StyledSortspan {
-  color: #0a0a0a;
+  color: var(--on-light-text);
   font-size: 14px;
   font-family: "Roboto", sans-serif;
   font-weight: 500;
@@ -16,12 +16,12 @@
   height: 40px;
   padding-left: 14px;
   padding-right: 14px;
-  background: #e5e5e2;
+  background: var(--on-light-field-bg);
   border-radius: 999px;
   border: none;
   box-shadow:
-    0 -2px 4px 0 rgba(249, 251, 236, 0.25) inset,
-    0 2px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    0 -2px 4px 0 rgb(var(--highlight-rgb) / 0.25) inset,
+    0 2px 4px 0 rgb(var(--shadow-rgb) / 0.25) inset;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -31,10 +31,10 @@
 }
 
 .StyledButton01:hover {
-  background: #dddddd;
+  background: var(--on-light-field-bg-focus);
 }
 
 .StyledButton01:active {
-  box-shadow: 0 2px 0 0 rgba(40, 51, 43, 0.35) inset;
+  box-shadow: 0 2px 0 0 rgb(var(--ink-rgb) / 0.35) inset;
   transform: translateY(2px);
 }

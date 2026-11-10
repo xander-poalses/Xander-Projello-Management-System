@@ -146,7 +146,7 @@ export default function SideNavBar() {
                                 width: 36,
                                 height: 36,
                                 borderRadius: "50%",
-                                background: "#C5D3C9",
+                                background: "var(--avatar-bg)",
                                 overflow: "hidden",
                                 display: "flex",
                                 alignItems: "center",

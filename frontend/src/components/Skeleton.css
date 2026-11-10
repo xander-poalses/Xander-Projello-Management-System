@@ -1,0 +1,53 @@
+/* Subtle skeleton: a soft tint that gently pulses, matching the final layout */
+.pj-skeleton {
+  display: block;
+  background: var(--skeleton-base);
+  animation: pj-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pj-skeleton-pulse {
+  0%,
+  100% {
+    background: var(--skeleton-base);
+  }
+  50% {
+    background: var(--skeleton-highlight);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pj-skeleton {
+    animation: none;
+  }
+}
+
+.pj-skeleton-group {
+  width: 100%;
+}
+
+.pj-skeleton-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pj-skeleton-cards__grid {
+  display: grid;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .pj-skeleton-cards__grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.pj-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -7,6 +7,8 @@ import { API_BASE_URL } from "../../config";
 import { AddButton } from "../../components/AddButton";
 import CustomModal from "../../components/CustomModal";
 import { getToken } from "../../auth/tokenStore";
+import { SkeletonCards } from "../../components/Skeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface UserDisplay {
   id: string;
@@ -294,14 +296,15 @@ export default function WorkersPage() {
             </div>
           </div>
 
-          {loading ? (
-            <p className="workers-page__message">Loading workers...</p>
+                    {loading ? (
+            <SkeletonCards count={3} columns={3} height={160} label="Loading workers" />
           ) : error ? (
-            <p className="workers-page__message--error">Error: {error}</p>
+            <EmptyState tone="error" title="Couldn't load workers" message={error} />
           ) : filteredWorkers.length === 0 ? (
-            <p className="workers-page__message">
-              {searchTerm.trim() ? "No workers match your search." : "No workers found yet."}
-            </p>
+            <EmptyState
+              title={searchTerm.trim() ? "No workers match your search" : "No workers yet"}
+              message={searchTerm.trim() ? "Try a different name, role or project." : "Generate an invite code and share it with your team to add workers."}
+            />
           ) : (
              <div className="workers-page__grid">
               {filteredWorkers.map((worker) => (

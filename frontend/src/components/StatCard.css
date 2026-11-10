@@ -1,7 +1,7 @@
 .stat-card {
   min-width: 100px;
   padding: 24px;
-  background: var(--secondary-background-item, #f7f7f3);
+  background: var(--secondary-background-item);
   border-radius: var(--radius-card);
   border: 1px solid var(--accent-2-10_Opacity);
   box-shadow: var(--shadow-card);

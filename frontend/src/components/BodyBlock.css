@@ -1,5 +1,5 @@
 .body-block {
-  background: var(--secondary-background, #f7f7f3);
+  background: var(--secondary-background);
   border-radius: 20px 0 0 20px;
   width: calc(100vw - 225px);
   min-height: 100vh;

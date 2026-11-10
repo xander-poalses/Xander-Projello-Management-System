@@ -34,12 +34,12 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 ## 4. Database
 
-- [ ] Add foreign keys to `ProjectUpdates`, `UpdateReactions` and `UpdateComments` (to Projects and Users)
-- [ ] Add indexes on `ProjectUpdates.ProjectId`, `UpdateReactions.UpdateId` and `UpdateComments.UpdateId`
-- [ ] Add a unique index on `CompanyInvites.Code`
-- [ ] Review the 15 cascade deletes and switch to `Restrict` or soft delete where losing data would be a problem (clients, projects)
+- [x] Add foreign keys to `ProjectUpdates`, `UpdateReactions` and `UpdateComments` (to Projects and Users)
+- [x] Add indexes on `ProjectUpdates.ProjectId`, `UpdateReactions.UpdateId` and `UpdateComments.UpdateId`
+- [x] Add a unique index on `CompanyInvites.Code`
+- [x] Review the 15 cascade deletes: Client -> Projects and Company -> Clients are now `Restrict`; project contents still cascade on a deliberate project delete (soft delete is below)
 - [ ] Choose one place to store `TotalPaid` and `Outstanding` (Client or Project), work out the other from it, and set decimal precision
-- [ ] Wrap multi-step writes in transactions (for example, register plus marking the invite used)
+- [x] Wrap multi-step writes in transactions (for example, register plus marking the invite used)
 - [ ] Add soft delete (`DeletedAt`) and an audit trail for key records
 - [ ] Decide how migrations run in production (in the deploy step or at startup)
 
@@ -53,15 +53,15 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 ## 6. Design system and Hallmark polish
 
-- [ ] Move all raw colours and fonts into the `:root` tokens (448 findings; start with `Clients.css`, `WorkerClientAddModal.css`, `CallOverlay.css`, `dashboard.css`)
-- [ ] Add system colour tokens: success, warning, error, info, disabled, border, control-border, in light and dark
+- [x] Move all raw colours and fonts into the `:root` tokens (448 findings; start with `Clients.css`, `WorkerClientAddModal.css`, `CallOverlay.css`, `dashboard.css`)
+- [x] Add system colour tokens: success, warning, error, info, disabled, border, control-border, in light and dark
 - [ ] Put spacing, radius and type sizes on a token scale (84 spacing findings)
 - [ ] Replace `transition: all` with named properties (AddButton, FilterButton, SortButton, CallOverlay, history, Clients)
 - [ ] Replace `100vw` and `overflow-x: hidden` with `100%` and `overflow-x: clip`
 - [ ] Replace the emoji icons (👍, ☎, ⚠️) with one icon set
 - [ ] Remove the "ARCHIVED SECURELY" eyebrow and use sentence case for table heads and `.project-tag`
 - [ ] Remove em dashes from copy (AddProjectMemberModal, DiscussionTab, single-project-view)
-- [ ] Change "View All →" to a plain verb label
+- [x] Change "View All →" to a plain verb label
 - [ ] Video grid: use `minmax(0, 1fr)`, swap pure `#000` for a token, make autoplay video muted
 - [ ] Add `aria-hidden` or a label to the splash `<canvas>`
 
@@ -77,7 +77,7 @@ Taken from the November 2026 audit (security, database, Hallmark and CLAUDE.md).
 
 ## 8. Required UI patterns (CLAUDE.md)
 
-- [ ] Skeleton loaders on every page that loads data
+- [x] Skeleton loaders on every page that loads data
 - [ ] Stale-while-revalidate data fetching (for example, TanStack Query)
 - [ ] Optimistic updates for reactions, comments and task status, rolling back on failure
 - [ ] Idempotency keys on every create or submit request (with a backend check)
